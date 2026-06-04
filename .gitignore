@@ -70,3 +70,4 @@ Testing/
 
 # useless files and folders
 .idea
+docs/generated
