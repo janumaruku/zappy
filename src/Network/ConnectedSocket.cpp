@@ -34,7 +34,7 @@ void ConnectedSocket::connect(Endpoint &endpoint)
 {
     _endpoint = endpoint;
     if (::connect(_socketFd,
-        reinterpret_cast<sockaddr *>(&endpoint.getAddress()),
+        reinterpret_cast<const sockaddr *>(&endpoint.getAddress()),
         sizeof(endpoint.getAddress())) == -1)
         throw std::runtime_error{"Connect failed"};
 }
