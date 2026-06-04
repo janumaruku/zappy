@@ -56,7 +56,7 @@ std::string Endpoint::getHostname() const noexcept
     return std::string{buf.data()};
 }
 
-sockaddr_in &Endpoint::getAddress() noexcept
+const sockaddr_in &Endpoint::getAddress() const noexcept
 {
     return _address;
 }
