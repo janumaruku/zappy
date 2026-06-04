@@ -31,7 +31,7 @@ jobs:
           TARGET="${{ github.event.pull_request.base.ref }}"
 
           if [ "$TARGET" == "dev" ]; then
-            STATUS="TEST"
+            STATUS="To Test"
           elif [ "$TARGET" == "main" ]; then
             STATUS="Done"
           else

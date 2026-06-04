@@ -28,4 +28,4 @@ jobs:
           ISSUE="${{ steps.extract.outputs.issue }}"
           [ -z "$ISSUE" ] && exit 0
           chmod +x .github/scripts/jira-transition.sh
-          .github/scripts/jira-transition.sh "$ISSUE" "IN REVIEW"
+          .github/scripts/jira-transition.sh "$ISSUE" "In Review"
