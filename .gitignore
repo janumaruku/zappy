@@ -71,3 +71,4 @@ Testing/
 # useless files and folders
 .idea
 docs/generated
+src/AIClient/target/
