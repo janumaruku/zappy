@@ -35,7 +35,7 @@ void Core::buildServerCommands()
             builder.name("port").alias("p").required();
         })
         .option([](shell::command::OptionBuilder &builder) {
-        builder.name("width").alias("x").required();
+            builder.name("width").alias("x").required();
         })
         .option([](shell::command::OptionBuilder &builder) {
             builder.name("height").alias("y").required();
