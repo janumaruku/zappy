@@ -23,7 +23,7 @@ impl CmdOptionBuilder {
     }
 
     pub fn alias(mut self, alias: char) -> Self {
-        self.option.alias = alias;
+        self.option.alias = Option::from(alias);
 
         self
     }

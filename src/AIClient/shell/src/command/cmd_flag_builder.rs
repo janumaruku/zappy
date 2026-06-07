@@ -23,7 +23,7 @@ impl CmdFlagBuilder {
     }
 
     pub fn alias(mut self, alias: char) -> Self {
-        self.flag.alias = alias;
+        self.flag.alias = Option::from(alias);
 
         self
     }
