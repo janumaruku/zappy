@@ -16,3 +16,10 @@ version = "0.1.0"
 [[package]]
 name = "shell"
 version = "0.1.0"
+dependencies = [
+ "useful",
+]
+
+[[package]]
+name = "useful"
+version = "0.1.0"
