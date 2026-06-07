@@ -1,5 +1,6 @@
 use std::collections::HashMap;
 
+#[derive(Default)]
 pub struct CommandContext {
     args: HashMap<String, String>,
     options: HashMap<String, String>,
