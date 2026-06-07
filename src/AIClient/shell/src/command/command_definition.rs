@@ -1,4 +1,4 @@
-use crate::command::CommandContext;
+use crate::command::{CommandContext, CommandError};
 
 #[derive(Debug, Default)]
 pub struct PositionalArgument {
@@ -49,9 +49,9 @@ impl CommandDefinition {
         context: &mut CommandContext,
         tokens: &mut Vec<String>,
         option: &CmdOption,
-    ) -> Result<(), String> {
+    ) -> Result<(), CommandError> {
         if tokens.len() < 2 {
-            Err(format!("Missing option {} value", &option.name))
+            Err(CommandError::MissingOptionValue(option.name.to_string()))
         } else {
             context.add_option(&option.name, &tokens[1]);
             tokens.drain(..2);
@@ -63,7 +63,7 @@ impl CommandDefinition {
         &self,
         context: &mut CommandContext,
         tokens: &mut Vec<String>,
-    ) -> Result<(), String> {
+    ) -> Result<(), CommandError> {
         let raw = &tokens[0];
         let token = if raw.starts_with("--") {
             &raw[2..]
@@ -76,7 +76,7 @@ impl CommandDefinition {
             true => {
                 let index = context.args_count();
                 if index >= self.arguments.len() {
-                    Err(format!("Unexpected argument {}", raw))
+                    Err(CommandError::UnknownArgument(raw.to_string()))
                 } else {
                     context.add_arg(&self.arguments[index].name, raw);
                     tokens.drain(..1);
@@ -92,12 +92,12 @@ impl CommandDefinition {
                 if let Some(option) = self.has_option(token) {
                     return self.process_options(context, tokens, option);
                 }
-                Err(format!("Unknown token: {}", token))
+                Err(CommandError::UnknownToken(token.to_string()))
             }
         }
     }
 
-    pub fn build_context(&self, cmd: &[String]) -> Result<CommandContext, String> {
+    pub fn build_context(&self, cmd: &[String]) -> Result<CommandContext, CommandError> {
         let mut tokens = cmd[1..].to_vec();
         let mut context: CommandContext = Default::default();
 
@@ -119,19 +119,19 @@ impl CommandDefinition {
 
         for arg in &self.arguments {
             if arg.required && !context.has_arg(&arg.name) {
-                Err(format!("Missing required argument {}", &arg.name))?;
+                Err(CommandError::MissingArgument(arg.name.clone()))?;
             }
         }
 
         for option in &self.options {
             if option.required && !context.has_option(&option.name) {
-                Err(format!("Missing required option {}", &option.name))?;
+                Err(CommandError::MissingOption(option.name.to_string()))?;
             }
         }
 
         for flag in &self.flags {
             if flag.required && !context.flag(&flag.name) {
-                Err(format!("Missing required flag {}", &flag.name))?;
+                Err(CommandError::MissingFlag(flag.name.to_string()))?;
             }
         }
 
