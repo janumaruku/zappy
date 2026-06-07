@@ -32,7 +32,7 @@ pub struct CommandDefinition {
     pub options: Vec<CmdOption>,
     pub flags: Vec<CmdFlag>,
 
-    handler: Box<dyn Fn(&CommandContext)>,
+    pub(crate) handler: Box<dyn Fn(&CommandContext)>,
 }
 
 impl CommandDefinition {
