@@ -10,7 +10,7 @@
 #include "CommandBuilder.hpp"
 #include "CommandContext.hpp"
 
-Core::Core(int argc, char **argv) : _argc(argc)
+Core::Core(char **argv)
 {
     for (auto i = 0; argv[i] != nullptr; i++)
         _argv.emplace_back(argv[i]);
