@@ -52,6 +52,7 @@ struct CommandDefinition {
     std::string description;
     std::vector<PositionalArgument> arguments;
     std::vector<Option> options;
+    std::vector<XOption> xOptions;
     std::vector<Flag> flags;
     CommandHandler handler;
 

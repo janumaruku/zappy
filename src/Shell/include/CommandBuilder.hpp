@@ -11,10 +11,12 @@
 #include "CommandDefinition.hpp"
 #include "FlagBuilder.hpp"
 #include "OptionBuilder.hpp"
+#include "XOptionBuilder.hpp"
 
 namespace shell::command {
 using OptionConfigurator = std::function<void(OptionBuilder &)>;
 using FlagConfigurator   = std::function<void(FlagBuilder &)>;
+using XOptionConfigurator = std::function<void(XOptionBuilder &)>;
 
 class CommandBuilder {
 public:
@@ -25,6 +27,8 @@ public:
     CommandBuilder &arg(ArgumentConfigurator configure) noexcept;
 
     CommandBuilder &option(OptionConfigurator configure) noexcept;
+
+    CommandBuilder &xOption(XOptionConfigurator configure) noexcept;
 
     CommandBuilder &flag(FlagConfigurator configure) noexcept;
 
