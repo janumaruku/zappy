@@ -32,7 +32,7 @@ struct XOption {
     std::string name;
     std::string description;
     std::string alias;
-    std::size_t min;
+    std::size_t min = 0;
     bool required = false;
 };
 
