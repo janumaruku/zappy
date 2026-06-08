@@ -9,7 +9,6 @@
 
 #include <stdexcept>
 
-#include "constants.hpp"
 #include "StringUtils.hpp"
 
 namespace shell {
@@ -47,6 +46,20 @@ std::string command::CommandContext::option(const std::string &name) const
     return _options.at(name);
 }
 
+std::vector<std::string> command::CommandContext::xOption(
+    const std::string &name) const
+{
+    if (!hasXOption(name))
+        throw std::out_of_range{"Option " + name + " not found"};
+
+    return _xOptions.at(name);
+}
+
+bool command::CommandContext::hasXOption(const std::string &name) const noexcept
+{
+    return _xOptions.contains(name);
+}
+
 bool command::CommandContext::hasOption(const std::string &name) const noexcept
 {
     return _options.contains(name);
@@ -69,6 +82,19 @@ void command::CommandContext::addOption(const std::string &name,
     const std::string &option) noexcept
 {
     _options.emplace(name, option);
+}
+
+void command::CommandContext::addXOption(const std::string &name,
+    const std::string &option) noexcept
+{
+    const auto itt = std::ranges::find_if(_xOptions, [&name](const auto &arg) {
+        return arg.first == name;
+    });
+
+    if (itt != _xOptions.end())
+        itt->second.push_back(option);
+    else
+        _xOptions.emplace(name, std::vector{option});
 }
 
 void command::CommandContext::addFlag(const std::string &name) noexcept

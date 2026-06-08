@@ -20,17 +20,25 @@ struct CommandContext {
 
     [[nodiscard]] bool hasOption(const std::string &name) const noexcept;
 
+    [[nodiscard]] std::vector<std::string> xOption(
+        const std::string &name) const;
+
+    [[nodiscard]] bool hasXOption(const std::string &name) const noexcept;
+
     [[nodiscard]] bool flag(const std::string &name) const noexcept;
 
     void addArg(const std::string &name, const std::string &arg) noexcept;
 
     void addOption(const std::string &name, const std::string &option) noexcept;
 
+    void addXOption(const std::string &name, const std::string &option) noexcept;
+
     void addFlag(const std::string &name) noexcept;
 
 private:
     std::vector<std::pair<std::string, std::string>> _args;
     std::unordered_map<std::string, std::string> _options;
+    std::unordered_map<std::string, std::vector<std::string>> _xOptions;
     std::vector<std::string> _flags;
 };
 } // namespace shell::command

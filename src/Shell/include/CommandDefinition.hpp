@@ -58,12 +58,17 @@ struct CommandDefinition {
 
     std::optional<Option> hasOption(const std::string &option);
 
+    std::optional<XOption> hasXOption(const std::string &xOption);
+
     std::optional<Flag> hasFlag(const std::string &flag);
 
     CommandContext buildCommandContext(std::vector<std::string> tokens);
 
     static void processOption(CommandContext &context,
-        std::vector<std::string> &tokens, const Option &option);
+    std::vector<std::string> &tokens, const Option &option);
+
+    static void processXOption(CommandContext &context,
+        std::vector<std::string> &tokens, const XOption &option);
 
     void processToken(CommandContext &context,
         std::vector<std::string> &tokens);

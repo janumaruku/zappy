@@ -26,6 +26,19 @@ std::optional<Option> CommandDefinition::hasOption(const std::string &option)
     return std::optional{*itt};
 }
 
+std::optional<XOption> CommandDefinition::hasXOption(const std::string &xOption)
+{
+    const auto itt =
+        std::ranges::find_if(xOptions, [&xOption](const auto &xpOption) {
+            return xpOption.name == xOption || xpOption.alias == xOption;
+        });
+
+    if (itt == xOptions.end())
+        return std::nullopt;
+
+    return std::optional{*itt};
+}
+
 std::optional<Flag> CommandDefinition::hasFlag(const std::string &flag)
 {
     const auto itt = std::ranges::find_if(flags, [&flag](const auto &xpFlag) {
@@ -47,23 +60,30 @@ CommandContext CommandDefinition::buildCommandContext(
     while (!tokens.empty())
         processToken(context, tokens);
 
-    for (const auto &arg : arguments)
+    for (const auto &arg: arguments)
         if (!context.hasArg(arg.name) && !arg.defaultValue.empty())
             context.addArg(arg.name, arg.defaultValue);
 
-    for (const auto &option : options)
+    for (const auto &option: options)
         if (!context.hasOption(option.name) && !option.defaultValue.empty())
             context.addOption(option.name, option.defaultValue);
 
-    for (const auto &arg : arguments)
+    for (const auto &arg: arguments)
         if (arg.required && !context.hasArg(arg.name))
             throw MissingArgumentException(arg.name);
 
-    for (const auto &option : options)
+    for (const auto &option: options)
         if (option.required && !context.hasOption(option.name))
             throw MissingOptionException(option.name);
 
-    for (const auto &flag : flags)
+    for (const auto &option: xOptions) {
+        if (option.required && !context.hasXOption(option.name))
+            throw MissingOptionException(option.name);
+        if (option.min > context.xOption(option.name).size())
+            throw MissingOptionValueException(option.name);
+    }
+
+    for (const auto &flag: flags)
         if (flag.required && !context.flag(flag.name))
             throw MissingFlagException(flag.name);
 
@@ -80,10 +100,24 @@ void CommandDefinition::processOption(CommandContext &context,
     tokens.erase(tokens.begin(), tokens.begin() + 2);
 }
 
+void CommandDefinition::processXOption(CommandContext &context,
+    std::vector<std::string> &tokens, const XOption &option)
+{
+    if (tokens.size() < 2)
+        throw MissingOptionValueException(option.name);
+
+    tokens.erase(tokens.begin(), tokens.begin() + 1);
+
+    while (!tokens.empty() && !tokens.front().starts_with("-")) {
+        context.addXOption(option.name, tokens.front());
+        tokens.erase(tokens.begin(), tokens.begin() + 1);
+    }
+}
+
 void CommandDefinition::processToken(CommandContext &context,
     std::vector<std::string> &tokens)
 {
-    const auto &raw  = tokens.front();
+    const auto &raw = tokens.front();
     const auto token = [&raw]() -> std::string {
         if (raw.starts_with("--"))
             return raw.substr(2);
@@ -99,6 +133,10 @@ void CommandDefinition::processToken(CommandContext &context,
         }
         if (const auto temp = hasOption(token); temp) {
             processOption(context, tokens, *temp);
+            return;
+        }
+        if (const auto temp = hasXOption(token); temp) {
+            processXOption(context, tokens, *temp);
             return;
         }
         throw UnknownTokenException(token);
