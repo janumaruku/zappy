@@ -28,6 +28,14 @@ struct Option {
     bool required = false;
 };
 
+struct XOption {
+    std::string name;
+    std::string description;
+    std::string alias;
+    std::size_t min;
+    bool required = false;
+};
+
 struct Flag {
     std::string name;
     std::string description;
