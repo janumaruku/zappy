@@ -42,7 +42,7 @@ CommandBuilder &CommandBuilder::option(OptionConfigurator configure) noexcept
     return *this;
 }
 
-CommandBuilder & CommandBuilder::xOption(XOptionConfigurator configure) noexcept
+CommandBuilder &CommandBuilder::xOption(XOptionConfigurator configure) noexcept
 {
     XOptionBuilder builder;
     configure(builder);
@@ -70,6 +70,9 @@ CommandBuilder &CommandBuilder::action(
 
 CommandDefinition CommandBuilder::build() noexcept
 {
+    *this = this->flag([](auto &builder) {
+        builder.name("help").alias("h").description("Print help message");
+    });
     return _definition;
 }
 } // namespace command

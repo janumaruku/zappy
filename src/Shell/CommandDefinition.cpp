@@ -6,14 +6,17 @@
 */
 
 #include <algorithm>
+#include <iostream>
 #include <ranges>
 
 #include "CommandContext.hpp"
 #include "ContextException.hpp"
+#include "HelpFormatter.hpp"
 #include "Options.hpp"
 
 namespace shell::command {
 std::optional<Option> CommandDefinition::hasOption(const std::string &option)
+const
 {
     const auto itt =
         std::ranges::find_if(options, [&option](const auto &xpOption) {
@@ -27,6 +30,7 @@ std::optional<Option> CommandDefinition::hasOption(const std::string &option)
 }
 
 std::optional<XOption> CommandDefinition::hasXOption(const std::string &xOption)
+const
 {
     const auto itt =
         std::ranges::find_if(xOptions, [&xOption](const auto &xpOption) {
@@ -39,7 +43,7 @@ std::optional<XOption> CommandDefinition::hasXOption(const std::string &xOption)
     return std::optional{*itt};
 }
 
-std::optional<Flag> CommandDefinition::hasFlag(const std::string &flag)
+std::optional<Flag> CommandDefinition::hasFlag(const std::string &flag) const
 {
     const auto itt = std::ranges::find_if(flags, [&flag](const auto &xpFlag) {
         return xpFlag.name == flag || xpFlag.alias == flag;
@@ -52,7 +56,7 @@ std::optional<Flag> CommandDefinition::hasFlag(const std::string &flag)
 }
 
 CommandContext CommandDefinition::buildCommandContext(
-    std::vector<std::string> tokens)
+    std::vector<std::string> tokens) const
 {
     tokens.erase(tokens.begin());
     CommandContext context;
@@ -115,7 +119,7 @@ void CommandDefinition::processXOption(CommandContext &context,
 }
 
 void CommandDefinition::processToken(CommandContext &context,
-    std::vector<std::string> &tokens)
+    std::vector<std::string> &tokens) const
 {
     const auto &raw = tokens.front();
     const auto token = [&raw]() -> std::string {
@@ -149,5 +153,18 @@ void CommandDefinition::processToken(CommandContext &context,
 
     context.addArg(this->arguments[index].name, raw);
     tokens.erase(tokens.begin());
+}
+
+void CommandDefinition::run(std::vector<std::string> &&cmd) const
+{
+    if (cmd.size() == 2 && (cmd[1] == "--help" || cmd[1] == "-h")) {
+        std::cout << formatHelp(*this);
+        std::fflush(stdout);
+        return;
+    }
+
+    auto context = buildCommandContext(std::move(cmd));
+
+    handler(context);
 }
 } // namespace shell::command
