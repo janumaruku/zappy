@@ -5,16 +5,17 @@
 ** 
 */
 
-#pragma once
+#ifndef BASICWAITABLETIMER_TPP
+#define BASICWAITABLETIMER_TPP
 
-#include "BasicWaitableTimer.hpp"
 #include "IoContext.hpp"
+#include "BasicWaitableTimer.hpp"
 
 namespace network {
 
 template <typename Clock>
 BasicWaitableTimer<Clock>::BasicWaitableTimer(const BasicWaitableTimer &&other) noexcept :
-_id(other._id), _time_point(other._time_point), _ctx(other._ctx), _handler(other._handler) {}
+_id(other._id), _time_point(other._time_point), _ioContext(other._ioContext), _handler(other._handler) {}
 
 
 template <typename Clock>
@@ -22,13 +23,13 @@ void BasicWaitableTimer<Clock>::asyncWait(Clock duration, const std::function<vo
 {
     _time_point = std::chrono::duration_cast<std::chrono::seconds>(Clock::now() + duration).count();
     _handler = handler;
-    _ctx.registerTimer(*this);
+    _ioContext.registerTimer(*this);
 }
 
 template <typename Clock>
 void BasicWaitableTimer<Clock>::cancel() noexcept
 {
-    _ctx.cancelTimer(_id);
+    _ioContext.cancelTimer(_id);
 }
 
 template <typename Clock>
@@ -44,3 +45,4 @@ std::size_t BasicWaitableTimer<Clock>::expiry() const noexcept
     return _time_point;
 }
 }
+#endif //BASICWAITABLETIMER_TPP

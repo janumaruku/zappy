@@ -5,7 +5,8 @@
 ** 
 */
 
-#pragma once
+#ifndef BASICWAITABLETIMER_HPP
+#define BASICWAITABLETIMER_HPP
 
 #include <cstddef>
 #include <ctime>
@@ -32,10 +33,11 @@ public:
 private:
     std::size_t _id;
     std::time_t _time_point;
-    network::IOContext &_ctx;
+    network::IOContext &_ioContext;
     std::function<void()> _handler;
 };
 
 }
 
+#endif //BASICWAITABLETIMER_HPP
 #include "BasicWaitableTimer.tpp"
