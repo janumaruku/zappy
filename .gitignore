@@ -38,6 +38,8 @@
 *.exe
 *.out
 *.app
+zappy_gui
+zappy_server
 
 # Build directories
 build/
