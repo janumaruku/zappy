@@ -84,6 +84,13 @@ std::string formatHelp(const command::CommandDefinition &def)
     const std::size_t usageCont = INDENT + def.name.size() + 1;
     std::string usageLine = std::string(INDENT, ' ') + def.name;
 
+    for (const auto &arg : def.arguments) {
+        const std::string token = arg.required
+            ? "<" + arg.name + ">"
+            : "[" + arg.name + "]";
+        appendUsageToken(usageLine, token, usageCont);
+    }
+
     for (const auto &option : def.options) {
         std::string token = option.required ? "--" : "[--";
         token += option.name;
@@ -95,7 +102,22 @@ std::string formatHelp(const command::CommandDefinition &def)
         appendUsageToken(usageLine, token, usageCont);
     }
 
+    for (const auto &option : def.xOptions) {
+        std::string token = option.required ? "--" : "[--";
+        token += option.name;
+        if (!option.alias.empty())
+            token += " | -" + option.alias;
+        if (!option.required)
+            token += "]";
+        for (auto i = 0UL; i < option.min; ++i)
+            token += " <" + option.name + std::to_string(i + 1) + ">";
+        appendUsageToken(usageLine, token, usageCont);
+    }
+    usageLine += " ...";
+
     for (const auto &flag : def.flags) {
+        if (flag.name == "help")
+            continue;
         std::string token = "[--" + flag.name;
         if (!flag.alias.empty())
             token += " | -" + flag.alias;
@@ -103,14 +125,10 @@ std::string formatHelp(const command::CommandDefinition &def)
         appendUsageToken(usageLine, token, usageCont);
     }
 
-    for (const auto &arg : def.arguments) {
-        const std::string token = arg.required
-            ? "<" + arg.name + ">"
-            : "[" + arg.name + "]";
-        appendUsageToken(usageLine, token, usageCont);
-    }
-
-    std::string result = "Usage\n" + usageLine + "\n";
+    std::string result = "Usage\n" + usageLine + "\n\n";
+    usageLine = std::string(INDENT, ' ') + def.name;
+    appendUsageToken(usageLine, "[--help | -h]", usageCont);
+    result += usageLine + "\n";
 
     if (!def.description.empty()) {
         result += "\nDescription\n";
@@ -128,6 +146,14 @@ std::string formatHelp(const command::CommandDefinition &def)
         if (!opt.alias.empty())
             label += ", -" + opt.alias;
         optEntries.emplace_back(label, opt.description);
+    }
+    for (const auto &opt : def.xOptions) {
+        std::string label = "--" + opt.name;
+        if (!opt.alias.empty())
+            label += ", -" + opt.alias;
+        const auto description = opt.description + "\nNeed at least" +
+            std::to_string(opt.min) + " " + opt.name;
+        optEntries.emplace_back(label, description);
     }
     result += formatSection("Option(s)", optEntries);
 

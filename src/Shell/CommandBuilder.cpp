@@ -42,6 +42,15 @@ CommandBuilder &CommandBuilder::option(OptionConfigurator configure) noexcept
     return *this;
 }
 
+CommandBuilder &CommandBuilder::xOption(XOptionConfigurator configure) noexcept
+{
+    XOptionBuilder builder;
+    configure(builder);
+    _definition.xOptions.push_back(builder.build());
+
+    return *this;
+}
+
 CommandBuilder &CommandBuilder::flag(FlagConfigurator configure) noexcept
 {
     FlagBuilder builder;
@@ -61,6 +70,9 @@ CommandBuilder &CommandBuilder::action(
 
 CommandDefinition CommandBuilder::build() noexcept
 {
+    *this = this->flag([](auto &builder) {
+        builder.name("help").alias("h").description("Print help message");
+    });
     return _definition;
 }
 } // namespace command

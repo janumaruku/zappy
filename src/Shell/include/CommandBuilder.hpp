@@ -5,16 +5,20 @@
 ** CommandBuilder
 */
 
-#pragma once
+#ifndef SHELL_COMMAND_BUILDER_HPP
+#define SHELL_COMMAND_BUILDER_HPP
+
 #include <string>
 
 #include "CommandDefinition.hpp"
 #include "FlagBuilder.hpp"
 #include "OptionBuilder.hpp"
+#include "XOptionBuilder.hpp"
 
 namespace shell::command {
 using OptionConfigurator = std::function<void(OptionBuilder &)>;
 using FlagConfigurator   = std::function<void(FlagBuilder &)>;
+using XOptionConfigurator = std::function<void(XOptionBuilder &)>;
 
 class CommandBuilder {
 public:
@@ -25,6 +29,8 @@ public:
     CommandBuilder &arg(ArgumentConfigurator configure) noexcept;
 
     CommandBuilder &option(OptionConfigurator configure) noexcept;
+
+    CommandBuilder &xOption(XOptionConfigurator configure) noexcept;
 
     CommandBuilder &flag(FlagConfigurator configure) noexcept;
 
@@ -37,3 +43,5 @@ private:
     CommandDefinition _definition;
 };
 } // namespace shell::command
+
+#endif // SHELL_COMMAND_BUILDER_HPP

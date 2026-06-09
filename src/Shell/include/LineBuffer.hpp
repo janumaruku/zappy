@@ -5,7 +5,8 @@
 ** LineBuffer
 */
 
-#pragma once
+#ifndef SHELL_LINE_BUFFER_HPP
+#define SHELL_LINE_BUFFER_HPP
 
 #include <cstddef>
 #include <string>
@@ -44,3 +45,5 @@ private:
 };
 
 } // namespace shell
+
+#endif // SHELL_LINE_BUFFER_HPP

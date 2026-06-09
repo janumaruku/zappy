@@ -16,6 +16,7 @@
 #include "constants.hpp"
 #include "ContextException.hpp"
 #include "HelpFormatter.hpp"
+#include "ShellException.hpp"
 
 namespace shell {
 Shell::Shell()

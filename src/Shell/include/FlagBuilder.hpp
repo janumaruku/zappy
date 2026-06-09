@@ -5,7 +5,9 @@
 ** FlagBuilder
 */
 
-#pragma once
+#ifndef SHELL_FLAG_BUILDER_HPP
+#define SHELL_FLAG_BUILDER_HPP
+
 #include <string>
 
 #include "CommandDefinition.hpp"
@@ -27,3 +29,5 @@ private:
     Flag _flag;
 };
 }
+
+#endif // SHELL_FLAG_BUILDER_HPP

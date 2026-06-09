@@ -6,14 +6,17 @@
 */
 
 #include <algorithm>
+#include <iostream>
 #include <ranges>
 
 #include "CommandContext.hpp"
 #include "ContextException.hpp"
+#include "HelpFormatter.hpp"
 #include "Options.hpp"
 
 namespace shell::command {
 std::optional<Option> CommandDefinition::hasOption(const std::string &option)
+const
 {
     const auto itt =
         std::ranges::find_if(options, [&option](const auto &xpOption) {
@@ -26,7 +29,21 @@ std::optional<Option> CommandDefinition::hasOption(const std::string &option)
     return std::optional{*itt};
 }
 
-std::optional<Flag> CommandDefinition::hasFlag(const std::string &flag)
+std::optional<XOption> CommandDefinition::hasXOption(const std::string &xOption)
+const
+{
+    const auto itt =
+        std::ranges::find_if(xOptions, [&xOption](const auto &xpOption) {
+            return xpOption.name == xOption || xpOption.alias == xOption;
+        });
+
+    if (itt == xOptions.end())
+        return std::nullopt;
+
+    return std::optional{*itt};
+}
+
+std::optional<Flag> CommandDefinition::hasFlag(const std::string &flag) const
 {
     const auto itt = std::ranges::find_if(flags, [&flag](const auto &xpFlag) {
         return xpFlag.name == flag || xpFlag.alias == flag;
@@ -39,7 +56,7 @@ std::optional<Flag> CommandDefinition::hasFlag(const std::string &flag)
 }
 
 CommandContext CommandDefinition::buildCommandContext(
-    std::vector<std::string> tokens)
+    std::vector<std::string> tokens) const
 {
     tokens.erase(tokens.begin());
     CommandContext context;
@@ -47,23 +64,30 @@ CommandContext CommandDefinition::buildCommandContext(
     while (!tokens.empty())
         processToken(context, tokens);
 
-    for (const auto &arg : arguments)
+    for (const auto &arg: arguments)
         if (!context.hasArg(arg.name) && !arg.defaultValue.empty())
             context.addArg(arg.name, arg.defaultValue);
 
-    for (const auto &option : options)
+    for (const auto &option: options)
         if (!context.hasOption(option.name) && !option.defaultValue.empty())
             context.addOption(option.name, option.defaultValue);
 
-    for (const auto &arg : arguments)
+    for (const auto &arg: arguments)
         if (arg.required && !context.hasArg(arg.name))
             throw MissingArgumentException(arg.name);
 
-    for (const auto &option : options)
+    for (const auto &option: options)
         if (option.required && !context.hasOption(option.name))
             throw MissingOptionException(option.name);
 
-    for (const auto &flag : flags)
+    for (const auto &option: xOptions) {
+        if (option.required && !context.hasXOption(option.name))
+            throw MissingOptionException(option.name);
+        if (option.min > context.xOption(option.name).size())
+            throw MissingOptionValueException(option.name);
+    }
+
+    for (const auto &flag: flags)
         if (flag.required && !context.flag(flag.name))
             throw MissingFlagException(flag.name);
 
@@ -80,10 +104,24 @@ void CommandDefinition::processOption(CommandContext &context,
     tokens.erase(tokens.begin(), tokens.begin() + 2);
 }
 
-void CommandDefinition::processToken(CommandContext &context,
-    std::vector<std::string> &tokens)
+void CommandDefinition::processXOption(CommandContext &context,
+    std::vector<std::string> &tokens, const XOption &option)
 {
-    const auto &raw  = tokens.front();
+    if (tokens.size() < 2)
+        throw MissingOptionValueException(option.name);
+
+    tokens.erase(tokens.begin(), tokens.begin() + 1);
+
+    while (!tokens.empty() && !tokens.front().starts_with("-")) {
+        context.addXOption(option.name, tokens.front());
+        tokens.erase(tokens.begin(), tokens.begin() + 1);
+    }
+}
+
+void CommandDefinition::processToken(CommandContext &context,
+    std::vector<std::string> &tokens) const
+{
+    const auto &raw = tokens.front();
     const auto token = [&raw]() -> std::string {
         if (raw.starts_with("--"))
             return raw.substr(2);
@@ -101,6 +139,10 @@ void CommandDefinition::processToken(CommandContext &context,
             processOption(context, tokens, *temp);
             return;
         }
+        if (const auto temp = hasXOption(token); temp) {
+            processXOption(context, tokens, *temp);
+            return;
+        }
         throw UnknownTokenException(token);
     }
 
@@ -111,5 +153,18 @@ void CommandDefinition::processToken(CommandContext &context,
 
     context.addArg(this->arguments[index].name, raw);
     tokens.erase(tokens.begin());
+}
+
+void CommandDefinition::run(std::vector<std::string> &&cmd) const
+{
+    if (cmd.size() == 2 && (cmd[1] == "--help" || cmd[1] == "-h")) {
+        std::cout << formatHelp(*this);
+        std::fflush(stdout);
+        return;
+    }
+
+    auto context = buildCommandContext(std::move(cmd));
+
+    handler(context);
 }
 } // namespace shell::command

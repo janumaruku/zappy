@@ -11,11 +11,10 @@
 
 class Core {
 public:
-    Core(int argc, char** argv);
+    explicit Core(char** argv);
     void run();
 
 private:
-    int _argc;
     std::vector<std::string> _argv;
 
     int _port = 0;

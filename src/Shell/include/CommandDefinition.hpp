@@ -5,7 +5,8 @@
 ** CommandDefinition
 */
 
-#pragma once
+#ifndef SHELL_COMMAND_DEFINITION_HPP
+#define SHELL_COMMAND_DEFINITION_HPP
 
 #include <functional>
 #include <optional>
@@ -28,6 +29,14 @@ struct Option {
     bool required = false;
 };
 
+struct XOption {
+    std::string name;
+    std::string description;
+    std::string alias;
+    std::size_t min = 0;
+    bool required = false;
+};
+
 struct Flag {
     std::string name;
     std::string description;
@@ -44,19 +53,29 @@ struct CommandDefinition {
     std::string description;
     std::vector<PositionalArgument> arguments;
     std::vector<Option> options;
+    std::vector<XOption> xOptions;
     std::vector<Flag> flags;
     CommandHandler handler;
 
-    std::optional<Option> hasOption(const std::string &option);
+    std::optional<Option> hasOption(const std::string &option) const;
 
-    std::optional<Flag> hasFlag(const std::string &flag);
+    std::optional<XOption> hasXOption(const std::string &xOption) const;
 
-    CommandContext buildCommandContext(std::vector<std::string> tokens);
+    std::optional<Flag> hasFlag(const std::string &flag) const;
+
+    CommandContext buildCommandContext(std::vector<std::string> tokens) const;
 
     static void processOption(CommandContext &context,
-        std::vector<std::string> &tokens, const Option &option);
+    std::vector<std::string> &tokens, const Option &option);
+
+    static void processXOption(CommandContext &context,
+        std::vector<std::string> &tokens, const XOption &option);
 
     void processToken(CommandContext &context,
-        std::vector<std::string> &tokens);
+        std::vector<std::string> &tokens) const;
+
+    void run(std::vector<std::string> &&cmd) const;
 };
 } // namespace shell::command
+
+#endif // SHELL_COMMAND_DEFINITION_HPP
