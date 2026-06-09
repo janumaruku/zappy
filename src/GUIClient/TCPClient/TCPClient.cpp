@@ -69,7 +69,8 @@ void TCPClient::pollAll() const
 
 void TCPClient::handleTransmission(const size_t &bytes)
 {
-    _transmission.append(_readBuffer.begin(), _readBuffer.begin() + bytes);
+    _transmission.append(_readAsyncBuffer.begin(),
+        _readAsyncBuffer.begin() + bytes);
 
     if (_transmission.ends_with("\n")) {
         // call protocol
@@ -81,7 +82,7 @@ void TCPClient::handleTransmission(const size_t &bytes)
 
 void TCPClient::startRead()
 {
-    _socket.asyncReadSome(network::buffer(_readBuffer, _readBuffer.size()),
+    _socket.asyncReadSome(network::buffer(_readAsyncBuffer, _readAsyncBuffer.size()),
         [this](const std::error_code &err, const std::size_t &bytes) {
             if (err) {
                 std::cerr << err.message() << std::endl;

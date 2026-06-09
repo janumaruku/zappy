@@ -31,6 +31,7 @@ private:
     network::IOContext &_ioc;
     network::ConnectedSocket _socket;
     std::string _readBuffer;
+    std::string _readAsyncBuffer;
     std::string _transmission;
 
     // ProtocolHandler _protocol;
