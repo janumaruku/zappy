@@ -9,6 +9,7 @@
 
 #include "CommandBuilder.hpp"
 #include "CommandContext.hpp"
+#include "Network.hpp"
 
 Core::Core(char **argv)
 {
@@ -19,9 +20,14 @@ Core::Core(char **argv)
 void Core::run()
 {
     buildServerCommands();
+
     shell::command::CommandContext context =
         _serverCommands.buildCommandContext(_argv);
+
     _serverCommands.handler(context);
+
+    Server server(_port);
+    server.run();
 }
 
 void Core::buildServerCommands()
