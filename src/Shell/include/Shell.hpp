@@ -5,11 +5,12 @@
 ** Shell
 */
 
-#pragma once
+#ifndef SHELL_SHELL_HPP
+#define SHELL_SHELL_HPP
+
 #include <string>
 
 #include "CommandDefinition.hpp"
-#include "ShellException.hpp"
 
 namespace shell {
 class Shell {
@@ -55,3 +56,5 @@ std::vector<std::string> split(const std::string &command);
 
 bool isEmptyLine(const std::string &line) noexcept;
 } // shell
+
+#endif // SHELL_SHELL_HPP

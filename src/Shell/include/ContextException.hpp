@@ -5,7 +5,8 @@
 ** ContextException
 */
 
-#pragma once
+#ifndef SHELL_CONTEXT_EXCEPTION_HPP
+#define SHELL_CONTEXT_EXCEPTION_HPP
 
 #include <exception>
 #include <string>
@@ -49,3 +50,5 @@ public:
     explicit UnexpectedArgumentException(const std::string &token);
 };
 } // namespace shell::command
+
+#endif // SHELL_CONTEXT_EXCEPTION_HPP

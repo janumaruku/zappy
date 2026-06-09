@@ -5,7 +5,8 @@
 ** KeyDispatcher
 */
 
-#pragma once
+#ifndef SHELL_KEY_DISPATCHER_HPP
+#define SHELL_KEY_DISPATCHER_HPP
 
 #include <functional>
 #include <string>
@@ -31,3 +32,5 @@ private:
 };
 
 } // namespace shell
+
+#endif // SHELL_KEY_DISPATCHER_HPP
