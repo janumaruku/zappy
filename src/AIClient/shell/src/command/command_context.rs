@@ -28,8 +28,16 @@ impl CommandContext {
         self.options.contains_key(name)
     }
 
+    pub fn options_count(&self) -> usize {
+        self.options.len()
+    }
+
     pub fn flag(&self, name: &str) -> bool {
         self.flags.contains(&name.to_string())
+    }
+    
+    pub fn flags_count(&self) -> usize {
+        self.flags.len()
     }
 
     pub fn add_arg(&mut self, name: &str, value: &str) {
