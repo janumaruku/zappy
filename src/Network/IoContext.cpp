@@ -8,8 +8,9 @@
 #include "IoContext.hpp"
 
 #include <algorithm>
+#include <cstddef>
 #include <ranges>
-#include <system_error>
+#include "ContainerUtils.hpp"
 
 #include "constants.hpp"
 
@@ -130,7 +131,7 @@ void IOContext::handleReadyFileDescriptors()
     std::size_t itt = 0;
 
     while (itt < _pollFds.size()) {
-        if (_pollFds[itt].revents & (POLLHUP | POLLERR | POLLNVAL)) {
+        if ((_pollFds[itt].revents & (POLLHUP | POLLERR | POLLNVAL)) != 0) {
             _pendingOperations.erase(_pollFds[itt].fd);
             _pollFds.erase(_pollFds.begin() + itt);
             continue;
@@ -149,7 +150,7 @@ void IOContext::triggerHandler(const int &itt)
 {
     const int fd = _pollFds[itt].fd;
 
-    if (_pollFds[itt].revents & (POLLIN | POLLOUT) && (
+    if (((_pollFds[itt].revents & (POLLIN | POLLOUT)) != 0) && (
         _pendingOperations.contains(fd) && !_pendingOperations.
                                             at(fd).empty())) {
         const auto [opType, handler] = _pendingOperations.at(fd).
@@ -158,6 +159,42 @@ void IOContext::triggerHandler(const int &itt)
 
         handler();
         updateEventType(fd);
+    }
+}
+
+template <typename Clock>
+void IOContext::registerTimer(BasicWaitableTimer<Clock> &timer)
+{
+    _timerQueue.push({
+        .id = timer._id,
+        .timePoint = timer._time_point,
+        .handler   = timer._handler,
+        .cancellation = false,
+    });
+}
+
+void IOContext::cancelTimer(const std::size_t &id)
+{
+    auto values = container(_timerQueue);
+
+    const auto it = std::ranges::find_if(values,
+        [id](const TimerEntry &entry) {
+            return entry.id == id;
+        });
+    if (it != values.end())
+        it->cancellation = true;
+}
+
+void IOContext::drainExpiredTimers()
+{
+    const std::time_t now = std::chrono::duration_cast<std::chrono::seconds>(
+        std::chrono::system_clock::now().time_since_epoch()).count();
+
+    while (!_timerQueue.empty()) {
+        const TimerEntry entry = _timerQueue.top();
+        if (entry.timePoint > now || entry.cancellation)
+            break;
+        _timerQueue.pop();
     }
 }
 }
