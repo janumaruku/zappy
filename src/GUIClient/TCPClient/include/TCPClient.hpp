@@ -34,7 +34,7 @@ private:
     std::string _transmission;
 
     // ProtocolHandler _protocol;
-    void handleRead(const size_t &bytes);
+    void handleTransmission(const size_t &bytes);
 
     void startRead();
 };

@@ -19,7 +19,7 @@ TCPClient::TCPClient(network::IOContext &ioc, const int port,
         if (receive() == "WELCOME") {
             send("GRAPHIC");
         } else {
-            throw;
+            throw std::runtime_error{"Received incorrect connection"};
         }
     } catch (std::exception &) {
         throw;
@@ -67,7 +67,7 @@ void TCPClient::pollAll() const
     _ioc.pollAll();
 }
 
-void TCPClient::handleRead(const size_t &bytes)
+void TCPClient::handleTransmission(const size_t &bytes)
 {
     _transmission.append(_readBuffer.begin(), _readBuffer.begin() + bytes);
 
@@ -76,7 +76,7 @@ void TCPClient::handleRead(const size_t &bytes)
         _transmission.clear();
         return;
     }
-    handleRead(bytes);
+    startRead();
 }
 
 void TCPClient::startRead()
@@ -91,7 +91,7 @@ void TCPClient::startRead()
                 std::clog << "Client disconnected" << std::endl;
                 _socket.close();
             }
-            handleRead(bytes);
+            handleTransmission(bytes);
         });
 }
 }
