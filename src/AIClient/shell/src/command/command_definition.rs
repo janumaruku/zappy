@@ -37,7 +37,9 @@ pub struct CommandDefinition {
 
 impl CommandDefinition {
     pub fn has_option(&self, name: &str) -> Option<&CmdOption> {
-        self.options.iter().find(|&option| option.name == name)
+        self.options.iter().find(|&option| {
+            option.name == name || option.alias.clone().unwrap().to_string() == name
+        })
     }
 
     pub fn has_flag(&self, name: &str) -> Option<&CmdFlag> {
