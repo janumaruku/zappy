@@ -70,6 +70,8 @@ void IOContext::run()
                 return entry.second.empty();
             }))
             break;
+
+        drainExpiredTimers();
     }
 
     _running = false;
@@ -192,9 +194,11 @@ void IOContext::drainExpiredTimers()
 
     while (!_timerQueue.empty()) {
         const TimerEntry entry = _timerQueue.top();
-        if (entry.timePoint > now || entry.cancellation)
-            break;
-        _timerQueue.pop();
+        if (entry.timePoint <= now  || entry.cancellation) {
+            _timerQueue.pop();
+            continue;
+        }
+        break;
     }
 }
 }
