@@ -43,7 +43,9 @@ impl CommandDefinition {
     }
 
     pub fn has_flag(&self, name: &str) -> Option<&CmdFlag> {
-        self.flags.iter().find(|&flag| flag.name == name)
+        self.flags
+            .iter()
+            .find(|&flag| flag.name == name || flag.alias.clone().unwrap().to_string() == name)
     }
 
     fn process_options(
