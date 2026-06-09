@@ -11,7 +11,7 @@ fn wrap_text(text: &str, start_col: usize) -> String {
         true => "\n".to_string(),
         false => {
             let indent = " ".repeat(start_col);
-            let mut words = text.split_whitespace();
+            let words = text.split_whitespace();
             let mut result = String::new();
             let mut len = start_col;
             let mut first = true;
@@ -116,6 +116,9 @@ fn build_usage(command: &CommandDefinition) -> String {
             indent_size,
         )
     }
+
+    usage.push_str(&format!("\n{}{}", " ".repeat(INDENT), command.name));
+    append_usage(&mut usage, "--help | -h".to_string(), indent_size);
 
     usage
 }
