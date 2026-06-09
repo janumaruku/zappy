@@ -11,7 +11,7 @@
 #include "CommandContext.hpp"
 
 namespace GUI {
-Core::Core(int argc, char **argv) : _argc(argc)
+Core::Core(int argc, char **argv): _argc(argc)
 {
     for (auto i = 0; argv[i] != nullptr; i++)
         _argv.emplace_back(argv[i]);
@@ -20,27 +20,27 @@ Core::Core(int argc, char **argv) : _argc(argc)
 void Core::run()
 {
     buildGUICommands();
-    shell::command::CommandContext context =
-            _GUICommands.buildCommandContext(_argv);
-    _GUICommands.handler(context);
+
+    _GUICommands.run(std::move(_argv));
 }
 
 void Core::buildGUICommands()
 {
     _GUICommands =
         shell::command::CommandBuilder().name("./zappy_GUI")
+        .description("Run the GUI client with the specified arguments.")
         .option([](shell::command::OptionBuilder &builder) {
-            builder.name("help").alias("hp");
+            builder.name("port").alias("p").required()
+                .description("port linked to the server");
         })
         .option([](shell::command::OptionBuilder &builder) {
-            builder.name("port").alias("p").required();
+            builder.name("machine").alias("m").required()
+                .description("hostname");
         })
-        .option([](shell::command::OptionBuilder &builder) {
-            builder.name("machine").alias("h").required();
-        })
-        .action([this](shell::command::CommandContext &ctx) {
-            _port = std::stoi(ctx.option("port"));
-            _machine = ctx.option("machine");
-        }).build();
+        .action([](shell::command::CommandContext &ctx) {
+            (void) ctx;
+            // TCPClient t(_ioc, std::stoi(ctx.option("port")), ctx.option("machine"));
+            //_tcpClient = ;
+    }).build();
 }
 }
