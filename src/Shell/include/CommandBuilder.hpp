@@ -5,7 +5,9 @@
 ** CommandBuilder
 */
 
-#pragma once
+#ifndef SHELL_COMMAND_BUILDER_HPP
+#define SHELL_COMMAND_BUILDER_HPP
+
 #include <string>
 
 #include "CommandDefinition.hpp"
@@ -41,3 +43,5 @@ private:
     CommandDefinition _definition;
 };
 } // namespace shell::command
+
+#endif // SHELL_COMMAND_BUILDER_HPP

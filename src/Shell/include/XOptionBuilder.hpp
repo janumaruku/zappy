@@ -7,10 +7,10 @@
 
 #ifndef ZAPPY_XOPTION_HPP
 #define ZAPPY_XOPTION_HPP
+
 #include <string>
 
 #include "CommandDefinition.hpp"
-
 
 namespace shell::command {
 class XOptionBuilder {

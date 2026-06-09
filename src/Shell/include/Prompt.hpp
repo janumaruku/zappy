@@ -5,7 +5,8 @@
 ** Prompt
 */
 
-#pragma once
+#ifndef SHELL_PROMPT_HPP
+#define SHELL_PROMPT_HPP
 
 #include <functional>
 #include <optional>
@@ -40,3 +41,5 @@ private:
 };
 
 } // namespace shell
+
+#endif // SHELL_PROMPT_HPP

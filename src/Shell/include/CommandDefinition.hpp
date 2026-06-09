@@ -5,7 +5,8 @@
 ** CommandDefinition
 */
 
-#pragma once
+#ifndef SHELL_COMMAND_DEFINITION_HPP
+#define SHELL_COMMAND_DEFINITION_HPP
 
 #include <functional>
 #include <optional>
@@ -76,3 +77,5 @@ struct CommandDefinition {
     void run(std::vector<std::string> &&cmd) const;
 };
 } // namespace shell::command
+
+#endif // SHELL_COMMAND_DEFINITION_HPP

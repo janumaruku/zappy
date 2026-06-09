@@ -5,7 +5,9 @@
 ** OptionBuilder
 */
 
-#pragma once
+#ifndef SHELL_OPTION_BUILDER_HPP
+#define SHELL_OPTION_BUILDER_HPP
+
 #include <functional>
 #include <string>
 
@@ -33,3 +35,5 @@ private:
     Option _option;
 };
 }
+
+#endif // SHELL_OPTION_BUILDER_HPP

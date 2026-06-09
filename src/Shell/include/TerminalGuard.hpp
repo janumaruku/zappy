@@ -5,7 +5,8 @@
 ** TerminalGuard
 */
 
-#pragma once
+#ifndef SHELL_TERMINAL_GUARD_HPP
+#define SHELL_TERMINAL_GUARD_HPP
 
 #include <termios.h>
 
@@ -33,3 +34,5 @@ private:
 };
 
 } // namespace shell
+
+#endif // SHELL_TERMINAL_GUARD_HPP

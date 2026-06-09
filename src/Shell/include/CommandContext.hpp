@@ -4,7 +4,9 @@
 ** File description:
 ** CommandDefinition
 */
-#pragma once
+
+#ifndef SHELL_COMMAND_CONTEXT_HPP
+#define SHELL_COMMAND_CONTEXT_HPP
 
 #include "CommandDefinition.hpp"
 
@@ -42,3 +44,5 @@ private:
     std::vector<std::string> _flags;
 };
 } // namespace shell::command
+
+#endif // SHELL_COMMAND_CONTEXT_HPP
