@@ -1,4 +1,11 @@
-add_executable(zappy_gui main.cpp)
+cmake_minimum_required(VERSION 4.2)
+
+add_executable(zappy_gui main.cpp
+        include/ProtocolHandler.hpp
+        include/ICommand.hpp
+        include/Commands.hpp
+        ProtocolHandler.cpp
+        Renderer.cpp)
 
 target_include_directories(zappy_gui PUBLIC include)
 
