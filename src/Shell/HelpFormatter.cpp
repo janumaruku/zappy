@@ -115,6 +115,8 @@ std::string formatHelp(const command::CommandDefinition &def)
     }
 
     for (const auto &flag : def.flags) {
+        if (flag.name == "help")
+            continue;
         std::string token = "[--" + flag.name;
         if (!flag.alias.empty())
             token += " | -" + flag.alias;
@@ -122,7 +124,7 @@ std::string formatHelp(const command::CommandDefinition &def)
         appendUsageToken(usageLine, token, usageCont);
     }
 
-    std::string result = "Usage\n" + usageLine + "\n";
+    std::string result = "Usage\n" + usageLine + "\n\n";
     usageLine = std::string(INDENT, ' ') + def.name;
     appendUsageToken(usageLine, "[--help | -h]", usageCont);
     result += usageLine + "\n";
