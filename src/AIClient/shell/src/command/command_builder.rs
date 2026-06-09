@@ -15,7 +15,12 @@ pub struct CommandBuilder {
 
 impl CommandBuilder {
     pub fn new() -> Self {
-        CommandBuilder::default()
+        CommandBuilder::default().flag(|builder1| {
+            builder1
+                .name("help")
+                .alias('h')
+                .description("Displays help information")
+        })
     }
 
     pub fn name(mut self, name: &str) -> Self {
