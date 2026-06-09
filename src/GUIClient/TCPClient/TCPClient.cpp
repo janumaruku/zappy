@@ -16,6 +16,11 @@ TCPClient::TCPClient(network::IOContext &ioc, const int port,
     try {
         network::Endpoint endpoint(port, hostname);
         _socket.connect(endpoint);
+        if (receive() == "WELCOME") {
+            send("GRAPHIC");
+        } else {
+            throw;
+        }
     } catch (std::exception &) {
         throw;
     }
