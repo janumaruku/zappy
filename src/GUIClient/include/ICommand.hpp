@@ -12,6 +12,6 @@
 
 class ICommand {
     private:
-        void execute(WorldState& worldState, const std::list<std::string>& args);
+        virtual void execute(WorldState& worldState, const std::list<std::string>& args) = 0;
 };
 #endif
