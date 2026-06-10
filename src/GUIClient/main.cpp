@@ -10,9 +10,12 @@
 #include "WorldState.hpp"
 #include "../Shell/include/CommandBuilder.hpp"
 #include "../Shell/include/CommandContext.hpp"
+#include "WorldState/Team/include/Team.hpp"
 
 int main()
 {
+    zappy::gui::WorldState worldStateTest;
+    zappy::gui::Team TeamTest("testName", "TestColor");
     auto command = shell::command::CommandBuilder{}.name("test")
         .description("Test command")
         .xOption([](auto &builder) {
@@ -26,6 +29,5 @@ int main()
         }).build();
 
     command.run({"test", "-h"/*, "one", "two"*/});
-    zappy::gui::WorldState worldStateTest;
     return 0;
 }
