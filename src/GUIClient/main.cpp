@@ -7,6 +7,7 @@
 
 #include <iostream>
 
+#include "WorldState.hpp"
 #include "../Shell/include/CommandBuilder.hpp"
 #include "../Shell/include/CommandContext.hpp"
 
@@ -25,5 +26,6 @@ int main()
         }).build();
 
     command.run({"test", "-h"/*, "one", "two"*/});
+    zappy::gui::WorldState worldStateTest;
     return 0;
 }
