@@ -5,8 +5,8 @@
 ** GUIMap.hpp
 */
 
-#ifndef GUIMAP_HPP_H
-#define GUIMAP_HPP_H
+#ifndef GUIMAP_HPP
+#define GUIMAP_HPP
 #include <sys/types.h>
 
 namespace zappy::gui {
