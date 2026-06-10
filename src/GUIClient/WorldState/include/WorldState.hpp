@@ -5,8 +5,8 @@
 ** WorldState.hpp
 */
 
-#ifndef WORLDSTATE_HPP_
-#define WORLDSTATE_HPP_
+#ifndef WORLDSTATE_HPP
+#define WORLDSTATE_HPP
 #include <sys/types.h>
 
 namespace zappy::gui {
