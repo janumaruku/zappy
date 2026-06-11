@@ -9,22 +9,25 @@
 #define GUIEGG_HPP
 #include <string>
 
+#include "Position.hpp"
+
 namespace zappy::gui {
 using PlayerId = std::string;
 
 class GUIEgg {
 public:
-    GUIEgg(uint id, PlayerId playerId /*, Position position */);
+    GUIEgg(uint id, const PlayerId &playerId, data::Position position);
 
-    uint getId();
+    uint getId() const;
 
     PlayerId getPlayerId();
 
-    //Position getPosition();
+    data::Position getPosition() const;
+
 private:
     uint _id;
     PlayerId _playerId;
-    //Position _position;
+    data::Position _position;
 
 };
 }

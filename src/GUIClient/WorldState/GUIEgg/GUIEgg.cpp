@@ -8,13 +8,14 @@
 #include "GUIEgg.hpp"
 
 namespace zappy::gui {
-GUIEgg::GUIEgg(uint id, PlayerId playerId /*, Position position*/): _id(id),
-    _playerId(playerId) /*_position(position)*/
+GUIEgg::GUIEgg(const uint id, const PlayerId &playerId,
+    const data::Position position): _id(id),
+    _playerId(playerId), _position(position)
 {
 
 }
 
-uint GUIEgg::getId()
+uint GUIEgg::getId() const
 {
     return _id;
 }
@@ -24,9 +25,9 @@ PlayerId GUIEgg::getPlayerId()
     return _playerId;
 }
 
-/*Position GUIEgg::getPosition()
+data::Position GUIEgg::getPosition() const
 {
     return _position;
 }
- */
+
 }
