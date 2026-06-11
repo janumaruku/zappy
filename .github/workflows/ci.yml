@@ -8,10 +8,6 @@ on:
     branches-ignore:
       - 'temp/*'
 
-  push:
-    branches-ignore:
-      - 'temp/*'
-
   workflow_dispatch:
 
 permissions:
