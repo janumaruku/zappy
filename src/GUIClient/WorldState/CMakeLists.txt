@@ -2,7 +2,7 @@ add_library(world_state WorldState.cpp)
 
 add_subdirectory(GUIMap)
 
-#add_subdirectory(GUIPlayer)
+add_subdirectory(GUIPlayer)
 
 add_subdirectory(Team)
 
