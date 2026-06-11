@@ -15,9 +15,9 @@ pub struct ConnectedSocket {
 }
 
 pub struct SocketConfig {
-    io_context: Rc<RefCell<IoContext>>,
-    fd: i32,
-    endpoint: Endpoint,
+    pub io_context: Rc<RefCell<IoContext>>,
+    pub fd: i32,
+    pub endpoint: Endpoint,
 }
 
 impl ConnectedSocket {
