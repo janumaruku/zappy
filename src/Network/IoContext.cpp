@@ -70,11 +70,8 @@ void IOContext::run()
         if (_stop && std::ranges::all_of(_pendingOperations,
             [](const auto &entry) {
                 return entry.second.empty();
-            }))
-            break;
-        
-        if (_pollFds.empty() && _timerQueue.empty() && _pendingOperations.empty())
-            break;
+            }) && _timerQueue.empty())
+            break;   
     }
 
     _running = false;

@@ -2,6 +2,7 @@
 #include <gtest/gtest.h>
 #include "BasicWaitableTimer.hpp"
 #include "Timer.hpp"
+#include "ContainerUtils.hpp"
 #include "IoContext.hpp"
 
 TEST(TimerTests, HandlerIsCalledAfterDuration)
@@ -52,4 +53,34 @@ TEST(TimerTests, ChainCalls)
     auto now = std::chrono::steady_clock::now().time_since_epoch().count();
     EXPECT_TRUE(hasBeenCalled);
     EXPECT_LE(now - timer.expiry().time_since_epoch().count(), 500'000'000LL);
+}
+
+TEST(TimerTests, OrderedByExpiry)
+{
+    network::IOContext ioContext;
+    SteadyTimer timer1(ioContext, 1);
+    SteadyTimer timer2(ioContext, 2);
+    SteadyTimer timer3(ioContext, 3);
+    SteadyTimer timer4(ioContext, 4);
+
+    std::vector<int> callOrder;
+
+    timer1.asyncWait(std::chrono::milliseconds(100), [&callOrder]() {
+        callOrder.push_back(1);
+    });
+    timer2.asyncWait(std::chrono::milliseconds(50), [&callOrder]() {
+        callOrder.push_back(2);
+    });
+    timer3.asyncWait(std::chrono::milliseconds(150), [&callOrder]() {
+        callOrder.push_back(3);
+    });
+    timer4.asyncWait(std::chrono::milliseconds(200), [&callOrder]() {
+        callOrder.push_back(4);
+    });
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(250));
+
+    ioContext.pollAll();
+    EXPECT_EQ(callOrder, (std::vector<int>{2, 1, 3, 4}));
+
 }

@@ -19,6 +19,6 @@ void IOContext::registerTimer(BasicWaitableTimer<Clock> &timer)
         .handler = timer.handler(),
         .cancellation = false
     };   
-    _timerQueue.emplace(entry);
+    _timerQueue.push(entry);
 }   
 }
