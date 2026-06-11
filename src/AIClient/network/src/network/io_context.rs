@@ -1,6 +1,8 @@
+use std::cell::RefCell;
 use colored::Colorize;
 use libc::{POLLERR, POLLHUP, POLLIN, POLLNVAL, POLLOUT, nfds_t, poll, pollfd};
 use std::collections::{HashMap, VecDeque};
+use std::rc::Rc;
 
 #[derive(PartialEq)]
 enum OpType {
@@ -11,14 +13,14 @@ enum OpType {
 #[derive(Default)]
 pub struct IoContext {
     pollfds: Vec<pollfd>,
-    pending_operations: HashMap<i32, VecDeque<(OpType, Box<dyn FnOnce() + Send + 'static>)>>,
+    pending_operations: HashMap<i32, VecDeque<(OpType, Box<dyn FnOnce() + 'static>)>>,
     running: bool,
     stop: bool,
 }
 
 impl IoContext {
-    pub fn new() -> Self {
-        IoContext::default()
+    pub fn new() -> Rc<RefCell<IoContext>> {
+        Rc::new(RefCell::new(IoContext::default()))
     }
 
     pub fn register_file_descriptor(&mut self, fd: i32) {
@@ -47,16 +49,16 @@ impl IoContext {
         }
     }
 
-    pub fn post_read(&mut self, fd: i32, handler: Box<dyn FnOnce() + Send + 'static>) {
+    pub fn post_read(&mut self, fd: i32, handler: impl FnOnce() + 'static) {
         if let Some(queue) = self.pending_operations.get_mut(&fd) {
-            queue.push_back((OpType::Read, handler));
+            queue.push_back((OpType::Read, Box::new(handler)));
         }
         self.update_event_type(fd);
     }
 
-    pub fn post_write(&mut self, fd: i32, handler: Box<dyn FnOnce() + Send + 'static>) {
+    pub fn post_write(&mut self, fd: i32, handler: impl FnOnce() + 'static) {
         if let Some(queue) = self.pending_operations.get_mut(&fd) {
-            queue.push_back((OpType::Write, handler));
+            queue.push_back((OpType::Write, Box::new(handler)));
         }
         self.update_event_type(fd);
     }
@@ -67,7 +69,7 @@ impl IoContext {
             Some((OpType::Read, _)) => POLLIN,
             Some(&(OpType::Write, _)) => POLLOUT,
         };
-        
+
         if let Some(pfd) = self.pollfds.iter_mut().find(|pfd| pfd.fd == fd) {
             pfd.events = event;
         }
