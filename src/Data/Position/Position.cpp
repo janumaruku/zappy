@@ -75,4 +75,12 @@ void Position::operator/=(double scalar)
     _y *= scalar;
 }
 
+bool Position::operator==(Position other)
+{
+    if (_x == other._x && _y == other._y) {
+        return true;
+    }
+    return false;
+}
+
 }

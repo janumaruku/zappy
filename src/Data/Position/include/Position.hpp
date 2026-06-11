@@ -33,6 +33,8 @@ public:
 
     void operator/=(double scalar);
 
+    bool operator==(Position other);
+
 private:
     int _x;
     int _y;
