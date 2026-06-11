@@ -8,6 +8,7 @@
 #include "IoContext.hpp"
 
 #include <algorithm>
+#include <chrono>
 #include <cstddef>
 #include <ranges>
 #include "ContainerUtils.hpp"
@@ -169,7 +170,7 @@ void IOContext::registerTimer(BasicWaitableTimer<Clock> &timer)
 {
     _timerQueue.push({
         .id = timer._id,
-        .timePoint = timer._time_point,
+        .timePoint = timer._expiry,
         .handler   = timer._handler,
         .cancellation = false,
     });

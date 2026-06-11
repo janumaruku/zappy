@@ -5,8 +5,8 @@
 ** IOptionHandler
 */
 
-#ifndef MYFTP_IOPTIONHANDLER_HPP
-#define MYFTP_IOPTIONHANDLER_HPP
+#ifndef ZAPPY_IOPTIONHANDLER_HPP
+#define ZAPPY_IOPTIONHANDLER_HPP
 
 #include <string>
 #include <vector>
@@ -27,4 +27,4 @@ public:
 };
 } // utils
 
-#endif //MYFTP_IOPTIONHANDLER_HPP
+#endif //ZAPPY_IOPTIONHANDLER_HPP

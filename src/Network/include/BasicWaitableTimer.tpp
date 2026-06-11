@@ -5,23 +5,27 @@
 ** 
 */
 
-#ifndef BASICWAITABLETIMER_TPP
-#define BASICWAITABLETIMER_TPP
+#pragma once
 
-#include "IoContext.hpp"
 #include "BasicWaitableTimer.hpp"
 
 namespace network {
 
 template <typename Clock>
 BasicWaitableTimer<Clock>::BasicWaitableTimer(const BasicWaitableTimer &&other) noexcept :
-_id(other._id), _time_point(other._time_point), _ioContext(other._ioContext), _handler(other._handler) {}
+_id(other._id), _expiry(other._expiry), _ioContext(other._ioContext), _handler(other._handler) {}
 
+template <typename Clock>
+BasicWaitableTimer<Clock>::BasicWaitableTimer(network::IOContext &ioContext, std::size_t id, std::chrono::duration<float> delayBeforeCall, std::function<void()> handler) :
+    _id(id),
+    _expiry(std::chrono::duration_cast<std::chrono::duration<float>>(delayBeforeCall).count()),
+    _ioContext(ioContext),
+    _handler(std::move(handler)) {}
 
 template <typename Clock>
 void BasicWaitableTimer<Clock>::asyncWait(Clock duration, const std::function<void()> &handler)
 {
-    _time_point = std::chrono::duration_cast<std::chrono::seconds>(Clock::now() + duration).count();
+    _expiry = std::chrono::duration_cast<std::chrono::duration<float>>(duration).count();
     _handler = handler;
     _ioContext.registerTimer(*this);
 }
@@ -33,16 +37,15 @@ void BasicWaitableTimer<Clock>::cancel() noexcept
 }
 
 template <typename Clock>
-void BasicWaitableTimer<Clock>::expiresAfter(Clock duration) const noexcept
+void BasicWaitableTimer<Clock>::expiresAfter(const std::chrono::duration<float> duration) const noexcept
 {
-    _time_point = std::chrono::duration_cast<std::chrono::seconds>(Clock::now() + duration).count();
+    _expiry = std::chrono::duration_cast<std::chrono::duration<float>>(Clock::now() + duration).count();
     cancel();
 }
 
 template <typename Clock>
-std::size_t BasicWaitableTimer<Clock>::expiry() const noexcept
+std::chrono::duration<float> BasicWaitableTimer<Clock>::expiry() const noexcept
 {
-    return _time_point;
+    return _expiry;
 }
 }
-#endif //BASICWAITABLETIMER_TPP

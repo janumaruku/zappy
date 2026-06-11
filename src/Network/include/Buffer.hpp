@@ -5,8 +5,8 @@
 ** Buffer
 */
 
-#ifndef MYFTP_BUFFER_HPP
-#define MYFTP_BUFFER_HPP
+#ifndef ZAPPY_BUFFER_HPP
+#define ZAPPY_BUFFER_HPP
 
 #include <cstring>
 #include <string>
@@ -102,4 +102,4 @@ ConstBuffer buffer(const std::vector<PodType> &vec)
 }
 } // ftp
 
-#endif //MYFTP_BUFFER_HPP
+#endif //ZAPPY_BUFFER_HPP

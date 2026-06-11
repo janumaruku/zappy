@@ -5,8 +5,7 @@
 ** IoContext
 */
 
-#ifndef MYFTP_IOCONTEXT_HPP
-#define MYFTP_IOCONTEXT_HPP
+#pragma once
 
 #include <functional>
 #include <poll.h>
@@ -16,15 +15,24 @@
 #include <ctime>
 
 #include "ConnectedSocket.hpp"
-#include "BasicWaitableTimer.hpp"
 
 namespace network {
+
+template <typename Clock>
+class BasicWaitableTimer;
 
 struct TimerEntry {
     std::size_t id;
     std::time_t timePoint;
     std::function<void()> handler;
     bool cancellation;
+};
+
+struct TimerEntryCompare
+{
+  constexpr bool
+  operator()(const TimerEntry &x, const TimerEntry &y) const
+  { return x.timePoint < y.timePoint; }
 };
 
 /**
@@ -124,7 +132,7 @@ public:
     std::unordered_map<int, std::queue<PendingOperation>> _pendingOperations; ///< Pending callbacks per file descriptor.
     bool _stop    = false; ///< Flag set by @ref stop to exit the run loop.
     bool _running = false; ///< True while @ref run is executing.
-    std::priority_queue<TimerEntry, std::vector<TimerEntry>, std::greater<TimerEntry>> _timerQueue;
+    std::priority_queue<TimerEntry, std::vector<TimerEntry>, TimerEntryCompare> _timerQueue;
 
     void updateEventType(const int &fileDescriptor);
     void handleReadyFileDescriptors();
@@ -133,5 +141,3 @@ public:
     void drainExpiredTimers();
 };
 }
-
-#endif //MYFTP_IOCONTEXT_HPP
