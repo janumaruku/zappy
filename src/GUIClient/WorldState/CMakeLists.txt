@@ -5,6 +5,8 @@ add_subdirectory(GUIMap)
 add_subdirectory(GUIPlayer)
 
 add_subdirectory(Team)
+²
+add_subdirectory(GUIEgg)
 
 target_include_directories(world_state PUBLIC include)
 
