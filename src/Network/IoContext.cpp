@@ -165,17 +165,6 @@ void IOContext::triggerHandler(const int &itt)
     }
 }
 
-template <typename Clock>
-void IOContext::registerTimer(BasicWaitableTimer<Clock> &timer)
-{
-    _timerQueue.push({
-        .id = timer._id,
-        .timePoint = timer._expiry,
-        .handler   = timer._handler,
-        .cancellation = false,
-    });
-}
-
 void IOContext::cancelTimer(const std::size_t &id)
 {
     auto values = container(_timerQueue);
@@ -190,8 +179,8 @@ void IOContext::cancelTimer(const std::size_t &id)
 
 void IOContext::drainExpiredTimers()
 {
-    const std::time_t now = std::chrono::duration_cast<std::chrono::seconds>(
-        std::chrono::system_clock::now().time_since_epoch()).count();
+    const auto now = std::chrono::duration_cast<std::chrono::duration<float>>(
+        std::chrono::system_clock::now().time_since_epoch());
 
     while (!_timerQueue.empty()) {
         const TimerEntry entry = _timerQueue.top();

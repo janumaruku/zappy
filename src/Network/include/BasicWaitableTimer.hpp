@@ -25,10 +25,12 @@ public:
     BasicWaitableTimer(const BasicWaitableTimer &) = delete;
     BasicWaitableTimer(const BasicWaitableTimer &&other) noexcept;
 
-    void asyncWait(Clock duration, const std::function<void()> &handler);
-    void expiresAfter(std::chrono::duration<float> duration) const noexcept;
+    void asyncWait(const std::chrono::duration<float> &duration, const std::function<void()> &handler);
+    void expiresAfter(Clock::duration duration) noexcept;
     void cancel() noexcept;
-    [[nodiscard]] std::chrono::duration<float> expiry() const noexcept;
+    [[nodiscard]] const std::chrono::duration<float> &expiry() const noexcept;
+    [[nodiscard]] const std::size_t &id() const noexcept;
+    [[nodiscard]] const std::function<void()> &handler() const noexcept;
 
     ~BasicWaitableTimer() = default;
 private:

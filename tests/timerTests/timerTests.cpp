@@ -15,7 +15,7 @@ TEST(TimerTests, HandlerIsCalledAfterDuration)
     network::BasicWaitableTimer<std::chrono::steady_clock> timer(ioContext, 1, std::chrono::milliseconds(100));
     bool handlerCalled = false;
 
-    timer.asyncWait([&handlerCalled]() {
+    timer.asyncWait(timer.expiry(), [&handlerCalled]() {
         handlerCalled = true;
     });
 
@@ -33,10 +33,10 @@ TEST(TimerTests, CancellationPreventsHandlerCall)
     bool handler2Called = false;
 
 
-    timer1.asyncWait([&handler1Called]() {
+    timer1.asyncWait(timer1.expiry(), [&handler1Called]() {
         handler1Called = true;
     });
-    timer2.asyncWait([&handler2Called]() {
+    timer2.asyncWait(timer2.expiry(), [&handler2Called]() {
         handler2Called = true;
     });
     timer2.cancel();
@@ -54,10 +54,10 @@ TEST(TimerTests, ChainCalls)
     bool hasBeenCalled = false;
 
     timer.expiresAfter(std::chrono::milliseconds(100));
-    timer.asyncWait([&]() {
+    timer.asyncWait(timer.expiry(), [&]() {
         hasBeenCalled = true;
     });
 
     ioContext.run();
-    EXPECT_TRUE(hasBeenCalled && std::chrono::steady_clock::now().time_since_epoch().count() - timer.expiry() <= 100);
+    EXPECT_TRUE(hasBeenCalled && std::chrono::steady_clock::now().time_since_epoch().count() - timer.expiry().count() <= 100);
 }

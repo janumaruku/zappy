@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <chrono>
 #include "BasicWaitableTimer.hpp"
 
 namespace network {
@@ -23,9 +24,9 @@ BasicWaitableTimer<Clock>::BasicWaitableTimer(network::IOContext &ioContext, std
     _handler(std::move(handler)) {}
 
 template <typename Clock>
-void BasicWaitableTimer<Clock>::asyncWait(Clock duration, const std::function<void()> &handler)
+void BasicWaitableTimer<Clock>::asyncWait(const std::chrono::duration<float> &duration, const std::function<void()> &handler)
 {
-    _expiry = std::chrono::duration_cast<std::chrono::duration<float>>(duration).count();
+    _expiry = duration;
     _handler = handler;
     _ioContext.registerTimer(*this);
 }
@@ -37,15 +38,34 @@ void BasicWaitableTimer<Clock>::cancel() noexcept
 }
 
 template <typename Clock>
-void BasicWaitableTimer<Clock>::expiresAfter(const std::chrono::duration<float> duration) const noexcept
+void BasicWaitableTimer<Clock>::expiresAfter(Clock::duration duration) noexcept
 {
-    _expiry = std::chrono::duration_cast<std::chrono::duration<float>>(Clock::now() + duration).count();
+    auto timePoint = Clock::now() + duration;
+    _expiry = static_cast<std::chrono::duration<float>>(
+        std::chrono::duration_cast<std::chrono::milliseconds>(
+            timePoint.time_since_epoch()
+        ).count()
+    );
+    _expiry = duration;
     cancel();
 }
 
 template <typename Clock>
-std::chrono::duration<float> BasicWaitableTimer<Clock>::expiry() const noexcept
+const std::chrono::duration<float> &BasicWaitableTimer<Clock>::expiry() const noexcept
 {
     return _expiry;
 }
+
+template <typename Clock>
+const std::size_t &BasicWaitableTimer<Clock>::id() const noexcept
+{
+    return _id;
+}
+
+template <typename Clock>
+const std::function<void()> &BasicWaitableTimer<Clock>::handler() const noexcept
+{
+    return _handler;
+}
+
 }

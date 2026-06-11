@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <chrono>
 #include <functional>
 #include <poll.h>
 #include <queue>
@@ -23,7 +24,7 @@ class BasicWaitableTimer;
 
 struct TimerEntry {
     std::size_t id;
-    std::time_t timePoint;
+    std::chrono::duration<float> timePoint;
     std::function<void()> handler;
     bool cancellation;
 };
@@ -141,3 +142,5 @@ public:
     void drainExpiredTimers();
 };
 }
+
+#include "IoContext.tpp"
