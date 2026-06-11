@@ -1,6 +1,6 @@
-use std::cell::RefCell;
 use colored::Colorize;
 use libc::{POLLERR, POLLHUP, POLLIN, POLLNVAL, POLLOUT, nfds_t, poll, pollfd};
+use std::cell::RefCell;
 use std::collections::{HashMap, VecDeque};
 use std::rc::Rc;
 
@@ -64,10 +64,14 @@ impl IoContext {
     }
 
     fn update_event_type(&mut self, fd: i32) {
-        let event = match self.pending_operations.get(&fd).and_then(|queue| queue.front()) {
+        let event = match self
+            .pending_operations
+            .get(&fd)
+            .and_then(|queue| queue.front())
+        {
             None => 0,
             Some((OpType::Read, _)) => POLLIN,
-            Some(&(OpType::Write, _)) => POLLOUT,
+            Some((OpType::Write, _)) => POLLOUT,
         };
 
         if let Some(pfd) = self.pollfds.iter_mut().find(|pfd| pfd.fd == fd) {
@@ -75,29 +79,39 @@ impl IoContext {
         }
     }
 
-    pub fn run(&mut self) -> Result<(), String> {
-        self.running = true;
+    pub fn run(this: Rc<RefCell<Self>>) -> Result<(), String> {
+        this.borrow_mut().running = true;
 
         loop {
-            unsafe {
-                if poll(self.pollfds.as_mut_ptr(), self.pollfds.len() as nfds_t, 10) == -1 {
-                    self.running = false;
-                    return Err("Failed to poll".to_string());
-                }
+            let result = unsafe {
+                let mut context = this.borrow_mut();
+                poll(
+                    context.pollfds.as_mut_ptr(),
+                    context.pollfds.len() as nfds_t,
+                    10,
+                )
+            };
+            if result == -1 {
+                this.borrow_mut().running = false;
+                return Err("Failed to poll".to_string());
             }
-            self.handle_ready_file_descriptor();
 
-            if self.stop
-                && self
-                    .pending_operations
-                    .iter()
-                    .all(|(_, queue)| queue.is_empty())
+            Self::handle_ready_file_descriptor(Rc::clone(&this));
+
             {
-                break;
+                let context = this.borrow();
+                if context.stop
+                    && context
+                        .pending_operations
+                        .iter()
+                        .all(|(_, queue)| queue.is_empty())
+                {
+                    break;
+                }
             }
         }
 
-        self.running = false;
+        this.borrow_mut().running = false;
 
         Ok(())
     }
@@ -106,16 +120,23 @@ impl IoContext {
         self.stop = true;
     }
 
-    pub fn poll(&mut self) -> Result<(), String> {
-        if self.running {
+    pub fn poll(this: Rc<RefCell<Self>>) -> Result<(), String> {
+        if this.borrow().running {
             return Err(format!(
                 "{}The IOContext loop is already running.",
                 "Error: ".red()
             ));
         }
 
-        unsafe {
-            if poll(self.pollfds.as_mut_ptr(), self.pollfds.len() as nfds_t, 10) == -1 {
+        {
+            let mut context = this.borrow_mut();
+            if unsafe {
+                poll(
+                    context.pollfds.as_mut_ptr(),
+                    context.pollfds.len() as nfds_t,
+                    10,
+                ) == -1
+            } {
                 return Err(format!(
                     "{}Failed to poll the file descriptors.",
                     "Error: ".red()
@@ -123,39 +144,68 @@ impl IoContext {
             }
         }
 
-        self.handle_ready_file_descriptor();
+        Self::handle_ready_file_descriptor(Rc::clone(&this));
 
         Ok(())
     }
 
-    pub fn poll_all(&mut self) -> Result<(), String> {
-        if self.running {
+    pub fn poll_all(this: Rc<RefCell<Self>>) -> Result<(), String> {
+        if this.borrow().running {
             return Err(format!(
                 "{}The IOContext loop is already running.",
                 "Error: ".red()
             ));
         }
 
-        while unsafe { poll(self.pollfds.as_mut_ptr(), self.pollfds.len() as nfds_t, 0) > 0 } {
-            self.handle_ready_file_descriptor();
+        loop {
+            let n = {
+                let mut context = this.borrow_mut();
+                unsafe {
+                    poll(
+                        context.pollfds.as_mut_ptr(),
+                        context.pollfds.len() as nfds_t,
+                        0,
+                    )
+                }
+            };
+            if n <= 0 {
+                break;
+            }
+
+            Self::handle_ready_file_descriptor(Rc::clone(&this));
         }
 
         Ok(())
     }
 
-    fn handle_ready_file_descriptor(&mut self) {
+    fn handle_ready_file_descriptor(this: Rc<RefCell<Self>>) {
         let mut i = 0;
 
-        while i < self.pollfds.len() {
-            if self.pollfds[i].revents & (POLLHUP | POLLERR | POLLNVAL) != 0 {
-                self.pending_operations.remove(&self.pollfds[i].fd);
-                self.pollfds.remove(i);
+        loop {
+            let len = this.borrow().pollfds.len();
+            if i >= len {
+                break;
+            }
+
+            let (temp_fd, revents) = {
+                let context = this.borrow();
+                (context.pollfds[i].fd, context.pollfds[i].revents)
+            };
+
+            if revents & (POLLHUP | POLLERR | POLLNVAL) != 0 {
+                let mut context = this.borrow_mut();
+                context.pending_operations.remove(&temp_fd);
+                context.pollfds.remove(i);
                 continue;
             }
 
-            self.trigger_handler(i);
+            Self::trigger_handler(Rc::clone(&this), i);
 
-            if self.stop && self.pollfds.is_empty() {
+            let (stop, empty) = {
+                let context = this.borrow();
+                (context.stop, context.pollfds.is_empty())
+            };
+            if stop && empty {
                 break;
             }
 
@@ -163,18 +213,26 @@ impl IoContext {
         }
     }
 
-    fn trigger_handler(&mut self, i: usize) {
-        let fd = self.pollfds[i].fd;
+    fn trigger_handler(this: Rc<RefCell<Self>>, i: usize) {
+        let revents = this.borrow().pollfds[i].revents;
 
-        if self.pollfds[i].revents & (POLLIN | POLLOUT) == 0 {
+        if revents & (POLLIN | POLLOUT) == 0 {
             return;
         }
 
-        if let Some(queue) = self.pending_operations.get_mut(&fd) {
-            if let Some((_, handler)) = queue.pop_front() {
-                handler();
-                self.update_event_type(fd);
-            }
+        let fd = this.borrow().pollfds[i].fd;
+        let temp_handler = {
+            let mut context = this.borrow_mut();
+            context
+                .pending_operations
+                .get_mut(&fd)
+                .and_then(|queue| queue.pop_front())
+                .map(|(_, handler)| handler)
+        };
+
+        if let Some(handler) = temp_handler {
+            handler();
+            this.borrow_mut().update_event_type(fd);
         }
     }
 }
