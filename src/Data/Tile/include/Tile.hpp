@@ -7,6 +7,7 @@
 
 #ifndef TILE_HPP
 #define TILE_HPP
+#include <cstdint>
 #include <list>
 #include <map>
 #include <string>
@@ -17,7 +18,7 @@
 namespace zappy::data {
 using PlayerId = std::string;
 
-enum class Resource {
+enum class Resource : std::uint8_t {
     FOOD,
     LINEMATE,
     DERAUMERE,
@@ -32,13 +33,15 @@ public:
     Tile(Position position, const std::map<Resource, uint> &resources,
         uint egg);
 
-    Position getPosition() const;
+    Tile(Position position, uint egg);
 
-    std::map<Resource, uint> getResources();
+    [[nodiscard]] Position getPosition() const;
 
-    std::string getResourcesAsString() const;
+    std::map<Resource, uint> &getResources();
 
-    uint getNumberOfEggs() const;
+    [[nodiscard]] std::string getResourcesAsString() const;
+
+    [[nodiscard]] uint getNumberOfEggs() const;
 
 private:
     Position _position;

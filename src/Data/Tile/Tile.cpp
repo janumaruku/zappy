@@ -7,6 +7,7 @@
 
 #include "Tile.hpp"
 
+#include <iostream>
 #include <ostream>
 
 namespace zappy::data {
@@ -16,12 +17,18 @@ Tile::Tile(const Position position, const std::map<Resource, uint> &resources,
 
 }
 
+Tile::Tile(const Position position, const uint egg): _position(position),
+    _egg(egg)
+{
+
+}
+
 Position Tile::getPosition() const
 {
     return _position;
 }
 
-std::map<Resource, uint> Tile::getResources()
+std::map<Resource, uint> &Tile::getResources()
 {
     return _resources;
 }
@@ -52,7 +59,7 @@ std::string Tile::getResourcesAsString() const
 {
     std::string res;
 
-    for (auto &it: _resources) {
+    for (const auto &it: _resources) {
         res += getResourceName(it.first) + ": " + std::to_string(it.second) +
             "\n";
     }
