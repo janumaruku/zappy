@@ -11,7 +11,7 @@
 
 namespace shell {
 
-TerminalGuard::TerminalGuard() : _active{false}
+TerminalGuard::TerminalGuard() : _active{true}
 {
     tcgetattr(STDIN_FILENO, &_saved);
 
@@ -20,8 +20,6 @@ TerminalGuard::TerminalGuard() : _active{false}
     raw.c_cc[VMIN]  = 1;
     raw.c_cc[VTIME] = 0;
     tcsetattr(STDIN_FILENO, TCSAFLUSH, &raw);
-
-    _active = true;
 }
 
 TerminalGuard::~TerminalGuard()

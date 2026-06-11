@@ -5,7 +5,9 @@
 ** PositionalArgumentBuilder
 */
 
-#pragma once
+#ifndef SHELL_POSITIONAL_ARGUMENT_BUILDER_HPP
+#define SHELL_POSITIONAL_ARGUMENT_BUILDER_HPP
+
 #include <string>
 
 #include "CommandDefinition.hpp"
@@ -29,3 +31,5 @@ private:
     PositionalArgument _argument;
 };
 } // namespace shell::command
+
+#endif // SHELL_POSITIONAL_ARGUMENT_BUILDER_HPP
