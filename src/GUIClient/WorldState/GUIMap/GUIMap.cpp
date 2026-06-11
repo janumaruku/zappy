@@ -9,12 +9,18 @@
 
 #include <string>
 
-uint zappy::gui::GUIMap::getWidth() const
+namespace zappy::gui {
+GUIMap::GUIMap(uint width, uint height): _width(width), _height(height)
+{
+
+}
+
+uint GUIMap::getWidth() const
 {
     return _width;
 }
 
-uint zappy::gui::GUIMap::getHeight() const
+uint GUIMap::getHeight() const
 {
     return _height;
 }
@@ -29,3 +35,4 @@ uint zappy::gui::GUIMap::getHeight() const
  *
  *}
  */
+}
