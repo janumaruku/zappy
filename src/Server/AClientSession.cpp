@@ -11,9 +11,12 @@ namespace zappy::server {
 
 static constexpr std::size_t READ_BUFFER_SIZE = 4096;
 
+AClientSession::AClientSession() {
+    this->_read_buffer.resize(READ_BUFFER_SIZE);
+}
+
 void AClientSession::start()
 {
-    _read_buffer.resize(READ_BUFFER_SIZE);
     _socket.asyncReadSome(network::buffer(_read_buffer, READ_BUFFER_SIZE),
         [this](const std::error_code &ec, const std::size_t &bytes) {
             if (ec) {
@@ -25,8 +28,6 @@ void AClientSession::start()
                 _socket.close();
                 return;
             }
-
-            _read_buffer.resize(bytes);
 
             handleRead();
 

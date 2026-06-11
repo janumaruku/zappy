@@ -16,6 +16,7 @@ namespace zappy::server {
 
 class IClientSession {
 public:
+    IClientSession();
     virtual ~IClientSession() = 0;
 
     virtual void start() = 0;

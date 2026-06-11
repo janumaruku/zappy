@@ -71,3 +71,7 @@ Testing/
 # useless files and folders
 .idea
 docs/generated
+
+# misc
+compile_flags.txt
+.gitignore
