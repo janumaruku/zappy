@@ -21,7 +21,7 @@ template <typename Clock>
 class BasicWaitableTimer {
 public:
 using Duration = Clock::duration;
-    BasicWaitableTimer() = default;
+    BasicWaitableTimer() = delete;
     BasicWaitableTimer(network::IOContext &ioContext, std::size_t id, std::function<void()> handler = {});
 
     BasicWaitableTimer(const BasicWaitableTimer &) = delete;
