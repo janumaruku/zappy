@@ -33,7 +33,7 @@ public:
 
     void operator/=(double scalar);
 
-    bool operator==(Position other);
+    bool operator==(Position other) const;
 
 private:
     int _x;

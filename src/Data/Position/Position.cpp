@@ -75,7 +75,7 @@ void Position::operator/=(double scalar)
     _y *= scalar;
 }
 
-bool Position::operator==(Position other)
+bool Position::operator==(const Position other) const
 {
     if (_x == other._x && _y == other._y) {
         return true;
