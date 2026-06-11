@@ -11,8 +11,6 @@
 #include "WorldState.hpp"
 #include "../Shell/include/CommandBuilder.hpp"
 #include "../Shell/include/CommandContext.hpp"
-#include "WorldState/GUIPlayer/include/GUIPlayer.hpp"
-#include "WorldState/Team/include/Team.hpp"
 
 int main()
 {
