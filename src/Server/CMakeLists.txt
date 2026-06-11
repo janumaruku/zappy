@@ -1,4 +1,8 @@
-add_executable(zappy_server main.cpp)
+add_executable(zappy_server
+  main.cpp
+  IClientSession.cpp
+  AISession.cpp
+  GUISession.cpp)
 
 target_include_directories(zappy_server PUBLIC include)
 
