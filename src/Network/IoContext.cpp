@@ -65,14 +65,16 @@ void IOContext::run()
                 });
 
         handleReadyFileDescriptors();
+        drainExpiredTimers();
 
         if (_stop && std::ranges::all_of(_pendingOperations,
             [](const auto &entry) {
                 return entry.second.empty();
             }))
             break;
-
-        drainExpiredTimers();
+        
+        if (_pollFds.empty() && _timerQueue.empty() && _pendingOperations.empty())
+            break;
     }
 
     _running = false;
@@ -96,6 +98,7 @@ void IOContext::poll()
             {strerror(errno)});
 
     handleReadyFileDescriptors();
+    drainExpiredTimers();
 }
 
 void IOContext::pollAll()
@@ -105,8 +108,10 @@ void IOContext::pollAll()
             utils::RED + "Error: " + utils::RESET +
             "The IOContext loop is already running");
 
-    while (::poll(_pollFds.data(), _pollFds.size(), 0) > 0)
+    while (::poll(_pollFds.data(), _pollFds.size(), 0) > 0) {
         handleReadyFileDescriptors();
+    }
+    drainExpiredTimers();
 }
 
 void IOContext::updateEventType(const int &fileDescriptor)
@@ -167,7 +172,7 @@ void IOContext::triggerHandler(const int &itt)
 
 void IOContext::cancelTimer(const std::size_t &id)
 {
-    auto values = container(_timerQueue);
+    auto &values = container(_timerQueue);
 
     const auto it = std::ranges::find_if(values,
         [id](const TimerEntry &entry) {
@@ -179,15 +184,20 @@ void IOContext::cancelTimer(const std::size_t &id)
 
 void IOContext::drainExpiredTimers()
 {
-    const auto now = std::chrono::duration_cast<std::chrono::duration<float>>(
-        std::chrono::system_clock::now().time_since_epoch());
+    const auto now = static_cast<float>(
+        std::chrono::high_resolution_clock::now().time_since_epoch().count());
 
     while (!_timerQueue.empty()) {
         const TimerEntry entry = _timerQueue.top();
-        if (entry.timePoint <= now  || entry.cancellation) {
+        if (entry.cancellation) {
             _timerQueue.pop();
             continue;
         }
+        if (entry.timePoint <= now) {
+            entry.handler();
+            _timerQueue.pop();
+            continue;
+        } 
         break;
     }
 }

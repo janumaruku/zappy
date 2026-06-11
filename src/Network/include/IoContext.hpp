@@ -24,7 +24,7 @@ class BasicWaitableTimer;
 
 struct TimerEntry {
     std::size_t id;
-    std::chrono::duration<float> timePoint;
+    float timePoint;
     std::function<void()> handler;
     bool cancellation;
 };
@@ -33,7 +33,7 @@ struct TimerEntryCompare
 {
   constexpr bool
   operator()(const TimerEntry &x, const TimerEntry &y) const
-  { return x.timePoint < y.timePoint; }
+  { return x.timePoint > y.timePoint; }
 };
 
 /**

@@ -14,19 +14,19 @@ namespace network {
 
 template <typename Clock>
 BasicWaitableTimer<Clock>::BasicWaitableTimer(const BasicWaitableTimer &&other) noexcept :
-_id(other._id), _expiry(other._expiry), _ioContext(other._ioContext), _handler(other._handler) {}
+_id(other._id), _ioContext(other._ioContext), _handler(other._handler) {}
 
 template <typename Clock>
-BasicWaitableTimer<Clock>::BasicWaitableTimer(network::IOContext &ioContext, std::size_t id, std::chrono::duration<float> delayBeforeCall, std::function<void()> handler) :
+BasicWaitableTimer<Clock>::BasicWaitableTimer(network::IOContext &ioContext,
+    std::size_t id, std::function<void()> handler) :
     _id(id),
-    _expiry(std::chrono::duration_cast<std::chrono::duration<float>>(delayBeforeCall).count()),
     _ioContext(ioContext),
     _handler(std::move(handler)) {}
 
 template <typename Clock>
-void BasicWaitableTimer<Clock>::asyncWait(const std::chrono::duration<float> &duration, const std::function<void()> &handler)
+void BasicWaitableTimer<Clock>::asyncWait(const Clock::duration &duration, const std::function<void()> &handler)
 {
-    _expiry = duration;
+    _expiry = Clock::now() + duration;
     _handler = handler;
     _ioContext.registerTimer(*this);
 }
@@ -40,18 +40,12 @@ void BasicWaitableTimer<Clock>::cancel() noexcept
 template <typename Clock>
 void BasicWaitableTimer<Clock>::expiresAfter(Clock::duration duration) noexcept
 {
-    auto timePoint = Clock::now() + duration;
-    _expiry = static_cast<std::chrono::duration<float>>(
-        std::chrono::duration_cast<std::chrono::milliseconds>(
-            timePoint.time_since_epoch()
-        ).count()
-    );
-    _expiry = duration;
     cancel();
+    _expiry = Clock::now() + duration;
 }
 
 template <typename Clock>
-const std::chrono::duration<float> &BasicWaitableTimer<Clock>::expiry() const noexcept
+std::chrono::time_point<Clock> BasicWaitableTimer<Clock>::expiry() const noexcept
 {
     return _expiry;
 }
