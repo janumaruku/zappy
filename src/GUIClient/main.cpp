@@ -8,17 +8,11 @@
 #include <iostream>
 
 #include "GUIEgg.hpp"
-#include "WorldState.hpp"
 #include "../Shell/include/CommandBuilder.hpp"
 #include "../Shell/include/CommandContext.hpp"
 
 int main()
 {
-    //zappy::gui::WorldState worldStateTest;
-    zappy::gui::Team TeamTest("testName");
-    zappy::gui::GUIPlayer GUIPlayerTest("testId", "testTeam",
-        zappy::gui::Orientation::NORTH, 0);
-    zappy::gui::GUIEgg eggTest(0, "testId", {0, 0});
     auto command = shell::command::CommandBuilder{}.name("test")
         .description("Test command")
         .xOption([](auto &builder) {
