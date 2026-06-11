@@ -9,21 +9,26 @@
 #define GUIMAP_HPP
 #include <sys/types.h>
 
+#include "Tile.hpp"
+
 namespace zappy::gui {
 class GUIMap {
 public:
     GUIMap(uint width, uint height);
 
-    uint getWidth() const;
+    [[nodiscard]] uint getWidth() const;
 
-    uint getHeight() const;
+    [[nodiscard]] uint getHeight() const;
 
-    //Tile getTile(Position pos);
-    //void updateTile(Position pos, map<Ressource, uint> ressources);
+    data::Tile &getTile(data::Position pos);
+
+    void updateTile(data::Position pos,
+        const std::map<data::Resource, uint> &resources);
+
 private:
     uint _width = 0;
     uint _height = 0;
-    //list<Tile> _tiles;
+    std::list<data::Tile> _tiles;
 };
 }
 
