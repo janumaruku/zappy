@@ -10,9 +10,10 @@
 #include <iostream>
 
 namespace zappy::gui {
-GUIPlayer::GUIPlayer(PlayerId id, std::string team, /*Position position,*/
-    Orientation orientation, uint8_t level): _id(id), _team(team),
-    _orientation(orientation), _level(level)
+GUIPlayer::GUIPlayer(const PlayerId &id, const std::string &team,
+    const data::Position position,
+    const Orientation orientation, const uint8_t level): _id(id), _team(team),
+    _position(position), _orientation(orientation), _level(level)
 {
 
 }
@@ -27,10 +28,10 @@ std::string GUIPlayer::getTeam() const
     return _team;
 }
 
-/*Position GUIPlayer::getTilePosition(){
+data::Position GUIPlayer::getTilePosition() const
+{
     return _position;
 }
-*/
 
 Orientation GUIPlayer::getOrientation() const
 {
@@ -42,20 +43,20 @@ uint8_t GUIPlayer::getLevel() const
     return _level;
 }
 
-void GUIPlayer::enqueueAction(Action action)
+void GUIPlayer::enqueueAction(const Action action)
 {
     _actionQueue.push(action);
     std::clog << "added action to queue" << std::endl;
 }
 
-GUIPlayer::Action GUIPlayer::dequeueAction()
+Action GUIPlayer::dequeueAction()
 {
     if (_actionQueue.empty()) {
-        std::clog << "No action to dequeue" << std::endl;
-        //error
+        throw std::runtime_error("No action to dequeue");
     }
     const Action action = _actionQueue.front();
     _actionQueue.pop();
+    std::clog << "removed action from queue" << std::endl;
     return action;
 }
 

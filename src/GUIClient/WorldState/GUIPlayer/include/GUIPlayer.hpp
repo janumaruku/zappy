@@ -8,8 +8,12 @@
 #ifndef GUIPLAYER_HPP
 #define GUIPLAYER_HPP
 #include <cstdint>
+#include <map>
 #include <queue>
 #include <string>
+
+#include "Position.hpp"
+#include "Tile.hpp"
 
 namespace zappy::gui {
 enum class Orientation : std::uint8_t {
@@ -34,23 +38,24 @@ enum class ActionType : std::uint8_t {
     DEATH,
 };
 
+struct Action {
+    ActionType type;
+    float duration;
+};
+
 class GUIPlayer {
     using PlayerId = std::string;
 
-    struct Action {
-        ActionType type;
-        float duration;
-    };
-
 public:
-    GUIPlayer(PlayerId id, std::string team, /*Position position,*/
+    GUIPlayer(const PlayerId &id, const std::string &team,
+        data::Position position,
         Orientation orientation, uint8_t level);
 
     PlayerId getId() const;
 
     std::string getTeam() const;
 
-    //Position getTilePosition();
+    data::Position getTilePosition() const;
 
     Orientation getOrientation() const;
 
@@ -65,10 +70,10 @@ public:
 private:
     PlayerId _id;
     std::string _team;
-    //Position _position;
+    data::Position _position;
     Orientation _orientation = Orientation::NORTH;
     uint8_t _level = 0;
-    //map<Ressource, uint> _inventory;
+    std::map<data::Resource, uint> _inventory;
     std::queue<Action> _actionQueue;
 };
 
