@@ -11,6 +11,7 @@ pub enum NetworkError {
 
 #[derive(Debug)]
 pub enum AcceptorError {
+    SocketOpenFailed,
     BadFileDescriptor,
     BadAddress,
     InvalidState,
@@ -18,6 +19,8 @@ pub enum AcceptorError {
     PermissionDenied,
     ProtocolError,
     UnknownError,
+    BindFailed,
+    ListenFailed,
 }
 
 impl std::error::Error for NetworkError {
@@ -78,7 +81,16 @@ impl Display for AcceptorError {
             }
             AcceptorError::UnknownError => {
                 write!(f, "{}Unknown error.", "[ACCEPTOR] ".red())
-            }
+            },
+            AcceptorError::SocketOpenFailed => {
+                write!(f, "{}Failed to open socket.", "[ACCEPTOR] ".red())
+            },
+            AcceptorError::BindFailed => {
+                write!(f, "{}Failed to bind socket to address.", "[ACCEPTOR] ".red())
+            },
+            AcceptorError::ListenFailed => {
+                write!(f, "{}Failed to listen on opened port.", "[ACCEPTOR] ".red())
+            },
         }
     }
 }
