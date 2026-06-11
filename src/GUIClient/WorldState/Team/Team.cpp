@@ -11,7 +11,7 @@
 
 namespace zappy::gui {
 
-Team::Team(std::string name, Color color): _name(name), _color(color)
+Team::Team(std::string name/*, Color color*/): _name(name) /*, _color(color)*/
 {
 
 }
@@ -21,10 +21,10 @@ std::string Team::getName()
     return _name;
 }
 
-Team::Color Team::getColor()
+/*Team::Color Team::getColor()
 {
     return _color;
-}
+}*/
 
 void Team::addPlayer(PlayerId id)
 {

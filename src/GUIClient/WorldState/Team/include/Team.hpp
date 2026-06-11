@@ -14,13 +14,12 @@ namespace zappy::gui {
 class Team {
 public:
     using PlayerId = std::string;
-    using Color = std::string;
 
-    Team(std::string name, Color color);
+    Team(std::string name/*, Color color*/);
 
     std::string getName();
 
-    Color getColor();
+    /*Color getColor();*/
 
     void addPlayer(PlayerId id);
 
@@ -29,7 +28,7 @@ public:
 private:
     std::string _name;
     std::list<PlayerId> _players;
-    Color _color;
+    /*Color _color;*/
 };
 }
 
