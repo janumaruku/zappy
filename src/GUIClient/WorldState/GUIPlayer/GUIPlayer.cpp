@@ -45,6 +45,7 @@ uint8_t GUIPlayer::getLevel() const
 void GUIPlayer::enqueueAction(Action action)
 {
     _actionQueue.push(action);
+    std::clog << "added action to queue" << std::endl;
 }
 
 GUIPlayer::Action GUIPlayer::dequeueAction()
