@@ -1,5 +1,5 @@
-add_library(zappy_data Position.cpp)
+add_library(position Position.cpp)
 
-target_include_directories(zappy_data PUBLIC include)
+target_include_directories(position PUBLIC include)
 
-target_link_libraries(zappy_data PUBLIC warning_options)
+target_link_libraries(position PUBLIC warning_options)
