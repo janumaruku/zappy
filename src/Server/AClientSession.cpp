@@ -37,11 +37,35 @@ void AClientSession::start()
 
 void AClientSession::send(std::string &data)
 {
-    const bool writeInProgress = !_write_queue.empty();
-    _write_queue.emplace(data);
+    this->_socket.write(network::buffer(data),
+        [this, &data](const std::error_code &err, const std::size_t &bytes) {
+            if (err) {
+                std::cerr << err.message() << std::endl;
+            }
+            if (bytes == 0) {
+                std::clog << "Client disconnected" << std::endl;
+                this->_socket.close();
+            }
+            std::clog << "Send: " << data << std::endl;
+        });
+}
 
-    if (!writeInProgress)
-        handleWrite();
+// Maybe put datatype to std::string
+void AClientSession::receive() {
+    this->_socket.read(network::buffer(
+        this->_read_buffer,
+        this->_read_buffer.size()),
+    [this](const std::error_code &err, const std::size_t &bytes) {
+        if (err) {
+            std::cerr << err.message() << std::endl;
+        }
+        if (bytes == 0) {
+            std::clog << "Client disconnected" << std::endl;
+            _socket.close();
+        }
+        std::clog << "Received: " << this->_read_buffer << std::endl;
+    });
+    // return this->_read_buffer;
 }
 
 void AClientSession::handleRead()
