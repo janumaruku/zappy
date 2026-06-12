@@ -25,8 +25,8 @@ public:
 
 protected:
     network::ConnectedSocket _socket;
-    std::string _read_buffer;
-    std::queue<std::string> _write_queue;
+    std::string _readBuffer;
+    std::queue<std::string> _writeQueue;
 
     virtual void handleRead() = 0;
     virtual void handleWrite() = 0;
