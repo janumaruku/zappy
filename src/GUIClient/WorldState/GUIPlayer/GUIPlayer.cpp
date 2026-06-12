@@ -11,8 +11,8 @@
 
 namespace zappy::gui {
 GUIPlayer::GUIPlayer(const PlayerId &id, const std::string &team,
-    const data::Position position,
-    const Orientation orientation, const uint8_t level): _id(id), _team(team),
+    data::Position &position,
+    Orientation &orientation, const uint8_t level): _id(id), _team(team),
     _position(position), _orientation(orientation), _level(level)
 {
 
@@ -62,9 +62,6 @@ Action GUIPlayer::dequeueAction()
 
 bool GUIPlayer::hasAction() const
 {
-    if (_actionQueue.empty()) {
-        return false;
-    }
-    return true;
+    return _actionQueue.empty();
 }
 }

@@ -48,8 +48,8 @@ class GUIPlayer {
 
 public:
     GUIPlayer(const PlayerId &id, const std::string &team,
-        data::Position position,
-        Orientation orientation, uint8_t level);
+        data::Position &position,
+        Orientation &orientation, uint8_t level);
 
     PlayerId getId() const;
 
