@@ -16,8 +16,8 @@ using PlayerId = std::string;
 
 class GUIEgg {
 public:
-    GUIEgg(uint id, const PlayerId &playerId, const std::string &team,
-        data::Position position);
+    GUIEgg(const uint &id, const PlayerId &playerId, const std::string &team,
+        const data::Position &position);
 
     uint getId() const;
 
