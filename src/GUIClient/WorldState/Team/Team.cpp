@@ -9,8 +9,6 @@
 
 #include <iostream>
 
-#include "../GUIEgg/include/GUIEgg.hpp"
-
 namespace zappy::gui {
 
 Team::Team(const std::string &name/*, Color color*/): _name(name)
