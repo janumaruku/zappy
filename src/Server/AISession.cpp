@@ -6,7 +6,6 @@
 */
 
 #include "AISession.hpp"
-#include <cstddef>
 
 namespace zappy::server {
 
