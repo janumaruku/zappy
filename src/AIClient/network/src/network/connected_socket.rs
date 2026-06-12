@@ -29,11 +29,12 @@ impl ConnectedSocket {
             self_ref: Weak::new(),
         }));
 
+        let fd = socket.borrow().socket_fd;
         socket
             .borrow_mut()
             .io_context
             .borrow_mut()
-            .register_file_descriptor(socket.borrow().socket_fd);
+            .register_file_descriptor(fd);
         socket.borrow_mut().self_ref = Rc::downgrade(&socket);
 
         socket
@@ -47,11 +48,12 @@ impl ConnectedSocket {
             self_ref: Weak::new(),
         }));
 
+        let fd = socket.borrow().socket_fd;
         socket
             .borrow_mut()
             .io_context
             .borrow_mut()
-            .register_file_descriptor(socket.borrow().socket_fd);
+            .register_file_descriptor(fd);
         socket.borrow_mut().self_ref = Rc::downgrade(&socket);
 
         socket
@@ -101,7 +103,7 @@ impl ConnectedSocket {
     pub fn write(
         &self,
         buffer: &[u8],
-        handler: Box<dyn FnOnce(Option<Box<dyn std::error::Error>>, usize) + 'static>,
+        handler: impl FnOnce(Option<Box<dyn std::error::Error>>, usize) + 'static,
     ) {
         let bytes = unsafe {
             write(
@@ -117,7 +119,7 @@ impl ConnectedSocket {
     pub fn read(
         &self,
         buffer: &mut [u8],
-        handler: Box<dyn FnOnce(Option<Box<dyn std::error::Error>>, usize) + 'static>,
+        handler: impl FnOnce(Option<Box<dyn std::error::Error>>, usize) + 'static,
     ) {
         let bytes = unsafe {
             read(
@@ -161,18 +163,18 @@ impl ConnectedSocket {
                     return;
                 };
 
-                let mut buf = buffer_ref.borrow_mut();
-                let slice = buf.as_mut();
-
                 let bytes = unsafe {
+                    let mut buf = buffer_ref.borrow_mut();
+                    let slice = buf.as_mut();
+
                     read(
                         socket.borrow().socket_fd,
                         slice.as_mut_ptr() as *mut c_void,
-                        slice.len(),
+                        slice.len() as size_t,
                     )
                 };
 
-                socket.borrow_mut().call_handler(bytes as i32, handler);
+                socket.borrow().call_handler(bytes as i32, handler);
             });
     }
 
@@ -198,11 +200,11 @@ impl ConnectedSocket {
                     write(
                         socket.borrow().socket_fd,
                         slice.as_ptr() as *const c_void,
-                        slice.len(),
+                        slice.len() as size_t,
                     )
                 };
 
-                socket.borrow_mut().call_handler(bytes as i32, handler);
+                socket.borrow().call_handler(bytes as i32, handler);
             });
     }
 }

@@ -1,7 +1,10 @@
 use crate::network::{
     AcceptorError, ConnectedSocket, Endpoint, IoContext, NetworkError, SocketConfig,
 };
-use libc::{accept, bind, listen, setsockopt, sockaddr, sockaddr_in, socket, socklen_t, AF_INET, SOCK_STREAM, SOL_SOCKET, SO_REUSEADDR};
+use libc::{
+    accept, bind, listen, setsockopt, sockaddr, sockaddr_in, socket, socklen_t, AF_INET,
+    SOCK_STREAM, SOL_SOCKET, SO_REUSEADDR,
+};
 use std::cell::RefCell;
 use std::ffi::c_void;
 use std::mem;
@@ -64,7 +67,11 @@ impl Acceptor {
 
         acceptor.borrow_mut().self_ref = Rc::downgrade(&acceptor);
 
-        acceptor.borrow_mut().io_context.borrow_mut().register_file_descriptor(socket_fd);
+        acceptor
+            .borrow_mut()
+            .io_context
+            .borrow_mut()
+            .register_file_descriptor(socket_fd);
 
         Ok(acceptor)
     }
@@ -97,9 +104,7 @@ impl Acceptor {
                     None => {
                         handler(Err(NetworkError::AcceptError(AcceptorError::InvalidState)));
                     }
-                    Some(socket) => {
-                        handler(Ok(socket))
-                    }
+                    Some(socket) => handler(Ok(socket)),
                 }
             })
     }
