@@ -5,8 +5,8 @@
 ** ErrorCode
 */
 
-#ifndef MYFTP_ERRORCODE_HPP
-#define MYFTP_ERRORCODE_HPP
+#ifndef ZAPPY_ERRORCODE_HPP
+#define ZAPPY_ERRORCODE_HPP
 
 #include <cstdint>
 #include <system_error>
@@ -49,4 +49,4 @@ inline const FtpErrorCodeCategory &ftpCategory() noexcept
 
 std::error_code make_error_code(FtpErrorCode errCode) noexcept; // NOLINT
 
-#endif //MYFTP_ERRORCODE_HPP
+#endif //ZAPPY_ERRORCODE_HPP

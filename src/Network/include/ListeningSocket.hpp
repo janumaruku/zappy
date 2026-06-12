@@ -5,8 +5,8 @@
 ** Socket
 */
 
-#ifndef MYFTP_SOCKET_HPP
-#define MYFTP_SOCKET_HPP
+#ifndef ZAPPY_SOCKET_HPP
+#define ZAPPY_SOCKET_HPP
 
 #include "Endpoint.hpp"
 #include "Logger.hpp"
@@ -51,4 +51,4 @@ private:
 };
 } // ftp
 
-#endif //MYFTP_SOCKET_HPP
+#endif //ZAPPY_SOCKET_HPP

@@ -5,8 +5,8 @@
 ** Endpoint
 */
 
-#ifndef MYFTP_ENDPOINT_HPP
-#define MYFTP_ENDPOINT_HPP
+#ifndef ZAPPY_ENDPOINT_HPP
+#define ZAPPY_ENDPOINT_HPP
 
 #include <string>
 #include <netinet/in.h>
@@ -52,4 +52,4 @@ private:
 };
 } // ftp
 
-#endif //MYFTP_ENDPOINT_HPP
+#endif //ZAPPY_ENDPOINT_HPP
