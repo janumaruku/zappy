@@ -5,4 +5,5 @@ edition = "2024"
 
 [dependencies]
 shell = { path = "../shell" }
+network = { path = "../network" }
 
