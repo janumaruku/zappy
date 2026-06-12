@@ -10,8 +10,9 @@
 #include <iostream>
 
 namespace zappy::gui {
-WorldState::WorldState(const GUIMap &map, const uint timeUnit): _map(map),
-    _timeUnit(timeUnit)
+WorldState::WorldState(const GUIMap &map,
+    const std::unordered_map<std::string, Team> &teams,
+    const uint timeUnit): _map(map), _teams(teams), _timeUnit(timeUnit)
 {
 
 }
@@ -21,44 +22,40 @@ GUIMap WorldState::getMap() const
     return _map;
 }
 
-std::map<PlayerId, GUIPlayer> WorldState::getPlayers()
+std::unordered_map<PlayerId, GUIPlayer> WorldState::getPlayers()
 {
     return _players;
 }
 
-GUIPlayer WorldState::getPlayer(const PlayerId &id)
+GUIPlayer &WorldState::getPlayerById(const PlayerId &id)
 {
-    auto it = _players.find(id);
 
-    if (it == _players.end()) {
+    if (!_players.contains(id)) {
         throw std::runtime_error("Player not found: " + id);
     }
-    return it->second;
+    return _players.at(id);
 }
 
-std::map<std::string, Team> WorldState::getTeams()
+const std::unordered_map<std::string, Team> &WorldState::getTeams()
 {
     return _teams;
 }
 
-void WorldState::onPlayerNew(PlayerId id, data::Position position,
-    const Orientation orientation, const uint8_t level, std::string team)
+void WorldState::onPlayerNew(const PlayerId &id, data::Position position,
+    const Orientation orientation, const uint8_t level, const std::string &team)
 {
     if (position.getX() > static_cast<int>(_map.getWidth()) || position.
         getX() < 0 || position.getY() > static_cast<int>(_map.getHeight()) ||
         position.getY() < 0) {
-        std::cerr << "new player out of bound" << std::endl;
+        std::cerr << "New player out of bound" << std::endl;
         return;
     }
-    const auto it = _teams.find(team);
-
-    if (it == _teams.end()) {
-        const auto newIt = _teams.insert({team, Team(team)}).first;
-        newIt->second.addPlayer(id);
-    } else {
-        it->second.addPlayer(id);
+    if (!_teams.contains(team)) {
+        std::cerr << team << " is not found" << std::endl;
+        return;
     }
-    _players.insert({id, GUIPlayer(id, team, position, orientation, level)});
+    _teams.at(team).addPlayer(id);
+    _players.emplace(id, GUIPlayer(id, team, position, orientation, level));
     std::clog << "New Player " << id << " has joined" << std::endl;
 }
 
@@ -68,21 +65,12 @@ void WorldState::onPlayerNew(PlayerId id, data::Position position,
 
 void WorldState::onPlayerDeath(const PlayerId &id)
 {
-    auto player = _players.find(id);
-    if (player == _players.end()) {
-        std::cerr << "Player not found onPlayerDeath" << std::endl;
+    if (!_players.contains(id)) {
+        std::cerr << "Player " << id << " is not found " << std::endl;
         return;
     }
-    const std::string team = player->second.getTeam();
-    auto it = _teams.find(team);
-
-    if (it == _teams.end()) {
-        std::cerr << "Team not found onPlayerDeath" << std::endl;
-        return;
-    }
-    it->second.removePlayer(id);
-    _players.erase(player);
-    std::clog << "Player " << id << " is dead" << std::endl;
+    _players.erase(id);
+    _teams.at(_players.at(id).getTeam()).removePlayer(id);
 }
 
 /*void WorldState::onTileContent(Position pos, std::map<Resource, uint> resources){
@@ -105,9 +93,7 @@ uint WorldState::getTimeUnit() const
 
 void WorldState::onEggDeath(const uint eggId)
 {
-    const auto it = _eggs.find(eggId);
-
-    if (it == _eggs.end()) {
+    if (!_eggs.contains(eggId)) {
         std::cerr << eggId << " is not found onEggDeath" << std::endl;
         return;
     }

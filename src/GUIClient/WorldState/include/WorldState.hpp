@@ -7,8 +7,8 @@
 
 #ifndef WORLDSTATE_HPP
 #define WORLDSTATE_HPP
-#include <map>
 #include <string>
+#include <unordered_map>
 #include <sys/types.h>
 
 #include "GUIEgg.hpp"
@@ -21,21 +21,22 @@ class WorldState {
     using PlayerId = std::string;
 
 public:
-    WorldState(const GUIMap &map, uint timeUnit);
+    WorldState(const GUIMap &map,
+        const std::unordered_map<std::string, Team> &teams, uint timeUnit);
 
     GUIMap getMap() const;
 
-    std::map<PlayerId, GUIPlayer> getPlayers();
+    std::unordered_map<PlayerId, GUIPlayer> getPlayers();
 
-    GUIPlayer getPlayer(const PlayerId &id);
+    GUIPlayer &getPlayerById(const PlayerId &id);
 
-    std::map<std::string, Team> getTeams();
+    const std::unordered_map<std::string, Team> &getTeams();
 
     uint getTimeUnit() const;
 
-    void onPlayerNew(PlayerId id, data::Position position,
+    void onPlayerNew(const PlayerId &id, data::Position position,
         Orientation orientation,
-        uint8_t level, std::string team);
+        uint8_t level, const std::string &team);
 
     //void onPlayerPosition(Position pos, Orientation orientation);
 
@@ -51,9 +52,9 @@ public:
 
 private:
     GUIMap _map;
-    std::map<PlayerId, GUIPlayer> _players;
-    std::map<uint, GUIEgg> _eggs;
-    std::map<std::string, Team> _teams;
+    std::unordered_map<PlayerId, GUIPlayer> _players;
+    std::unordered_map<uint, GUIEgg> _eggs;
+    std::unordered_map<std::string, Team> _teams;
     uint _timeUnit = 0;
 };
 }
