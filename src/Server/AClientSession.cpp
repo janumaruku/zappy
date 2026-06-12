@@ -70,7 +70,7 @@ std::string AClientSession::receive()
 void AClientSession::handleRead()
 {
     if (!_readBuffer.empty())
-        receive();
+        AClientSession::receive();
 }
 
 void AClientSession::handleWrite()
