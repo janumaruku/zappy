@@ -27,7 +27,7 @@ uint GUIMap::getHeight() const
     return _height;
 }
 
-data::Tile &GUIMap::getTile(const data::Position pos)
+data::Tile &GUIMap::getTile(data::Position pos)
 {
     if (pos.getX() > static_cast<int>(_width) || pos.getX() < 0 ||
         pos.getY() > static_cast<int>(_height) || pos.getY() < 0) {

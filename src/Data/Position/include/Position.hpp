@@ -13,32 +13,34 @@ class Position {
 public:
     Position(int x, int y);
 
-    int getX() const;
+    int &getX();
 
-    int getY() const;
-
-    Position operator+(Position other) const;
-
-    void operator+=(Position other);
-
-    Position operator-(Position other) const;
-
-    void operator-=(Position other);
-
-    Position operator*(double scalar) const;
-
-    void operator*=(double scalar);
-
-    Position operator/(double scalar) const;
-
-    void operator/=(double scalar);
-
-    bool operator==(Position other) const;
+    int &getY();
 
 private:
     int _x;
     int _y;
 };
 }
+
+zappy::data::Position operator+(zappy::data::Position current,
+    zappy::data::Position other);
+
+void operator+=(zappy::data::Position &current, zappy::data::Position other);
+
+zappy::data::Position operator-(zappy::data::Position current,
+    zappy::data::Position other);
+
+void operator-=(zappy::data::Position &current, zappy::data::Position other);
+
+zappy::data::Position operator*(zappy::data::Position current, double scalar);
+
+void operator*=(zappy::data::Position &current, double scalar);
+
+zappy::data::Position operator/(zappy::data::Position current, double scalar);
+
+void operator/=(zappy::data::Position &current, double scalar);
+
+bool operator==(zappy::data::Position current, zappy::data::Position other);
 
 #endif

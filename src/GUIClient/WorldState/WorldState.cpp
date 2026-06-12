@@ -41,7 +41,7 @@ std::map<std::string, Team> WorldState::getTeams()
     return _teams;
 }
 
-void WorldState::onPlayerNew(PlayerId id, const data::Position position,
+void WorldState::onPlayerNew(PlayerId id, data::Position position,
     const Orientation orientation, const uint8_t level, std::string team)
 {
     if (position.getX() > static_cast<int>(_map.getWidth()) || position.
