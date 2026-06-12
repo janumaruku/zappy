@@ -1,7 +1,5 @@
-add_executable(zappy_gui TCPClient.cpp)
+add_library(tcp_client TCPClient.cpp)
 
-target_include_directories(zappy_gui PUBLIC include)
+target_include_directories(tcp_client PUBLIC include)
 
-target_link_libraries(zappy_gui PUBLIC warning_options network)
-
-set_target_properties(zappy_gui PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR})
+target_link_libraries(tcp_client PUBLIC warning_options network)

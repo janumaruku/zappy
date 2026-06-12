@@ -13,11 +13,12 @@ namespace zappy::gui {
 TCPClient::TCPClient(network::IOContext &ioc, const int port,
     const std::string &hostname): _ioc(ioc), _socket(_ioc)
 {
+    _readBuffer.resize(1024);
     try {
         network::Endpoint endpoint(port, hostname);
         _socket.connect(endpoint);
-        if (receive() == "WELCOME") {
-            send("GRAPHIC");
+        if (receive() == "WELCOME\n") {
+            send("GRAPHIC\n");
         } else {
             throw std::runtime_error{"Received incorrect connection"};
         }
@@ -59,7 +60,7 @@ std::string TCPClient::receive()
             }
             std::clog << "Received: " << _readBuffer << std::endl;
         });
-    return _readBuffer;
+    return std::string(_readBuffer.data());
 }
 
 void TCPClient::pollAll() const
@@ -82,7 +83,8 @@ void TCPClient::handleTransmission(const size_t &bytes)
 
 void TCPClient::startRead()
 {
-    _socket.asyncReadSome(network::buffer(_readAsyncBuffer, _readAsyncBuffer.size()),
+    _socket.asyncReadSome(network::buffer(_readAsyncBuffer,
+                              _readAsyncBuffer.size()),
         [this](const std::error_code &err, const std::size_t &bytes) {
             if (err) {
                 std::cerr << err.message() << std::endl;
@@ -95,4 +97,4 @@ void TCPClient::startRead()
             handleTransmission(bytes);
         });
 }
-}
+} // namespace zappy::gui
