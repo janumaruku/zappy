@@ -9,9 +9,12 @@
 
 #include <iostream>
 
+#include "../GUIEgg/include/GUIEgg.hpp"
+
 namespace zappy::gui {
 
-Team::Team(std::string name/*, Color color*/): _name(name) /*, _color(color)*/
+Team::Team(const std::string &name/*, Color color*/): _name(name)
+/*, _color(color)*/
 {
 
 }
@@ -26,20 +29,23 @@ std::string Team::getName()
     return _color;
 }*/
 
-void Team::addPlayer(PlayerId id)
+void Team::addPlayer(const PlayerId &id)
 {
     _players.push_back(id);
 }
 
-void Team::removePlayer(PlayerId id)
+void Team::removePlayer(const PlayerId &id)
 {
-    auto lastSize = _players.size();
-    _players.remove(id);
+    const auto it = std::ranges::find_if(_players.begin(), _players.end(),
+        [id](const PlayerId &player) {
+            return player == id;
+        });
 
-    if (_players.size() >= lastSize) {
+    if (it == _players.end()) {
         std::clog << "Couldn't find player: " << id << std::endl;
-    } else {
-        std::clog << "Removed player: " << id << std::endl;
+        return;
     }
+    _players.remove(id);
+    std::clog << "Removed player: " << id << std::endl;
 }
 }

@@ -15,15 +15,15 @@ class Team {
 public:
     using PlayerId = std::string;
 
-    Team(std::string name/*, Color color*/);
+    Team(const std::string &name/*, Color color*/);
 
     std::string getName();
 
     /*Color getColor();*/
 
-    void addPlayer(PlayerId id);
+    void addPlayer(const PlayerId &id);
 
-    void removePlayer(PlayerId id);
+    void removePlayer(const PlayerId &id);
 
 private:
     std::string _name;
