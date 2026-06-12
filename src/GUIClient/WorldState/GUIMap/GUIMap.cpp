@@ -11,7 +11,7 @@
 #include <iostream>
 
 namespace zappy::gui {
-GUIMap::GUIMap(const uint width, const uint height): _width(width),
+GUIMap::GUIMap(const uint &width, const uint &height): _width(width),
     _height(height)
 {
 
