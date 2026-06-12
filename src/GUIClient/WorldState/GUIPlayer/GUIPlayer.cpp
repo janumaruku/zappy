@@ -11,8 +11,8 @@
 
 namespace zappy::gui {
 GUIPlayer::GUIPlayer(const PlayerId &id, const std::string &team,
-    data::Position &position,
-    Orientation &orientation, const uint8_t level): _id(id), _team(team),
+    const data::Position &position,
+    const Orientation &orientation, const uint8_t level): _id(id), _team(team),
     _position(position), _orientation(orientation), _level(level)
 {
 
@@ -33,12 +33,12 @@ data::Position GUIPlayer::getTilePosition() const
     return _position;
 }
 
-Orientation GUIPlayer::getOrientation() const
+Orientation &GUIPlayer::getOrientation()
 {
     return _orientation;
 }
 
-uint8_t GUIPlayer::getLevel() const
+uint8_t &GUIPlayer::getLevel()
 {
     return _level;
 }

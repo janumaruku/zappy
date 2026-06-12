@@ -48,8 +48,8 @@ class GUIPlayer {
 
 public:
     GUIPlayer(const PlayerId &id, const std::string &team,
-        data::Position &position,
-        Orientation &orientation, uint8_t level);
+        const data::Position &position,
+        const Orientation &orientation, uint8_t level);
 
     PlayerId getId() const;
 
@@ -57,9 +57,9 @@ public:
 
     data::Position getTilePosition() const;
 
-    Orientation getOrientation() const;
+    Orientation &getOrientation();
 
-    uint8_t getLevel() const;
+    uint8_t &getLevel();
 
     void enqueueAction(Action action);
 
