@@ -50,8 +50,7 @@ void AClientSession::send(std::string &data)
         });
 }
 
-// Maybe put datatype to std::string
-void AClientSession::receive() {
+std::string AClientSession::receive() {
     this->_socket.read(network::buffer(
         this->_read_buffer,
         this->_read_buffer.size()),
@@ -65,7 +64,7 @@ void AClientSession::receive() {
         }
         std::clog << "Received: " << this->_read_buffer << std::endl;
     });
-    // return this->_read_buffer;
+    return this->_read_buffer;
 }
 
 void AClientSession::handleRead()

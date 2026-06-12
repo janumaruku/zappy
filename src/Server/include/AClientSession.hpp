@@ -20,7 +20,7 @@ public:
 
     void start() override;
     void send(std::string &data) override;
-    void receive() override;
+    std::string receive() override;
     
 
 protected:
