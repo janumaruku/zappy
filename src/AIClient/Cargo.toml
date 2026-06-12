@@ -1,4 +1,4 @@
 [workspace]
-members = ["shell", "network", "app", "useful", "client_test"]
+members = ["shell", "network", "app", "useful", "client_test", "ai_tcp_client"]
 resolver = "2"
 
