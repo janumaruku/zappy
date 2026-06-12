@@ -7,19 +7,22 @@
 
 #ifndef ZAPPY_PROTOCOLHANDLER_HPP
     #define ZAPPY_PROTOCOLHANDLER_HPP
-    #include <map>
     #include <string>
-    #include <functional>
     #include "ICommand.hpp"
+    #include "WorldState.hpp"
+    #include "FactoryTemplate.hpp"
 
 class ProtocolHandler {
-    private:
-        // WorldState& _worldState;
-        //
-        // ProtocolHandler() noexcept;
-        // std::map<std::string, std::function<ICommand*()>> _factories;
-        // void handleLine(const std::string line) noexcept;
-        // void registerCommand(const std::string &name,
-        //     std::function<ICommand*()> creator) noexcept;
+public:
+    using CommandFactory = FactoryTemplate<ICommand,std::string, WorldState&,
+        const std::vector<std::string> &>
+    ProtocolHandler(WorldState& worldState) noexcept = default;
+
+    void handleLine(const std::string line) noexcept;
+
+private:
+    WorldState& _worldState;
+    CommandFactory _factory;
+
 };
 #endif
