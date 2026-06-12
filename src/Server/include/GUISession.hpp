@@ -20,7 +20,7 @@ public:
     void start() override;
 
 protected:
-    void handleTransmission() override;
+    void handleTransmission(const std::size_t &bytes) override;
 };
 
 }
