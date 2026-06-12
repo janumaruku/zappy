@@ -6,20 +6,21 @@
 */
 
 #include "AISession.hpp"
+#include <cstddef>
 
 namespace zappy::server {
 
-void AISession::handleTransmission()
+void AISession::handleTransmission(const std::size_t &bytes)
 {
-    _transmission.append(_readAsyncBuffer.begin(),
-        _readAsyncBuffer.begin() + bytes);
+    this->_transmission.append(this->_readAsyncBuffer.begin(),
+        this->_readAsyncBuffer.begin() + bytes);
 
-    if (_transmission.ends_with("\n")) {
+    if (this->_transmission.ends_with("\n")) {
         // call protocol
-        _transmission.clear();
+        this->_transmission.clear();
         return;
     }
-    startRead();
+    this->start();
 }
 
 } // namespace zappy::server

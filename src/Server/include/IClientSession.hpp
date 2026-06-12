@@ -8,6 +8,7 @@
 #ifndef ICLIENTSESSION_HPP_
     #define ICLIENTSESSION_HPP_
 
+#include <cstddef>
 #include <queue>
 #include <string>
 #include "ConnectedSocket.hpp"
@@ -32,7 +33,7 @@ protected:
 
     virtual void handleRead() = 0;
     virtual void handleWrite() = 0;
-    virtual void handleTransmission() = 0;
+    virtual void handleTransmission(const std::size_t &bytes) = 0;
 };
 
 }
