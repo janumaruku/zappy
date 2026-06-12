@@ -11,14 +11,14 @@
 #include <ostream>
 
 namespace zappy::data {
-Tile::Tile(const Position position, const std::map<Resource, uint> &resources,
-    const uint egg): _position(position), _resources(resources), _egg(egg)
+Tile::Tile(const Position position,
+    const std::map<Resource, uint> &resources): _position(position),
+    _resources(resources)
 {
 
 }
 
-Tile::Tile(const Position position, const uint egg): _position(position),
-    _egg(egg)
+Tile::Tile(const Position position): _position(position)
 {
 
 }
@@ -64,10 +64,5 @@ std::string Tile::getResourcesAsString() const
             "\n";
     }
     return res;
-}
-
-uint Tile::getNumberOfEggs() const
-{
-    return _egg;
 }
 }

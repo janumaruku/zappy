@@ -30,10 +30,9 @@ enum class Resource : std::uint8_t {
 
 class Tile {
 public:
-    Tile(Position position, const std::map<Resource, uint> &resources,
-        uint egg);
+    Tile(Position position, const std::map<Resource, uint> &resources);
 
-    Tile(Position position, uint egg);
+    Tile(Position position);
 
     [[nodiscard]] Position getPosition() const;
 
@@ -41,13 +40,9 @@ public:
 
     [[nodiscard]] std::string getResourcesAsString() const;
 
-    [[nodiscard]] uint getNumberOfEggs() const;
-
 private:
     Position _position;
     std::map<Resource, uint> _resources;
-    std::list<PlayerId> _players;
-    uint _egg = 0;
 
     static std::string getResourceName(Resource resource);
 };

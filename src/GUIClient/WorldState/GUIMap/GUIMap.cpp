@@ -38,7 +38,7 @@ data::Tile &GUIMap::getTile(data::Position pos)
             return it;
         }
     }
-    const data::Tile newPositionTile(pos, 0);
+    const data::Tile newPositionTile(pos);
     _tiles.push_back(newPositionTile);
     return _tiles.back();
 }
