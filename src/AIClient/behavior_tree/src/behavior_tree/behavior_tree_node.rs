@@ -38,13 +38,18 @@ impl BlackBoard {
     pub fn set<T: Any>(&mut self, key: &str, value: T) {
         self.board.insert(key.to_string(), Box::new(value));
     }
+
+    pub fn clear(&mut self, key: &str) -> Result<(), String> {
+        self.board
+            .remove(key)
+            .map(|_| ())
+            .ok_or_else(|| format!("Black board: key {} not found", key))
+    }
 }
 
 impl BehaviorTree {
     pub fn new(root_node: Box<dyn BehaviorNode>) -> Self {
-        BehaviorTree {
-            root_node
-        }
+        BehaviorTree { root_node }
     }
     pub fn tick(&mut self, blackboard: &mut BlackBoard) -> NodeStatus {
         self.root_node.tick(blackboard)
