@@ -42,7 +42,7 @@ private:
     enum Direction : std::uint8_t {
         UP,
         LEFT,
-        DOWN
+        DOWN,
         RIGHT,
     } _orientation;
 };

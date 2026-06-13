@@ -16,7 +16,7 @@
 #include <cstdint>
 
 namespace zappy::data {
-    
+
 struct Position {
     std::uint32_t x;
     std::uint32_t y;
