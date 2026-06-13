@@ -8,7 +8,7 @@
 #ifndef GUIPLAYER_HPP
 #define GUIPLAYER_HPP
 #include <cstdint>
-#include <map>
+#include <unordered_map>
 #include <queue>
 #include <string>
 
@@ -51,29 +51,25 @@ public:
         const data::Position &position,
         const Orientation &orientation, uint8_t level);
 
-    PlayerId getId() const;
-
-    std::string getTeam() const;
-
-    data::Position getTilePosition() const;
-
-    Orientation &getOrientation();
-
-    uint8_t &getLevel();
+    [[nodiscard]] PlayerId getId() const;
+    [[nodiscard]] std::string getTeam() const;
+    [[nodiscard]] data::Position getPosition() const;
+    [[nodiscard]] Orientation getOrientation() const;
+    [[nodiscard]] uint8_t getLevel() const;
 
     void enqueueAction(Action action);
 
     Action dequeueAction();
 
-    bool hasAction() const;
+    [[nodiscard]] bool hasAction() const;
 
 private:
     PlayerId _id;
     std::string _team;
     data::Position _position;
-    Orientation _orientation = Orientation::NORTH;
+    Orientation _orientation;
     uint8_t _level = 0;
-    std::map<data::Resource, uint> _inventory;
+    std::unordered_map<data::Resource, uint> _inventory;
     std::queue<Action> _actionQueue;
 };
 
