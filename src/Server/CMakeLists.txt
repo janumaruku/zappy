@@ -1,6 +1,6 @@
 add_executable(zappy_server
   main.cpp
-  IClientSession.cpp
+  AClientSession.cpp
   AISession.cpp
   GUISession.cpp)
 
