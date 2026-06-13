@@ -6,12 +6,12 @@ add_executable(zappy_server
 add_subdirectory(Core)
 
 
-# add_library(server)
+add_library(zappy_server)
 
-target_include_directories(server PUBLIC
+target_include_directories(zappy_server PUBLIC
   include
 )
 
-# target_link_libraries(server PUBLIC warning_options)
+target_link_libraries(zappy_server PUBLIC warning_options)
 
-# set_target_properties(server PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR})
+set_target_properties(zappy_server PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR})
