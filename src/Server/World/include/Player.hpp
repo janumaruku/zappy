@@ -9,7 +9,6 @@
     #define PLAYER_HPP_
 
     #include <cstdint>
-    #include <stdint.h>
     #include <string>
     #include <unordered_map>
     #include "Data.hpp"
@@ -42,7 +41,7 @@ private:
     TeamId _team;
     zappy::data::Position _position;
     std::uint8_t _level;
-    std::unordered_map<std::uint8_t, Resource> _inventory;
+    std::unordered_map<Resource, std::uint8_t> _inventory;
 
     enum Direction : std::uint8_t {
         UP,

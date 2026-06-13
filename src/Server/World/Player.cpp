@@ -69,16 +69,13 @@ void Player::right()
 
 bool Player::eatFood()
 {
-    return _inventory.erase(std::ranges::find_if(_inventory.begin(), _inventory.end(),
-        [](const std::pair<std::uint8_t, Resource>& item) {
-            return item.second == Resource::FOOD;
-        }), _inventory.end()) != _inventory.end();
+    return _inventory.erase(Resource::FOOD) > 0;
 }
 
 bool Player::takeResource(const Resource& resource)
 {
-    _inventory.insert({static_cast<std::uint8_t>(_inventory.size() + 1), resource});
-    return false;
+    _inventory[resource]++;
+    return true;
 }
 
 }
