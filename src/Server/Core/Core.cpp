@@ -19,41 +19,44 @@ Core::Core(char **argv)
 void Core::run()
 {
     buildServerCommands();
-    shell::command::CommandContext context =
-        _serverCommands.buildCommandContext(_argv);
-    _serverCommands.handler(context);
+
+    _serverCommands.run(std::move(_argv));
 }
 
 void Core::buildServerCommands()
 {
     _serverCommands =
         shell::command::CommandBuilder().name("./zappy_server")
+        .description("Runs the server with the specified arguments.")
         .option([](shell::command::OptionBuilder &builder) {
-            builder.name("help").alias("h");
+            builder.name("port").alias("p").required()
+                .description("port number.");
         })
         .option([](shell::command::OptionBuilder &builder) {
-            builder.name("port").alias("p").required();
+            builder.name("width").alias("x").required()
+                .description("width of the world");
         })
         .option([](shell::command::OptionBuilder &builder) {
-            builder.name("width").alias("x").required();
+            builder.name("height").alias("y").required()
+                .description("height of the world");
+        })
+        .xOption([](shell::command::XOptionBuilder &builder) {
+            builder.name("name").alias("n").min(2).required()
+                .description("name of the teams.");
         })
         .option([](shell::command::OptionBuilder &builder) {
-            builder.name("height").alias("y").required();
+            builder.name("clientsNb").alias("c").required()
+                .description("number of initial client per team.");
         })
         .option([](shell::command::OptionBuilder &builder) {
-            builder.name("name").alias("n").required();
-        })
-        .option([](shell::command::OptionBuilder &builder) {
-            builder.name("clientsNb").alias("c").required();
-        })
-        .option([](shell::command::OptionBuilder &builder) {
-            builder.name("frequency").alias("f").required();
+            builder.name("frequency").alias("f").required()
+                .description("reciprocal of time unit for execution of actions.");
         })
         .action([this](shell::command::CommandContext &ctx) {
             _port = std::stoi(ctx.option("port"));
             _width = std::stoi(ctx.option("width"));
             _height = std::stoi(ctx.option("height"));
-            _teams.push_back(ctx.option("name"));
+            _teams = ctx.xOption("name");
             _clientPerTeam = std::stoi(ctx.option("clientsNb"));
             _frequency = std::stoi(ctx.option("frequency"));
         }).build();

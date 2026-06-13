@@ -5,8 +5,8 @@
 ** OptionException
 */
 
-#ifndef MYFTP_OPTIONEXCEPTION_HPP
-#define MYFTP_OPTIONEXCEPTION_HPP
+#ifndef ZAPPY_OPTIONEXCEPTION_HPP
+#define ZAPPY_OPTIONEXCEPTION_HPP
 
 #include <exception>
 #include <string>
@@ -24,4 +24,4 @@ protected:
 };
 } // namespace utils
 
-#endif // MYFTP_OPTIONEXCEPTION_HPP
+#endif // ZAPPY_OPTIONEXCEPTION_HPP

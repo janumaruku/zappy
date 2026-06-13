@@ -5,8 +5,8 @@
 ** Acceptor
 */
 
-#ifndef MYFTP_ACCEPTOR_HPP
-#define MYFTP_ACCEPTOR_HPP
+#ifndef ZAPPY_ACCEPTOR_HPP
+#define ZAPPY_ACCEPTOR_HPP
 
 #include <functional>
 #include <memory>
@@ -93,4 +93,4 @@ private:
 };
 } // ftp
 
-#endif //MYFTP_ACCEPTOR_HPP
+#endif //ZAPPY_ACCEPTOR_HPP
