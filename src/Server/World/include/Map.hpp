@@ -8,39 +8,16 @@
 #ifndef MAP_HPP_
     #define MAP_HPP_
 
-#include <list>
-#include <string>
-#include <utility>
-#include <sys/types.h>
-#include <unordered_map>
-#include <cstdint>
-
-namespace zappy::data {
-
-struct Position {
-    std::uint32_t x;
-    std::uint32_t y;
-};
-
-class Tile {};
-
-}
-
-enum class Resource : std::uint8_t {
-    FOOD,
-    LINEMATE,
-    DERAUMERE,
-    SIBUR,
-    MENDIANE,
-    PHIRAS
-};
+    #include <list>
+    #include <string>
+    #include <utility>
+    #include <sys/types.h>
+    #include <unordered_map>
+    #include <cstdint>
+    #include "Player.hpp"
+    #include "Resources.hpp"
 
 namespace zappy::server {
-
-using PlayerId = std::string;
-using TeamId = std::string;
-
-class Player;
 
 class Map {
 public:
@@ -67,4 +44,5 @@ private:
 };
 
 }
+
 #endif

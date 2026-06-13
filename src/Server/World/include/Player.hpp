@@ -5,26 +5,32 @@
 ** Player.hpp
 */
 
-#pragma once
+#ifndef PLAYER_HPP_
+    #define PLAYER_HPP_
 
-#include <string>
-#include <unordered_map>
-#include <stdint.h>
-#include "Map.hpp"
+    #include <cstdint>
+    #include <stdint.h>
+    #include <string>
+    #include <unordered_map>
+    #include "Data.hpp"
+    #include "Resources.hpp"
 
 namespace zappy::server {
 
+using PlayerId = std::string;
+using TeamId = std::string;
+
 class Player {
 public:
-
     Player() = delete;
-    explicit Player(const PlayerId &id, const TeamId &team, const zappy::data::Position &position, const std::uint8_t &level);
-    
+    explicit Player(const PlayerId &id, const TeamId &team,
+        const zappy::data::Position &position, const std::uint8_t &level);
+
     void left();
     void forward();
     void right();
     bool eatFood();
-    bool takeResource(const Resource& resource);
+    bool takeResource(const Resource &resource);
 
     [[nodiscard]] const PlayerId &getId() const;
     [[nodiscard]] const TeamId &getTeam() const;
@@ -32,7 +38,6 @@ public:
     [[nodiscard]] const std::uint8_t &getLevel() const;
 
 private:
-
     PlayerId _id;
     TeamId _team;
     zappy::data::Position _position;
@@ -47,4 +52,6 @@ private:
     } _orientation;
 };
 
-}
+} // namespace zappy::server
+
+#endif
