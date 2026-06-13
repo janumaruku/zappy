@@ -6,39 +6,50 @@
 */
 
 #include "GUIPlayer.hpp"
-
+#include <random>
 #include <iostream>
 
 namespace zappy::gui {
+
+
+GUIPlayer::GUIPlayer(const PlayerId &id, const std::string &team,
+    const data::Position &position, const uint8_t level): _id(id), _team(team),
+    _position(position), _orientation(randomizedOrientation()), _level(level) {}
+
 GUIPlayer::GUIPlayer(const PlayerId &id, const std::string &team,
     const data::Position &position,
     const Orientation &orientation, const uint8_t level): _id(id), _team(team),
-    _position(position), _orientation(orientation), _level(level)
-{
+    _position(position), _orientation(orientation), _level(level) {}
 
+Orientation GUIPlayer::randomizedOrientation()
+{
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> dis(0, 3);
+    return static_cast<Orientation>(dis(gen));
 }
 
-GUIPlayer::PlayerId GUIPlayer::getId() const
+const GUIPlayer::PlayerId &GUIPlayer::getId() const
 {
     return _id;
 }
 
-std::string GUIPlayer::getTeam() const
+const std::string &GUIPlayer::getTeam() const
 {
     return _team;
 }
 
-data::Position GUIPlayer::getTilePosition() const
+const data::Position &GUIPlayer::getPosition() const
 {
     return _position;
 }
 
-Orientation &GUIPlayer::getOrientation()
+const Orientation &GUIPlayer::getOrientation() const
 {
     return _orientation;
 }
 
-uint8_t &GUIPlayer::getLevel()
+const uint8_t &GUIPlayer::getLevel() const
 {
     return _level;
 }

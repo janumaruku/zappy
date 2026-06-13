@@ -10,10 +10,7 @@
 #include <stdexcept>
 
 namespace zappy::data {
-Position::Position(int x, int y): _x(x), _y(y)
-{
-
-}
+Position::Position(int x, int y): _x(x), _y(y) {}
 
 int &Position::getX()
 {

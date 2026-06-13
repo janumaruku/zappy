@@ -47,15 +47,21 @@ class GUIPlayer {
     using PlayerId = std::string;
 
 public:
-    GUIPlayer(const PlayerId &id, const std::string &team,
+
+    // Prefer this constructor over the second one since the orietation is randomized
+    //  when the player is created
+    explicit GUIPlayer(const PlayerId &id, const std::string &team,
+        const data::Position &position, uint8_t level);
+
+    explicit GUIPlayer(const PlayerId &id, const std::string &team,
         const data::Position &position,
         const Orientation &orientation, uint8_t level);
 
-    [[nodiscard]] PlayerId getId() const;
-    [[nodiscard]] std::string getTeam() const;
-    [[nodiscard]] data::Position getPosition() const;
-    [[nodiscard]] Orientation getOrientation() const;
-    [[nodiscard]] uint8_t getLevel() const;
+    [[nodiscard]] const PlayerId &getId() const;
+    [[nodiscard]] const std::string &getTeam() const;
+    [[nodiscard]] const data::Position &getPosition() const;
+    [[nodiscard]] const Orientation &getOrientation() const;
+    [[nodiscard]] const uint8_t &getLevel() const;
 
     void enqueueAction(Action action);
 
@@ -63,7 +69,10 @@ public:
 
     [[nodiscard]] bool hasAction() const;
 
+    
 private:
+    static Orientation randomizedOrientation();
+
     PlayerId _id;
     std::string _team;
     data::Position _position;

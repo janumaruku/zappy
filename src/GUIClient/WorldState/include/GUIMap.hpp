@@ -14,6 +14,8 @@
 namespace zappy::gui {
 class GUIMap {
 public:
+
+    GUIMap() = default;
     GUIMap(const uint &width, const uint &height);
 
     [[nodiscard]] uint getWidth() const;

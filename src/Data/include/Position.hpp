@@ -13,9 +13,9 @@ class Position {
 public:
     Position(int x, int y);
 
-    int &getX();
+    [[nodiscard]] int &getX();
 
-    int &getY();
+    [[nodiscard]] int &getY();
 
 private:
     int _x;

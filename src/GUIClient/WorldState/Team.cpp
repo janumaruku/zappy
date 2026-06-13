@@ -43,7 +43,7 @@ void Team::removePlayer(const PlayerId &id)
         std::clog << "Couldn't find player: " << id << std::endl;
         return;
     }
-    _players.remove(id);
+    _players.erase(it);
     std::clog << "Removed player: " << id << std::endl;
 }
 }
