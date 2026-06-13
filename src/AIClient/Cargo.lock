@@ -3,6 +3,13 @@
 version = 4
 
 [[package]]
+name = "ai_tcp_client"
+version = "0.1.0"
+dependencies = [
+ "network",
+]
+
+[[package]]
 name = "app"
 version = "0.1.0"
 dependencies = [

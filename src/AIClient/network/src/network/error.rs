@@ -3,6 +3,8 @@ use std::fmt::Display;
 
 #[derive(Debug)]
 pub enum NetworkError {
+    SocketOpenFailed(String),
+    ConnectFailed(String),
     ConnectionLimitReached,
     WriteError(std::io::Error),
     ReadError(std::io::Error),
@@ -29,6 +31,7 @@ impl std::error::Error for NetworkError {
             NetworkError::ConnectionLimitReached => None,
             NetworkError::WriteError(e) | NetworkError::ReadError(e) => Some(e),
             NetworkError::AcceptError(e) => Some(e),
+            _ => None,
         }
     }
 }
@@ -47,7 +50,13 @@ impl Display for NetworkError {
             }
             NetworkError::AcceptError(err) => {
                 write!(f, "{}{err}", "[NETWORK] ".red())
-            }
+            },
+            NetworkError::SocketOpenFailed(err) => {
+                write!(f, "{}Failed to open socket for {err}", "[NETWORK] ".red())
+            },
+            NetworkError::ConnectFailed(err) => {
+                write!(f, "{}Failed to connect to peer in {err}", "[NETWORK] ".red())
+            },
         }
     }
 }

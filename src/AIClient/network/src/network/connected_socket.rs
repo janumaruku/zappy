@@ -1,7 +1,6 @@
-use crate::network::{Endpoint, IoContext};
+use crate::network::{Endpoint, IoContext, NetworkError};
 use libc::{
-    close, connect, read, size_t, sockaddr, socket, socklen_t, write, AF_INET
-    , SOCK_STREAM,
+    AF_INET, SOCK_STREAM, close, connect, read, size_t, sockaddr, socket, socklen_t, write,
 };
 use std::cell::RefCell;
 use std::ffi::c_void;
@@ -21,23 +20,32 @@ pub struct SocketConfig {
 }
 
 impl ConnectedSocket {
-    pub fn new(io_context: Rc<RefCell<IoContext>>) -> Rc<RefCell<ConnectedSocket>> {
-        let socket = Rc::new(RefCell::new(ConnectedSocket {
-            socket_fd: unsafe { socket(AF_INET, SOCK_STREAM, 0) },
-            endpoint: Endpoint::new(0, ""),
-            io_context,
-            self_ref: Weak::new(),
-        }));
+    pub fn new(
+        io_context: Rc<RefCell<IoContext>>,
+    ) -> Result<Rc<RefCell<ConnectedSocket>>, NetworkError> {
+        let fd = unsafe { socket(AF_INET, SOCK_STREAM, 0) };
+        if fd < 0 {
+            Err(NetworkError::SocketOpenFailed(
+                "ConnectedSocket".to_string(),
+            ))
+        } else {
+            let socket = Rc::new(RefCell::new(ConnectedSocket {
+                socket_fd: fd,
+                endpoint: Endpoint::new(0, ""),
+                io_context,
+                self_ref: Weak::new(),
+            }));
 
-        let fd = socket.borrow().socket_fd;
-        socket
-            .borrow_mut()
-            .io_context
-            .borrow_mut()
-            .register_file_descriptor(fd);
-        socket.borrow_mut().self_ref = Rc::downgrade(&socket);
+            let fd = socket.borrow().socket_fd;
+            socket
+                .borrow_mut()
+                .io_context
+                .borrow_mut()
+                .register_file_descriptor(fd);
+            socket.borrow_mut().self_ref = Rc::downgrade(&socket);
 
-        socket
+            Ok(socket)
+        }
     }
 
     pub fn from_socket_config(config: SocketConfig) -> Rc<RefCell<ConnectedSocket>> {
@@ -63,7 +71,7 @@ impl ConnectedSocket {
         self.self_ref.upgrade()
     }
 
-    pub fn connect(&mut self, endpoint: Endpoint) -> Result<(), String> {
+    pub fn connect(&mut self, endpoint: Endpoint) -> Result<(), NetworkError> {
         let address = endpoint.address();
         let address_size = size_of_val(&address);
         self.endpoint = endpoint;
@@ -75,7 +83,7 @@ impl ConnectedSocket {
                 address_size as socklen_t,
             ) == -1
         } {
-            return Err("Failed to connect to peer".to_string());
+            return Err(NetworkError::ConnectFailed("ConnectedSocket".to_string()));
         }
 
         Ok(())
@@ -103,7 +111,7 @@ impl ConnectedSocket {
     pub fn write(
         &self,
         buffer: &[u8],
-        handler: impl FnOnce(Option<Box<dyn std::error::Error>>, usize) + 'static,
+        handler: impl FnOnce(Option<Box<dyn std::error::Error>>, usize),
     ) {
         let bytes = unsafe {
             write(
@@ -119,7 +127,7 @@ impl ConnectedSocket {
     pub fn read(
         &self,
         buffer: &mut [u8],
-        handler: impl FnOnce(Option<Box<dyn std::error::Error>>, usize) + 'static,
+        handler: impl FnOnce(Option<Box<dyn std::error::Error>>, usize),
     ) {
         let bytes = unsafe {
             read(
@@ -135,7 +143,7 @@ impl ConnectedSocket {
     fn call_handler(
         &self,
         bytes: i32,
-        handler: impl FnOnce(Option<Box<dyn std::error::Error>>, usize) + 'static,
+        handler: impl FnOnce(Option<Box<dyn std::error::Error>>, usize),
     ) {
         match bytes {
             -1 => {
