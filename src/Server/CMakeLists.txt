@@ -8,7 +8,9 @@ add_subdirectory(Core)
 
 # add_library(server)
 
-# target_include_directories(server PUBLIC include)
+target_include_directories(server PUBLIC
+  include
+)
 
 # target_link_libraries(server PUBLIC warning_options)
 
