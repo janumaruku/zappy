@@ -15,7 +15,7 @@ namespace zappy::server {
 
 class AClientSession : public IClientSession {
 public:
-    AClientSession();
+    AClientSession() = delete;
     ~AClientSession() override = default;
 
     void start() override;

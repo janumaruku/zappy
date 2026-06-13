@@ -13,14 +13,14 @@
 
 namespace zappy::server {
 
+constexpr char END_OF_TRANSMISSION = '\n';
+
 class AISession : public IClientSession {
 public:
     AISession() = delete;
     ~AISession() override = default;
 
     void start() override;
-
-protected:
     void handleTransmission() override;
 
 private:

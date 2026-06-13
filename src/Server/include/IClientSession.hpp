@@ -16,8 +16,8 @@ namespace zappy::server {
 
 class IClientSession {
 public:
-    IClientSession();
-    virtual ~IClientSession() = 0;
+    IClientSession() = delete;
+    virtual ~IClientSession() = default;
 
     virtual void start() = 0;
     virtual void send(std::string &data) = 0;
