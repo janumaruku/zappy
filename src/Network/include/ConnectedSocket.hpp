@@ -5,8 +5,8 @@
 ** ConnectedSocket
 */
 
-#ifndef MYFTP_CONNECTEDSOCKET_HPP
-#define MYFTP_CONNECTEDSOCKET_HPP
+#ifndef ZAPPY_CONNECTEDSOCKET_HPP
+#define ZAPPY_CONNECTEDSOCKET_HPP
 
 #include <functional>
 #include <queue>
@@ -117,4 +117,4 @@ private:
 };
 }
 
-#endif //MYFTP_CONNECTEDSOCKET_HPP
+#endif //ZAPPY_CONNECTEDSOCKET_HPP

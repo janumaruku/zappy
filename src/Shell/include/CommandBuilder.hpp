@@ -1,0 +1,47 @@
+/*
+** EPITECH PROJECT, 2026
+** Shell
+** File description:
+** CommandBuilder
+*/
+
+#ifndef SHELL_COMMAND_BUILDER_HPP
+#define SHELL_COMMAND_BUILDER_HPP
+
+#include <string>
+
+#include "CommandDefinition.hpp"
+#include "FlagBuilder.hpp"
+#include "OptionBuilder.hpp"
+#include "XOptionBuilder.hpp"
+
+namespace shell::command {
+using OptionConfigurator = std::function<void(OptionBuilder &)>;
+using FlagConfigurator   = std::function<void(FlagBuilder &)>;
+using XOptionConfigurator = std::function<void(XOptionBuilder &)>;
+
+class CommandBuilder {
+public:
+    CommandBuilder &name(const std::string &name) noexcept;
+
+    CommandBuilder &description(const std::string &description) noexcept;
+
+    CommandBuilder &arg(ArgumentConfigurator configure) noexcept;
+
+    CommandBuilder &option(OptionConfigurator configure) noexcept;
+
+    CommandBuilder &xOption(XOptionConfigurator configure) noexcept;
+
+    CommandBuilder &flag(FlagConfigurator configure) noexcept;
+
+    CommandBuilder &action(const std::function<void(CommandContext &)> &action)
+        noexcept;
+
+    CommandDefinition build() noexcept;
+
+private:
+    CommandDefinition _definition;
+};
+} // namespace shell::command
+
+#endif // SHELL_COMMAND_BUILDER_HPP

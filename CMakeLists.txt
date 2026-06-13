@@ -11,3 +11,7 @@ add_library(warning_options INTERFACE)
 target_compile_options(warning_options INTERFACE -Wall -Wextra -Werror)
 
 add_subdirectory(src)
+
+enable_testing()
+
+add_subdirectory(tests)

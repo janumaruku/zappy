@@ -38,6 +38,8 @@
 *.exe
 *.out
 *.app
+zappy_gui
+zappy_server
 
 # Build directories
 build/
@@ -75,3 +77,4 @@ docs/generated
 # misc
 compile_flags.txt
 .gitignore
+src/AIClient/target/
