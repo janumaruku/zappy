@@ -21,24 +21,21 @@ uint Map::getHeight() const
     return this->_height;
 }
 
-Tile Map::getTile(Position &pos) const
+const Map::Tile &Map::getTile(const Position &pos) const
 {
     if (pos.x >= _width || pos.y >= _height)
         throw std::out_of_range("Position out of map bounds");
 
-    const std::size_t index = static_cast<std::size_t>(pos.y) * _width + pos.x;
-
-    if (index >= _tiles.size())
-        throw std::out_of_range("Calculated tile index out of range");
+    const std::size_t index = (static_cast<std::size_t>(pos.y) * _width) + pos.x;
 
     auto it = _tiles.begin();
     std::advance(it, static_cast<std::ptrdiff_t>(index));
     return *it;
 }
 
-Player Map::getPlayer(PlayerId id) const
+const Player &Map::getPlayer(const PlayerId &id) const
 {
-    return Player{};
+    return _players.at(id);
 }
 
 }
