@@ -1,7 +1,9 @@
-add_executable(zappy_server Core.cpp main.cpp)
+add_executable(server_core
+  Core.cpp
+  main.cpp)
 
-target_include_directories(zappy_server PUBLIC include)
+target_include_directories(server_core PUBLIC include)
 
-target_link_libraries(zappy_server PUBLIC warning_options shell)
+target_link_libraries(server_core PUBLIC warning_options shell)
 
-set_target_properties(zappy_server PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR})
+set_target_properties(server_core PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR})
