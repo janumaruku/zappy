@@ -10,7 +10,7 @@
 
     #include <cstdint>
     #include <string>
-    #include <unordered_map>
+    #include <map>
     #include "Data.hpp"
     #include "Resources.hpp"
 
@@ -41,7 +41,7 @@ private:
     TeamId _team;
     zappy::data::Position _position;
     std::uint8_t _level;
-    std::unordered_map<Resource, std::uint8_t> _inventory;
+    std::map<Resource, std::uint8_t> _inventory;
 
     enum Direction : std::uint8_t {
         UP,
