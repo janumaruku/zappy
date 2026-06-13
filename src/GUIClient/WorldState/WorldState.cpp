@@ -34,9 +34,8 @@ const std::unordered_map<PlayerId, GUIPlayer> &WorldState::getPlayers()
 const GUIPlayer &WorldState::getPlayerById(const PlayerId &id)
 {
 
-    if (!_players.contains(id)) {
+    if (!_players.contains(id))
         throw std::runtime_error("Player not found: " + id);
-    }
     return _players.at(id);
 }
 
