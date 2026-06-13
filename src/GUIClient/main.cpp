@@ -7,7 +7,7 @@
 
 #include <iostream>
 
-#include "GUIEgg.hpp"
+#include "WorldState/include/GUIEgg.hpp"
 #include "../Shell/include/CommandBuilder.hpp"
 #include "../Shell/include/CommandContext.hpp"
 

@@ -1,3 +1,6 @@
-add_subdirectory(Position)
+add_library(zappy_data STATIC Position.cpp
+        Tile.cpp)
 
-add_subdirectory(Tile)
+target_include_directories(zappy_data PUBLIC include)
+
+target_link_libraries(zappy_data PUBLIC warning_options)

@@ -5,7 +5,7 @@
 ** Position.cpp
 */
 
-#include "Position.hpp"
+#include "include/Position.hpp"
 
 #include <stdexcept>
 
