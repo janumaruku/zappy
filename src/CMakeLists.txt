@@ -10,6 +10,4 @@ add_subdirectory(GUIClient)
 
 add_subdirectory(Server)
 
-add_subdirectory(Shell)
-
 add_subdirectory(Data)
