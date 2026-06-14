@@ -7,8 +7,16 @@
 
 #ifndef POSITION_HPP
 #define POSITION_HPP
+#include <cstdint>
 
 namespace zappy::data {
+enum class Orientation: uint8_t {
+    UP = 0,
+    RIGHT,
+    DOWN,
+    LEFT,
+};
+
 class Position {
 public:
     Position() = default;
@@ -34,6 +42,10 @@ public:
     Position operator/(const int &scalar) const;
 
     Position operator/=(const int &scalar);
+
+    Position operator%(const Position &other) const;
+
+    Position operator%=(const Position &other);
 
 private:
     int _x = 0;

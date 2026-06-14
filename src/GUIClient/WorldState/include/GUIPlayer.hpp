@@ -16,13 +16,6 @@
 #include "Tile.hpp"
 
 namespace zappy::gui {
-enum class Orientation : std::uint8_t {
-    NORTH = 0,
-    WEST,
-    SOUTH,
-    EAST,
-};
-
 enum class ActionType : std::uint8_t {
     FORWARD,
     LEFT,
@@ -48,7 +41,8 @@ class GUIPlayer {
 
 public:
     GUIPlayer(const PlayerId &id, const std::string &team,
-        const data::Position &position, uint8_t level);
+        const data::Position &position, data::Orientation orientation,
+        uint8_t level);
 
     [[nodiscard]] PlayerId getId() const;
 
@@ -56,7 +50,7 @@ public:
 
     [[nodiscard]] data::Position getPosition() const;
 
-    [[nodiscard]] Orientation getOrientation() const;
+    [[nodiscard]] data::Orientation getOrientation() const;
 
     uint8_t &getLevel();
 
@@ -70,7 +64,7 @@ private:
     PlayerId _id;
     std::string _team;
     data::Position _position;
-    Orientation _orientation;
+    data::Orientation _orientation;
     uint8_t _level = 0;
     std::unordered_map<data::Resource, uint> _inventory;
     std::queue<Action> _actionQueue;
