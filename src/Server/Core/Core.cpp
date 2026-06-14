@@ -9,6 +9,7 @@
 
 #include "CommandBuilder.hpp"
 #include "CommandContext.hpp"
+#include "Network.hpp"
 
 Core::Core(char **argv)
 {
@@ -20,7 +21,17 @@ void Core::run()
 {
     buildServerCommands();
 
+<<<<<<< ZAP-5-Implement-Server-class-and-Acceptor
+    shell::command::CommandContext context =
+        _serverCommands.buildCommandContext(_argv);
+
+    _serverCommands.handler(context);
+
+    Server server(_port);
+    server.run();
+=======
     _serverCommands.run(std::move(_argv));
+>>>>>>> dev
 }
 
 void Core::buildServerCommands()
