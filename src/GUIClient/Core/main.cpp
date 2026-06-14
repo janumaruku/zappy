@@ -9,10 +9,10 @@
 
 #include "Core.hpp"
 
-int main(const int ac, char **av)
+int main(int, char **av)
 {
     try {
-        zappy::gui::Core core(ac, av);
+        zappy::gui::Core core(av);
         core.run();
     } catch (const std::exception &error) {
         std::cerr << error.what() << std::endl;

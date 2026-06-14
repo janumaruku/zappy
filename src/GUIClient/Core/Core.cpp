@@ -13,7 +13,7 @@
 #include "CommandContext.hpp"
 
 namespace zappy::gui {
-Core::Core(const int argc, char **argv): _argc(argc)
+Core::Core(char **argv)
 // add renderer class
 {
     for (auto i = 0; argv[i] != nullptr; i++)
