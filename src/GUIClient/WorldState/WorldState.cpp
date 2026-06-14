@@ -14,7 +14,6 @@ WorldState::WorldState(const std::unordered_map<std::string, Team> &teams,
     const uint timeUnit, uint width, uint height): _map{width, height},
     _teams(teams), _timeUnit(timeUnit)
 {
-    _map.generate();
 }
 
 const GUIMap &WorldState::getMap() const noexcept

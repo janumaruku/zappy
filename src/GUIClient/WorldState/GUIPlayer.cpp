@@ -34,7 +34,7 @@ data::Position GUIPlayer::getPosition() const
     return _position;
 }
 
-Orientation GUIPlayer::getOrientation() const
+data::Orientation GUIPlayer::getOrientation() const
 {
     return _orientation;
 }
