@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <cstdint>
 #include <list>
 #include <memory>
 #include <string>
@@ -24,7 +25,7 @@ public:
     void run();
 
 private:
-    enum class ClientType {
+    enum class ClientType : std::uint8_t {
         UNKNOWN,
         AI,
         GUI
