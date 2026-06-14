@@ -11,7 +11,7 @@
 #include <unordered_map>
 #include <sys/types.h>
 
-#include "GUIEgg.hpp"
+#include "../../../Data/include/Egg.hpp"
 #include "GUIMap.hpp"
 #include "GUIPlayer.hpp"
 #include "Team.hpp"
@@ -51,7 +51,7 @@ public:
 private:
     GUIMap _map;
     std::unordered_map<PlayerId, GUIPlayer> _players;
-    std::unordered_map<uint, GUIEgg> _eggs;
+    std::unordered_map<uint, data::Egg> _eggs;
     std::unordered_map<std::string, Team> _teams;
     uint _timeUnit = 1;
 };

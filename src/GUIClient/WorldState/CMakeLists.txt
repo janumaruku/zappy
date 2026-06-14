@@ -1,5 +1,4 @@
 add_library(world_state WorldState.cpp
-        GUIEgg.cpp
         GUIMap.cpp
         GUIPlayer.cpp
         Team.cpp)

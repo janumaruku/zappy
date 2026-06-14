@@ -10,7 +10,6 @@
 
 #include "AClientSession.hpp"
 #include "Server.hpp"
-#include "Temp.hpp"
 
 namespace zappy::server {
 

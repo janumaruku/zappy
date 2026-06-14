@@ -10,6 +10,7 @@ target_include_directories(zappy_server PUBLIC
 target_link_libraries(zappy_server PUBLIC
     warning_options
     shell
+    server
 )
 
 set_target_properties(zappy_server PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR})

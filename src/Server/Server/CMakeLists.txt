@@ -7,4 +7,4 @@ add_library(server STATIC
 
 target_include_directories(server PUBLIC include)
 
-target_link_libraries(server PUBLIC network utils warning_options)
+target_link_libraries(server PUBLIC network world utils warning_options)

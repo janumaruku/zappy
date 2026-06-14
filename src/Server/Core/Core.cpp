@@ -26,7 +26,8 @@ void Core::run()
 
     _serverCommands.handler(context);
 
-    zappy::server::Server server(_port);
+    zappy::server::Server server(_port, _width, _height, _teams, _clientPerTeam,
+        _frequency);
     server.run();
 }
 
@@ -61,8 +62,8 @@ void Core::buildServerCommands()
         })
         .action([this](shell::command::CommandContext &ctx) {
             _port = std::stoi(ctx.option("port"));
-            _width = static_cast<uint>(std::stoi(ctx.option("width")));
-            _height = static_cast<uint>(std::stoi(ctx.option("height")));
+            _width = std::stoi(ctx.option("width"));
+            _height = std::stoi(ctx.option("height"));
             _teams = ctx.xOption("name");
             _clientPerTeam = static_cast<uint>(std::stoi(ctx.option("clientsNb")));
             _frequency = static_cast<uint>(std::stoi(ctx.option("frequency")));

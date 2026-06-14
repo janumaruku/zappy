@@ -9,16 +9,9 @@
 
 #include <iostream>
 
+#include "AISession.hpp"
 #include "Buffer.hpp"
-
-static std::string cleanLine(const std::string &line)
-{
-    std::string clean = line;
-
-    while (!clean.empty() && (clean.back() == '\n' || clean.back() == '\r'))
-        clean.pop_back();
-    return clean;
-}
+#include "GUISession.hpp"
 
 static void closeSocket(const std::shared_ptr<network::ConnectedSocket> &socket)
 {
@@ -28,12 +21,19 @@ static void closeSocket(const std::shared_ptr<network::ConnectedSocket> &socket)
 
 namespace zappy::server {
 
-Server::Server(int port): _acceptor(_ioContext, network::Endpoint(port))
+Server::~Server() = default;
+
+Server::Server(int port, int width, int height, std::vector<std::string> teams,
+    uint playersPerTeam, uint frequency):
+    _acceptor(_ioContext, network::Endpoint(port)), _teams(teams),
+    _frequency(frequency), _map(width, height)
 {
+    (void)playersPerTeam;
 }
 
 void Server::run()
 {
+    (void)_frequency;
     startAccept();
     _ioContext.run();
 }
@@ -61,35 +61,70 @@ void Server::onAccept(
     const std::shared_ptr<network::ConnectedSocket> &socket)
 {
     auto welcome = std::make_shared<std::string>("WELCOME\n");
+    bool success = false;
 
-    socket->asyncWrite(network::buffer(*welcome), [this, &socket](
-        const std::error_code &err, std::size_t) {
-            if (err) {
+    socket->write(network::buffer("WELCOME\n"),
+        [&socket, &success](auto, const std::size_t bytes) {
+            if (bytes == 0) {
+                std::clog << "Client disconnected!" << std::endl;
                 socket->close();
-                return;
+            } else {
+                success = true;
+                std::clog << "Sent: " << "WELCOME" << std::endl;
             }
-
-            auto input = std::make_shared<std::string>(4096, '\0');
-
-            socket->asyncReadSome(network::buffer(*input, input->size()),
-                [this, socket, input](const std::error_code &readError,
-                std::size_t bytesRead) {
-                    if (readError || bytesRead == 0) {
-                        closeSocket(socket);
-                        return;
-                    }
-
-                    const std::string clientName =
-                        cleanLine(input->substr(0, bytesRead));
-
-                    if (clientName == "GRAPHIC")
-                        guiHandshake(socket);
-                    else
-                        aiHandshake(socket, clientName);
-                });
         });
 
-    startAccept();
+    if (!success)
+        return;
+
+    std::string response(1024, '\0');
+
+    socket->read(network::buffer(response, response.size()),
+        [&socket, &response](auto, const std::size_t &bytes) {
+            if (bytes == 0) {
+                std::clog << "Client disconnected" << std::endl;
+                socket->close();
+            } else {
+                response.resize(bytes);
+                std::clog << "Received: " << response << std::endl;
+            }
+        });
+
+    if (response == "GRAPHIC\n") {
+        _guiSessions.push_back(std::make_unique<GUISession>(socket, *this));
+        _guiSessions.back()->start();
+    } else {
+
+    }
+
+    // socket->asyncWrite(network::buffer(*welcome), [this, &socket](
+    //     const std::error_code &err, std::size_t) {
+    //         if (err) {
+    //             socket->close();
+    //             return;
+    //         }
+    //
+    //         auto input = std::make_shared<std::string>(4096, '\0');
+    //
+    //         socket->asyncReadSome(network::buffer(*input, input->size()),
+    //             [this, socket, input](const std::error_code &readError,
+    //             std::size_t bytesRead) {
+    //                 if (readError || bytesRead == 0) {
+    //                     closeSocket(socket);
+    //                     return;
+    //                 }
+    //
+    //                 const std::string clientName =
+    //                     cleanLine(input->substr(0, bytesRead));
+    //
+    //                 if (clientName == "GRAPHIC")
+    //                     guiHandshake(socket);
+    //                 else
+    //                     aiHandshake(socket, clientName);
+    //             });
+    //     });
+    //
+    // startAccept();
 }
 
 void Server::aiHandshake(

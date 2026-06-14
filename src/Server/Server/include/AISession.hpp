@@ -9,10 +9,11 @@
     #define AISESSION_HPP_
 
     #include "AClientSession.hpp"
-#include "Server.hpp"
+    #include "Server.hpp"
+    #include "Timer.hpp"
+    #include "Player.hpp"
 
 namespace zappy::server {
-
 class AISession : public AClientSession {
 public:
     AISession() = delete;
