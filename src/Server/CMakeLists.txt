@@ -2,9 +2,7 @@ add_library(zappy_server
   AClientSession.cpp
   AISession.cpp
   GUISession.cpp)
-
 add_subdirectory(Core)
-
 target_include_directories(zappy_server PUBLIC
   include
 )
