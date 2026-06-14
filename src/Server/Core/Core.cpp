@@ -9,7 +9,7 @@
 
 #include "CommandBuilder.hpp"
 #include "CommandContext.hpp"
-#include "Network.hpp"
+#include "Server.hpp"
 
 Core::Core(char **argv)
 {
@@ -21,17 +21,13 @@ void Core::run()
 {
     buildServerCommands();
 
-<<<<<<< ZAP-5-Implement-Server-class-and-Acceptor
     shell::command::CommandContext context =
         _serverCommands.buildCommandContext(_argv);
 
     _serverCommands.handler(context);
 
-    Server server(_port);
+    zappy::server::Server server(_port);
     server.run();
-=======
-    _serverCommands.run(std::move(_argv));
->>>>>>> dev
 }
 
 void Core::buildServerCommands()
@@ -65,10 +61,10 @@ void Core::buildServerCommands()
         })
         .action([this](shell::command::CommandContext &ctx) {
             _port = std::stoi(ctx.option("port"));
-            _width = std::stoi(ctx.option("width"));
-            _height = std::stoi(ctx.option("height"));
+            _width = static_cast<uint>(std::stoi(ctx.option("width")));
+            _height = static_cast<uint>(std::stoi(ctx.option("height")));
             _teams = ctx.xOption("name");
-            _clientPerTeam = std::stoi(ctx.option("clientsNb"));
-            _frequency = std::stoi(ctx.option("frequency"));
+            _clientPerTeam = static_cast<uint>(std::stoi(ctx.option("clientsNb")));
+            _frequency = static_cast<uint>(std::stoi(ctx.option("frequency")));
         }).build();
 }
