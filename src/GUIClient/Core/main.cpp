@@ -6,14 +6,15 @@
 */
 
 #include <iostream>
+
 #include "Core.hpp"
 
-int main(int ac, char **av)
+int main(const int ac, char **av)
 {
     try {
-        GUI::Core core(ac, av);
+        zappy::gui::Core core(ac, av);
         core.run();
-    } catch (const std::exception& error) {
+    } catch (const std::exception &error) {
         std::cerr << error.what() << std::endl;
         return 84;
     }
