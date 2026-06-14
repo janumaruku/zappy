@@ -21,6 +21,7 @@ class WorldState {
     using PlayerId = std::string;
 
 public:
+    WorldState() = default;
     WorldState(const std::unordered_map<std::string, Team> &teams,
         uint timeUnit, uint width, uint height);
 
