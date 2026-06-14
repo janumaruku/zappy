@@ -1,4 +1,4 @@
-#⚡ Zappy: A tribute to *Zaphod Beeblebrox*
+# Zappy: A tribute to *Zaphod Beeblebrox* # ⚡
 
 > *“No clash royale here…”*
 
