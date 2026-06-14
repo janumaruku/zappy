@@ -6,6 +6,12 @@
 */
 
 #include "AISession.hpp"
+#include <algorithm>
+#include <initializer_list>
+#include <cctype>
+#include <ranges>
+#include <cstddef>
+#include <sys/types.h>
 
 namespace zappy::server {
 
@@ -31,6 +37,45 @@ void AISession::handleTransmission()
         return;
     }
     start();
+}
+
+std::size_t AISession::getResultSize(const std::string &str)
+{
+    std::size_t count = 0;
+    std::size_t strSize = str.size();
+    size_t i = 0;
+
+    for (; str[i]; i++) {
+        auto currentPos = i;
+        for (; i + 1 < strSize && !std::isalpha(str[i + 1]); i++);
+        count += currentPos != i;
+    }
+    return count;
+}
+
+
+std::vector<std::string> AISession::sanitizedSplit(const std::string &str)
+{
+    std::vector<std::string> result;
+
+    if (str == "\n") {
+        result.emplace_back ("\n");
+        return result;
+    }
+
+    std::string buf;
+
+    for (size_t i = 0; i != getResultSize(str); i++) {
+        for (const auto &c : str) {
+            if (!std::isalpha(c))
+                break;
+            buf.push_back(c);
+        }
+        result.push_back(buf);
+        if (i != 0)
+            buf.clear();
+    }
+    return result;
 }
 
 } // namespace zappy::server

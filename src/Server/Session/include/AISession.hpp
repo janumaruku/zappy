@@ -8,7 +8,9 @@
 #ifndef AISESSION_HPP_
     #define AISESSION_HPP_
 
-    #include "IClientSession.hpp"
+    #include <cstddef>
+#include <string>
+#include "IClientSession.hpp"
     #include "Temp.hpp"
 
 namespace zappy::server {
@@ -24,6 +26,10 @@ public:
     void handleTransmission() override;
 
 private:
+
+    [[nodiscard]] static std::size_t getResultSize(const std::string &str);
+    [[nodiscard]] static std::vector<std::string> sanitizedSplit(const std::string &str);
+
     Server &_server;
     Player _player;
     uint _pending_commands;
