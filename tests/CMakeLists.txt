@@ -12,17 +12,22 @@ option(WITH_COVERAGE "Enable coverage reporting" OFF)
 add_executable(
         unit_tests
         timerTests/timerTests.cpp
+        splittingTests/splittingTests.cpp
 )
 
 target_include_directories(unit_tests PRIVATE
     ${CMAKE_SOURCE_DIR}/src/Network/include
     ${CMAKE_SOURCE_DIR}/src/Utils/include
+    ${CMAKE_SOURCE_DIR}/src/Server/Core/include
+    ${CMAKE_SOURCE_DIR}/src/Server/Session/include
+    ${CMAKE_SOURCE_DIR}/src/Server/World/include
 )
 
 target_link_libraries(
         unit_tests
         network
         utils
+        zappy_server_session
         GTest::gtest_main
 )
 

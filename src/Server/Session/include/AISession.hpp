@@ -25,10 +25,11 @@ public:
     void start() override;
     void handleTransmission() override;
 
-private:
-
     [[nodiscard]] static std::size_t getResultSize(const std::string &str);
     [[nodiscard]] static std::vector<std::string> sanitizedSplit(const std::string &str);
+
+private:
+
 
     Server &_server;
     Player _player;
