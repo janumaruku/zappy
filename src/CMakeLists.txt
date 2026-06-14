@@ -9,3 +9,5 @@ add_subdirectory(Network)
 add_subdirectory(GUIClient)
 
 add_subdirectory(Server)
+
+add_subdirectory(Data)
