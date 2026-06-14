@@ -5,17 +5,37 @@
 ** IoContext
 */
 
-#ifndef MYFTP_IOCONTEXT_HPP
-#define MYFTP_IOCONTEXT_HPP
+#pragma once
 
+#include <chrono>
 #include <functional>
 #include <poll.h>
+#include <queue>
 #include <unordered_map>
 #include <vector>
+#include <ctime>
 
 #include "ConnectedSocket.hpp"
 
 namespace network {
+
+template <typename Clock>
+class BasicWaitableTimer;
+
+struct TimerEntry {
+    std::size_t id;
+    float timePoint;
+    std::function<void()> handler;
+    bool cancellation;
+};
+
+struct TimerEntryCompare
+{
+  constexpr bool
+  operator()(const TimerEntry &x, const TimerEntry &y) const
+  { return x.timePoint > y.timePoint; }
+};
+
 /**
  * @class IOContext
  * @brief The event loop that drives all asynchronous operations in the library.
@@ -102,16 +122,25 @@ public:
      */
     void pollAll();
 
-private:
+    
+    template <typename Clock>
+    void registerTimer(BasicWaitableTimer<Clock> &timer);
+
+    void cancelTimer(const std::size_t &id);
+
+    private:
     std::vector<pollfd> _pollFds;                                        ///< List of file descriptors watched by @c poll(2).
     std::unordered_map<int, std::queue<PendingOperation>> _pendingOperations; ///< Pending callbacks per file descriptor.
     bool _stop    = false; ///< Flag set by @ref stop to exit the run loop.
     bool _running = false; ///< True while @ref run is executing.
+    std::priority_queue<TimerEntry, std::vector<TimerEntry>, TimerEntryCompare> _timerQueue;
 
     void updateEventType(const int &fileDescriptor);
     void handleReadyFileDescriptors();
     void triggerHandler(const int &itt);
+
+    void drainExpiredTimers();
 };
 }
 
-#endif //MYFTP_IOCONTEXT_HPP
+#include "IoContext.tpp"
