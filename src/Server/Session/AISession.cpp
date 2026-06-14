@@ -54,7 +54,7 @@ std::size_t AISession::getResultSize(const std::string &str)
 }
 
 
-std::vector<std::string> AISession::sanitizedSplit(const std::string &str)
+std::vector<std::string> AISession::sanitizedSplit(const std::string &str) 
 {
     std::vector<std::string> result;
 
@@ -64,16 +64,21 @@ std::vector<std::string> AISession::sanitizedSplit(const std::string &str)
     }
 
     std::string buf;
+    std::size_t resultSize = getResultSize(str);
+    size_t j = 0;
 
-    for (size_t i = 0; i != getResultSize(str); i++) {
-        for (const auto &c : str) {
-            if (!std::isalpha(c))
+    for (size_t i = 0; i != resultSize; i++) {
+        for (; str[j]; j++) {
+            if (!std::isalpha(str[j])){
+                j++;
                 break;
-            buf.push_back(c);
+            }
+            std::cout << "current char:\"" << str[j] << "\"" << std::endl;
+            buf.push_back(str[j]);
         }
         result.push_back(buf);
-        if (i != 0)
-            buf.clear();
+        buf.clear();
+        std::cout << "vec[i] = " << result[i] << std::endl;
     }
     return result;
 }
