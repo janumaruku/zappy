@@ -5,4 +5,4 @@ add_library(zappy_server_session
 target_include_directories(zappy_server_session PUBLIC
   include
 )
-target_link_libraries(zappy_server_session PUBLIC network warning_options)
+target_link_libraries(zappy_server_session PUBLIC network World warning_options)

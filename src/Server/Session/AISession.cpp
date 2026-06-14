@@ -11,7 +11,9 @@
 #include <cctype>
 #include <ranges>
 #include <cstddef>
+#include <chrono>
 #include <sys/types.h>
+#include <vector>
 
 namespace zappy::server {
 
@@ -31,14 +33,44 @@ void AISession::handleTransmission()
     _transmission.append(_readAsyncBuffer.begin(),
         _readAsyncBuffer.begin() + END_OF_TRANSMISSION);
 
-    if (_transmission.ends_with(END_OF_TRANSMISSION)) {
-        // call protocol
-        _transmission.clear();
+    if (!_transmission.ends_with(END_OF_TRANSMISSION)) {
+        start();
         return;
     }
-    start();
+
+    std::vector<std::string> splittedLine = sanitizedSplit(_transmission);
+    if (_pending_commands >= MAX_PENDING_COMMANDS)
+        return;
+    const auto &commandPrefix = splittedLine[0];
+
+    if (_server)
+    scheduleResponse(RESPONSE_TIME, PLACEHOLDER_SERVER_RESPONSE);
+    _transmission.clear();
 }
 
+
+void AISession::scheduleResponse(const uint &durationConstant, const std::string &response)
+{
+    _command_timer.asyncWait(std::chrono::high_resolution_clock::duration(durationConstant / COMMAND_TRIGGER_DIVISOR),
+    [this, response](){
+        _writeQueue.push(response);
+    });
+    onCommandComplete();
+}
+
+
+const Player &AISession::getPlayer() const noexcept
+{
+    return _player;
+}
+
+const Server &AISession::getServer() const noexcept
+{
+    return _server;
+}
+
+
+// free functions
 std::size_t AISession::getResultSize(const std::string &str)
 {
     std::size_t count = 0;
@@ -77,5 +109,6 @@ std::vector<std::string> AISession::sanitizedSplit(const std::string &str)
     }
     return result;
 }
+// free functions
 
 } // namespace zappy::server
