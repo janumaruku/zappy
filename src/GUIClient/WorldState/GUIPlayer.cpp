@@ -13,11 +13,10 @@
 
 namespace zappy::gui {
 GUIPlayer::GUIPlayer(const PlayerId &id, const std::string &team,
-    const data::Position &position,
+    const data::Position &position, data::Orientation orientation,
     const uint8_t level): _id(id), _team(team),
-    _position(position), _level(level)
+    _position(position), _orientation(orientation), _level(level)
 {
-    _orientation = static_cast<Orientation>(utils::randomNumber<int>(0, 3));
 }
 
 GUIPlayer::PlayerId GUIPlayer::getId() const

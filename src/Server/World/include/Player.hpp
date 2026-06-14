@@ -11,8 +11,8 @@
     #include <cstdint>
     #include <string>
     #include <unordered_map>
-    #include "Data.hpp"
-    #include "Resources.hpp"
+    #include "Position.hpp"
+    #include "Tile.hpp"
 
 namespace zappy::server {
 
@@ -23,32 +23,25 @@ class Player {
 public:
     Player() = delete;
     explicit Player(const PlayerId &id, const TeamId &team,
-        const zappy::data::Position &position, const std::uint8_t &level);
+        const data::Position &position, const std::uint8_t &level);
 
     void left();
-    void forward();
+    void forward(int width, int height);
     void right();
-    bool eatFood();
-    bool takeResource(const Resource &resource);
+    void takeResource(const data::Resource &resource);
 
-    [[nodiscard]] const PlayerId &getId() const;
-    [[nodiscard]] const TeamId &getTeam() const;
-    [[nodiscard]] const zappy::data::Position &getPosition() const;
-    [[nodiscard]] const std::uint8_t &getLevel() const;
+    [[nodiscard]] PlayerId getId() const noexcept;
+    [[nodiscard]] TeamId getTeam() const noexcept;
+    [[nodiscard]] data::Position getPosition() const noexcept;
+    [[nodiscard]] std::uint8_t getLevel() const noexcept;
 
 private:
     PlayerId _id;
     TeamId _team;
-    zappy::data::Position _position;
+    data::Position _position;
     std::uint8_t _level;
-    std::unordered_map<Resource, std::uint8_t> _inventory;
-
-    enum Direction : std::uint8_t {
-        UP,
-        LEFT,
-        DOWN,
-        RIGHT,
-    } _orientation;
+    std::unordered_map<data::Resource, std::uint8_t> _inventory;
+    data::Orientation _orientation;
 };
 
 } // namespace zappy::server

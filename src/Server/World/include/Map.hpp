@@ -6,40 +6,37 @@
 */
 
 #ifndef MAP_HPP_
-    #define MAP_HPP_
+#define MAP_HPP_
 
-    #include <list>
-    #include <string>
-    #include <utility>
-    #include <sys/types.h>
-    #include <unordered_map>
-    #include <cstdint>
-    #include "Player.hpp"
-    #include "Resources.hpp"
+#include <string>
+#include <unordered_map>
+#include <vector>
+
+#include "Player.hpp"
 
 namespace zappy::server {
 
 class Map {
 public:
-    using Tile = zappy::data::Tile;
-    using Position = zappy::data::Position;
+    explicit Map(const int width, const int height);
 
-    Map(std::uint32_t width, std::list<Tile> tiles, std::uint32_t height)
-    : _width(width), _height(height), _tiles(std::move(tiles)) {}
     ~Map() = default;
 
-    [[nodiscard]] std::uint32_t getWidth() const;
-    [[nodiscard]] std::uint32_t getHeight() const;
-    [[nodiscard]] const Tile &getTile(const Position &pos) const;
+    [[nodiscard]] int getWidth() const noexcept;
+    [[nodiscard]] int getHeight() const noexcept;
+    [[nodiscard]] const data::Tile &getTile(const data::Position &pos) const;
     [[nodiscard]] const Player &getPlayer(const PlayerId &id) const;
-    void generateResources();
-    bool takeResource(Resource resource, Position pos);
-    void dropResource(Resource resource, Position pos);
+    void generate();
+    void generateResource(const data::Resource &resource, uint amount);
+    [[nodiscard]] bool takeResource(const data::Resource &resource,
+        const data::Position &pos);
+    void dropResource(const data::Resource &resource,
+        const data::Position &pos);
 
 private:
-    std::uint32_t _width;
-    std::uint32_t _height;
-    std::list<Tile> _tiles;
+    int _width;
+    int _height;
+    std::vector<data::Tile> _tiles;
     std::unordered_map<PlayerId, Player> _players;
 };
 

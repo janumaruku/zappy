@@ -26,8 +26,6 @@ public:
     void updateTile(data::Position pos,
         const std::unordered_map<data::Resource, uint> &resources);
 
-    void generate();
-
 private:
     uint _width = 0;
     uint _height = 0;

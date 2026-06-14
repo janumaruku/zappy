@@ -40,6 +40,12 @@ public:
 
     void setResources(const std::unordered_map<Resource, uint> &resources);
 
+    bool hasResource(const Resource &resource) const;
+
+    void takeResource(const Resource &resource);
+
+    void dropResource(const Resource &resource);
+
 private:
     Position _position;
     std::unordered_map<Resource, uint> _resources;

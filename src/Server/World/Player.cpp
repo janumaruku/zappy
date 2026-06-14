@@ -6,76 +6,77 @@
 */
 
 #include "Player.hpp"
-#include <algorithm>
+#include "constants.hpp"
 
 namespace zappy::server {
+Player::Player(const PlayerId &id, const TeamId &team,
+    const data::Position &position, const std::uint8_t &level): _id{id},
+    _team{team}, _position{position}, _level{level}
+{
+    _orientation = static_cast<data::Orientation>(utils::randomNumber(0, 3));
+    _inventory[data::Resource::FOOD] = 10;
 
-Player::Player(const PlayerId &id, const TeamId &team, const zappy::data::Position &position, const std::uint8_t &level)
-: _id(id), _team(team), _position(position), _level(level) {}
+    for (auto i = 1; i < 7; ++i)
+        _inventory[static_cast<data::Resource>(i)] = 0;
+}
 
 void Player::left()
 {
-    switch (_orientation) {
-        case UP:
-            _orientation = LEFT;
-            break;
-            case DOWN:
-                _orientation = RIGHT;
-        case LEFT:
-            _orientation = DOWN;
-            break;
-            break;
-        case RIGHT:
-            _orientation = UP;
-            break;
-    }
+    _orientation = static_cast<data::Orientation>((static_cast<int>(
+            _orientation)
+        + 1) % 4);
 }
 
-void Player::forward()
+void Player::forward(const int width, const int height)
 {
+    auto &pos = _position;
     switch (_orientation) {
-        case UP:
-            _position.y--;
-            break;
-        case DOWN:
-            _position.y++;
-            break;
-        case LEFT:
-            _position.x--;
-            break;
-        case RIGHT:
-            _position.x++;
-            break;
+    case data::Orientation::UP:
+        pos = (pos - data::Position{0, 1}) % data::Position{1, width};
+        break;
+    case data::Orientation::DOWN:
+        pos = (pos + data::Position{0, 1}) % data::Position{1, height};
+        break;
+    case data::Orientation::LEFT:
+        pos = (pos - data::Position{1, 0}) % data::Position{width, 1};
+        break;
+    case data::Orientation::RIGHT:
+        pos = (pos + data::Position{1, 0}) % data::Position{width, 1};
+        break;
     }
 }
 
 void Player::right()
 {
-    switch (_orientation) {
-        case UP:
-            _orientation = RIGHT;
-            break;
-        case DOWN:
-            _orientation = LEFT;
-            break;
-        case LEFT:
-            _orientation = DOWN;
-            break;
-        case RIGHT:
-            _orientation = UP;
-            break;
+    if (static_cast<int>(_orientation) == 0) {
+        _orientation = data::Orientation::LEFT;
+        return;
     }
+
+    _orientation = static_cast<data::Orientation>(static_cast<int>(_orientation)
+        - 1);
 }
 
-bool Player::eatFood()
-{
-    return _inventory.erase(Resource::FOOD) > 0;
-}
-
-bool Player::takeResource(const Resource& resource)
+void Player::takeResource(const data::Resource &resource)
 {
     _inventory[resource]++;
-    return true;
 }
 
+PlayerId Player::getId() const noexcept
+{
+    return _id;
+}
+
+TeamId Player::getTeam() const noexcept
+{
+    return _team;
+}
+data::Position Player::getPosition() const noexcept
+{
+    return _position;
+}
+std::uint8_t Player::getLevel() const noexcept
+{
+    return _level;
+}
 }

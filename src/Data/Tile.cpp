@@ -31,4 +31,18 @@ void Tile::setResources(const std::unordered_map<Resource, uint> &resources)
 {
     _resources = resources;
 }
+bool Tile::hasResource(const Resource &resource) const
+{
+    return _resources.at(resource) != 0;
+}
+
+void Tile::takeResource(const Resource &resource)
+{
+    _resources.at(resource)--;
+}
+
+void Tile::dropResource(const Resource &resource)
+{
+    _resources.at(resource)++;
+}
 }

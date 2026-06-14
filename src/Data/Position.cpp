@@ -95,4 +95,20 @@ Position Position::operator/=(const int &scalar)
 
     return *this;
 }
+
+Position Position::operator%(const Position &other) const
+{
+    Position result = *this;
+    result %= other;
+
+    return result;
+}
+
+Position Position::operator%=(const Position &other)
+{
+    _x %= other.getX();
+    _y %= other.getY();
+
+    return *this;
+}
 }

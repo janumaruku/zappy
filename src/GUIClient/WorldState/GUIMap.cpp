@@ -49,9 +49,4 @@ void GUIMap::updateTile(const data::Position pos,
 
     _tiles[index].setResources(resources);
 }
-
-void GUIMap::generate()
-{
-    // !todo()
-}
 }

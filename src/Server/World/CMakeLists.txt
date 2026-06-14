@@ -3,4 +3,4 @@ add_library(World STATIC Map.cpp
 
 target_include_directories(World PUBLIC include)
 
-target_link_libraries(World PUBLIC utils warning_options)
+target_link_libraries(World PUBLIC utils zappy_data warning_options)
