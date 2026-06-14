@@ -1,6 +1,6 @@
-add_library(World STATIC Map.cpp
+add_library(world STATIC Map.cpp
         Player.cpp)
 
-target_include_directories(World PUBLIC include)
+target_include_directories(world PUBLIC include)
 
-target_link_libraries(World PUBLIC utils zappy_data warning_options)
+target_link_libraries(world PUBLIC utils zappy_data warning_options)

@@ -1,4 +1,5 @@
 add_library(zappy_data STATIC Position.cpp
+        Egg.cpp
         Tile.cpp)
 
 target_include_directories(zappy_data PUBLIC include)

@@ -10,20 +10,23 @@
 #include <memory>
 #include <string>
 #include <vector>
-#include <system_error>
 
 #include "Acceptor.hpp"
 #include "ConnectedSocket.hpp"
 #include "IoContext.hpp"
+#include "Map.hpp"
 
 namespace zappy::server {
 
-class Map;
 class AISession;
 class GUISession;
+
 class Server {
 public:
-    explicit Server(int port);
+    explicit Server(int port, int width, int height,
+        std::vector<std::string> teams, uint playersPerTeam,
+        uint frequency = 1);
+    ~Server();
 
     void run();
 
@@ -33,10 +36,12 @@ public:
 private:
     network::IOContext _ioContext;
     network::Acceptor _acceptor;
+    std::vector<std::string> _teams;
+    uint _frequency = 1;
 
-    // Map *_map = nullptr; //PR needs to switch type from pointer to value
-    std::vector<AISession *> _aiSessions; //PR needs to switch type from pointer to value
-    std::vector<GUISession *> _guiSessions; //PR needs to switch type from pointer to value
+    Map _map;
+    std::vector<std::unique_ptr<AISession>> _aiSessions;
+    std::vector<std::unique_ptr<GUISession>> _guiSessions;
 
     void startAccept();
 
@@ -47,10 +52,10 @@ private:
     void aiHandshake(
         const std::shared_ptr<network::ConnectedSocket> &socket,
         const std::string &teamName
-    );
+        );
 
     void guiHandshake(
         const std::shared_ptr<network::ConnectedSocket> &socket
-    );
+        );
 };
 }
