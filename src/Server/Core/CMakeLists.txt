@@ -4,6 +4,6 @@ add_executable(server_core
 
 target_include_directories(server_core PUBLIC include)
 
-target_link_libraries(server_core PUBLIC warning_options shell)
+target_link_libraries(server_core PUBLIC warning_options shell zappy_server)
 
 set_target_properties(server_core PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR})
