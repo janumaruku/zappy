@@ -9,13 +9,15 @@
 
 #include <iostream>
 
+#include "../../Utils/include/constants.hpp"
+
 namespace zappy::gui {
 GUIPlayer::GUIPlayer(const PlayerId &id, const std::string &team,
     const data::Position &position,
-    const Orientation &orientation, const uint8_t level): _id(id), _team(team),
-    _position(position), _orientation(orientation), _level(level)
+    const uint8_t level): _id(id), _team(team),
+    _position(position), _level(level)
 {
-
+    _orientation = static_cast<Orientation>(utils::randomNumber<int>(0, 3));
 }
 
 GUIPlayer::PlayerId GUIPlayer::getId() const
@@ -28,12 +30,12 @@ std::string GUIPlayer::getTeam() const
     return _team;
 }
 
-data::Position GUIPlayer::getTilePosition() const
+data::Position GUIPlayer::getPosition() const
 {
     return _position;
 }
 
-Orientation &GUIPlayer::getOrientation()
+Orientation GUIPlayer::getOrientation() const
 {
     return _orientation;
 }

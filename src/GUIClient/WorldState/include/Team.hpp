@@ -7,15 +7,16 @@
 
 #ifndef TEAM_HPP_
 #define TEAM_HPP_
-#include <list>
+
 #include <string>
+#include <vector>
 
 namespace zappy::gui {
 class Team {
 public:
     using PlayerId = std::string;
 
-    Team(const std::string &name/*, Color color*/);
+    explicit Team(const std::string &name/*, Color color*/);
 
     std::string getName();
 
@@ -27,7 +28,7 @@ public:
 
 private:
     std::string _name;
-    std::list<PlayerId> _players;
+    std::vector<PlayerId> _players;
     /*Color _color;*/
 };
 }

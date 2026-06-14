@@ -17,7 +17,7 @@
 
 namespace zappy::gui {
 enum class Orientation : std::uint8_t {
-    NORTH,
+    NORTH = 0,
     WEST,
     SOUTH,
     EAST,
@@ -48,16 +48,15 @@ class GUIPlayer {
 
 public:
     GUIPlayer(const PlayerId &id, const std::string &team,
-        const data::Position &position,
-        const Orientation &orientation, uint8_t level);
+        const data::Position &position, uint8_t level);
 
-    PlayerId getId() const;
+    [[nodiscard]] PlayerId getId() const;
 
-    std::string getTeam() const;
+    [[nodiscard]] std::string getTeam() const;
 
-    data::Position getTilePosition() const;
+    [[nodiscard]] data::Position getPosition() const;
 
-    Orientation &getOrientation();
+    [[nodiscard]] Orientation getOrientation() const;
 
     uint8_t &getLevel();
 
@@ -65,15 +64,15 @@ public:
 
     Action dequeueAction();
 
-    bool hasAction() const;
+    [[nodiscard]] bool hasAction() const;
 
 private:
     PlayerId _id;
     std::string _team;
     data::Position _position;
-    Orientation _orientation = Orientation::NORTH;
+    Orientation _orientation;
     uint8_t _level = 0;
-    std::map<data::Resource, uint> _inventory;
+    std::unordered_map<data::Resource, uint> _inventory;
     std::queue<Action> _actionQueue;
 };
 

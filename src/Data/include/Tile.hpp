@@ -11,6 +11,7 @@
 #include <list>
 #include <map>
 #include <string>
+#include <unordered_map>
 #include <sys/types.h>
 
 #include "Position.hpp"
@@ -19,7 +20,7 @@ namespace zappy::data {
 using PlayerId = std::string;
 
 enum class Resource : std::uint8_t {
-    FOOD,
+    FOOD = 0,
     LINEMATE,
     DERAUMERE,
     SIBUR,
@@ -30,21 +31,18 @@ enum class Resource : std::uint8_t {
 
 class Tile {
 public:
-    Tile(Position position, const std::map<Resource, uint> &resources);
-
-    Tile(Position position);
+    explicit Tile(Position position);
 
     [[nodiscard]] Position getPosition() const;
 
-    std::map<Resource, uint> &getResources();
+    [[nodiscard]] const std::unordered_map<Resource, uint> &
+    getResources() const;
 
-    [[nodiscard]] std::string getResourcesAsString() const;
+    void setResources(const std::unordered_map<Resource, uint> &resources);
 
 private:
     Position _position;
-    std::map<Resource, uint> _resources;
-
-    static std::string getResourceName(Resource resource);
+    std::unordered_map<Resource, uint> _resources;
 };
 }
 

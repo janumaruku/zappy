@@ -7,6 +7,7 @@
 
 #ifndef GUIMAP_HPP
 #define GUIMAP_HPP
+#include <vector>
 #include <sys/types.h>
 
 #include "Tile.hpp"
@@ -20,15 +21,17 @@ public:
 
     [[nodiscard]] uint getHeight() const;
 
-    data::Tile &getTile(data::Position pos);
+    [[nodiscard]] const data::Tile &getTile(data::Position pos) const;
 
     void updateTile(data::Position pos,
-        const std::map<data::Resource, uint> &resources);
+        const std::unordered_map<data::Resource, uint> &resources);
+
+    void generate();
 
 private:
     uint _width = 0;
     uint _height = 0;
-    std::list<data::Tile> _tiles;
+    std::vector<data::Tile> _tiles;
 };
 }
 

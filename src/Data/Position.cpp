@@ -15,77 +15,84 @@ Position::Position(int x, int y): _x(x), _y(y)
 
 }
 
-int &Position::getX()
+int Position::getX() const
 {
     return _x;
 }
 
-int &Position::getY()
+int Position::getY() const
 {
     return _y;
 }
+
+Position Position::operator+(const Position &current) const
+{
+    Position result = *this;
+
+    result += current;
+
+    return result;
 }
 
-zappy::data::Position operator+(zappy::data::Position current,
-    zappy::data::Position other)
+Position Position::operator+=(const Position &current)
 {
-    return {current.getX() + other.getX(), current.getY() + other.getY()};
+    _x += current.getX();
+    _y += current.getY();
+
+    return *this;
 }
 
-void operator+=(zappy::data::Position &current, zappy::data::Position other)
+Position Position::operator-(const Position &current) const
 {
-    current.getX() += other.getX();
-    current.getY() += other.getY();
+    Position result = *this;
+
+    result -= current;
+
+    return result;
 }
 
-zappy::data::Position operator-(zappy::data::Position current,
-    zappy::data::Position other)
+Position Position::operator-=(const Position &current)
 {
-    return {current.getX() - other.getY(), current.getY() - other.getY()};
+    _x -= current.getX();
+    _y -= current.getY();
+
+    return *this;
 }
 
-void operator-=(zappy::data::Position &current, zappy::data::Position other)
+Position Position::operator*(const int &scalar) const
 {
-    current.getX() -= other.getX();
-    current.getY() -= other.getY();
+    Position result = *this;
+
+    result *= scalar;
+
+    return result;
 }
 
-zappy::data::Position operator*(zappy::data::Position current,
-    const double scalar)
+Position Position::operator*=(const int &scalar)
 {
-    return {static_cast<int>(current.getX() * scalar),
-            static_cast<int>(current.getY() * scalar)};
+    _x *= scalar;
+    _y *= scalar;
+
+    return *this;
 }
 
-void operator*=(zappy::data::Position &current, const double scalar)
+Position Position::operator/(const int &scalar) const
 {
-    current.getX() *= scalar;
-    current.getY() *= scalar;
+    Position result = *this;
+
+    result /= scalar;
+
+    return result;
 }
 
-zappy::data::Position operator/(zappy::data::Position current,
-    const double scalar)
+Position Position::operator/=(const int &scalar)
 {
-    if (scalar == 0) {
+    if (scalar == 0)
         throw std::runtime_error("Attempt to divide by 0");
-    }
-    return {static_cast<int>(current.getX() / scalar),
-            static_cast<int>(current.getY() / scalar)};
-}
 
-void operator/=(zappy::data::Position &current, const double scalar)
-{
-    if (scalar == 0) {
-        throw std::runtime_error("Attempt to divide by 0");
-    }
-    current.getX() *= scalar;
-    current.getY() *= scalar;
-}
+    _x /= scalar;
+    _y /= scalar;
 
-bool operator==(zappy::data::Position current, zappy::data::Position other)
-{
-    if (current.getX() == other.getY() && current.getY() == other.getY()) {
-        return true;
-    }
-    return false;
+    return *this;
+}
 }

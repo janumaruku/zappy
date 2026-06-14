@@ -10,24 +10,25 @@
 #include <iostream>
 
 namespace zappy::gui {
-WorldState::WorldState(const GUIMap &map,
-    const std::unordered_map<std::string, Team> &teams,
-    const uint timeUnit): _map(map), _teams(teams), _timeUnit(timeUnit)
+WorldState::WorldState(const std::unordered_map<std::string, Team> &teams,
+    const uint timeUnit, uint width, uint height): _map{width, height},
+    _teams(teams), _timeUnit(timeUnit)
 {
-
+    _map.generate();
 }
 
-GUIMap WorldState::getMap() const
+const GUIMap &WorldState::getMap() const noexcept
 {
     return _map;
 }
 
-std::unordered_map<PlayerId, GUIPlayer> WorldState::getPlayers()
+const std::unordered_map<WorldState::PlayerId, GUIPlayer> &
+WorldState::getPlayers() const noexcept
 {
     return _players;
 }
 
-GUIPlayer &WorldState::getPlayerById(const PlayerId &id)
+const GUIPlayer &WorldState::getPlayerById(const PlayerId &id) const
 {
 
     if (!_players.contains(id)) {
@@ -41,22 +42,10 @@ const std::unordered_map<std::string, Team> &WorldState::getTeams()
     return _teams;
 }
 
-void WorldState::onPlayerNew(const PlayerId &id, data::Position position,
-    const Orientation orientation, const uint8_t level, const std::string &team)
+void WorldState::onPlayerNew(const GUIPlayer &player)
 {
-    if (position.getX() > static_cast<int>(_map.getWidth()) || position.
-        getX() < 0 || position.getY() > static_cast<int>(_map.getHeight()) ||
-        position.getY() < 0) {
-        std::cerr << "New player out of bound" << std::endl;
-        return;
-    }
-    if (!_teams.contains(team)) {
-        std::cerr << team << " is not found" << std::endl;
-        return;
-    }
-    _teams.at(team).addPlayer(id);
-    _players.emplace(id, GUIPlayer(id, team, position, orientation, level));
-    std::clog << "New Player " << id << " has joined" << std::endl;
+    _players.emplace(player.getId(), player);
+    std::clog << "New Player " << player.getId() << " has joined" << std::endl;
 }
 
 /*void WorldState::onPlayerPosition(Position pos, Orientation orientation){
@@ -69,8 +58,10 @@ void WorldState::onPlayerDeath(const PlayerId &id)
         std::cerr << "Player " << id << " is not found " << std::endl;
         return;
     }
+
+    const auto player = _players.at(id);
+    _teams.at(player.getTeam()).removePlayer(id);
     _players.erase(id);
-    _teams.at(_players.at(id).getTeam()).removePlayer(id);
 }
 
 /*void WorldState::onTileContent(Position pos, std::map<Resource, uint> resources){

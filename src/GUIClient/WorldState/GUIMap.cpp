@@ -13,9 +13,7 @@
 namespace zappy::gui {
 GUIMap::GUIMap(const uint &width, const uint &height): _width(width),
     _height(height)
-{
-
-}
+{}
 
 uint GUIMap::getWidth() const
 {
@@ -27,27 +25,33 @@ uint GUIMap::getHeight() const
     return _height;
 }
 
-data::Tile &GUIMap::getTile(data::Position pos)
+const data::Tile &GUIMap::getTile(data::Position pos) const
 {
     if (pos.getX() > static_cast<int>(_width) || pos.getX() < 0 ||
         pos.getY() > static_cast<int>(_height) || pos.getY() < 0) {
         throw std::runtime_error("getTile position out of bound");
     }
-    for (auto &it: _tiles) {
-        if (it.getPosition() == pos) {
-            return it;
-        }
-    }
-    const data::Tile newPositionTile(pos);
-    _tiles.push_back(newPositionTile);
-    return _tiles.back();
+
+    const auto index = (pos.getY() * _width) + pos.getX();
+
+    return _tiles[index];
 }
 
 void GUIMap::updateTile(const data::Position pos,
-    const std::map<data::Resource, uint> &resources)
+    const std::unordered_map<data::Resource, uint> &resources)
 {
-    for (const auto &it: resources) {
-        getTile(pos).getResources().insert_or_assign(it.first, it.second);
+    if (pos.getX() > static_cast<int>(_width) || pos.getX() < 0 ||
+        pos.getY() > static_cast<int>(_height) || pos.getY() < 0) {
+        throw std::runtime_error("getTile position out of bound");
     }
+
+    const auto index = (pos.getY() * _width) + pos.getX();
+
+    _tiles[index].setResources(resources);
+}
+
+void GUIMap::generate()
+{
+    // !todo()
 }
 }

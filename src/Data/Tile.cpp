@@ -11,16 +11,10 @@
 #include <ostream>
 
 namespace zappy::data {
-Tile::Tile(const Position position,
-    const std::map<Resource, uint> &resources): _position(position),
-    _resources(resources)
-{
-
-}
-
 Tile::Tile(const Position position): _position(position)
 {
-
+    for (auto i = 0; i < 7; ++i)
+        _resources[static_cast<Resource>(i)] = 0;
 }
 
 Position Tile::getPosition() const
@@ -28,41 +22,13 @@ Position Tile::getPosition() const
     return _position;
 }
 
-std::map<Resource, uint> &Tile::getResources()
+const std::unordered_map<Resource, uint> & Tile::getResources() const
 {
     return _resources;
 }
 
-std::string Tile::getResourceName(const Resource resource)
+void Tile::setResources(const std::unordered_map<Resource, uint> &resources)
 {
-    switch (resource) {
-    case Resource::FOOD:
-        return "Food";
-    case Resource::LINEMATE:
-        return "Linemate";
-    case Resource::DERAUMERE:
-        return "Deraumere";
-    case Resource::SIBUR:
-        return "Sibur";
-    case Resource::MENDIANE:
-        return "Mendiane";
-    case Resource::PHIRAS:
-        return "Phiras";
-    case Resource::THYSTAME:
-        return "Thystame";
-    default:
-        return "Unkown resource";
-    }
-}
-
-std::string Tile::getResourcesAsString() const
-{
-    std::string res;
-
-    for (const auto &it: _resources) {
-        res += getResourceName(it.first) + ": " + std::to_string(it.second) +
-            "\n";
-    }
-    return res;
+    _resources = resources;
 }
 }

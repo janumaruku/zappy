@@ -34,16 +34,13 @@ void Team::addPlayer(const PlayerId &id)
 
 void Team::removePlayer(const PlayerId &id)
 {
-    const auto it = std::ranges::find_if(_players.begin(), _players.end(),
-        [id](const PlayerId &player) {
-            return player == id;
-        });
+    const auto it = std::ranges::find(_players, id);
 
     if (it == _players.end()) {
         std::clog << "Couldn't find player: " << id << std::endl;
         return;
     }
-    _players.remove(id);
+    _players.erase(it);
     std::clog << "Removed player: " << id << std::endl;
 }
 }

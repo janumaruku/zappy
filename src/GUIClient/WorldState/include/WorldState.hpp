@@ -21,22 +21,20 @@ class WorldState {
     using PlayerId = std::string;
 
 public:
-    WorldState(const GUIMap &map,
-        const std::unordered_map<std::string, Team> &teams, uint timeUnit);
+    WorldState(const std::unordered_map<std::string, Team> &teams,
+        uint timeUnit, uint width, uint height);
 
-    GUIMap getMap() const;
+    [[nodiscard]] const GUIMap &getMap() const noexcept;
 
-    std::unordered_map<PlayerId, GUIPlayer> getPlayers();
+    const std::unordered_map<PlayerId, GUIPlayer> &getPlayers() const noexcept;
 
-    GUIPlayer &getPlayerById(const PlayerId &id);
+    const GUIPlayer &getPlayerById(const PlayerId &id) const;
 
     const std::unordered_map<std::string, Team> &getTeams();
 
     uint getTimeUnit() const;
 
-    void onPlayerNew(const PlayerId &id, data::Position position,
-        Orientation orientation,
-        uint8_t level, const std::string &team);
+    void onPlayerNew(const GUIPlayer &player);
 
     //void onPlayerPosition(Position pos, Orientation orientation);
 
@@ -55,7 +53,7 @@ private:
     std::unordered_map<PlayerId, GUIPlayer> _players;
     std::unordered_map<uint, GUIEgg> _eggs;
     std::unordered_map<std::string, Team> _teams;
-    uint _timeUnit = 0;
+    uint _timeUnit = 1;
 };
 }
 

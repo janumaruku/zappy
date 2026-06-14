@@ -11,36 +11,34 @@
 namespace zappy::data {
 class Position {
 public:
+    Position() = default;
+
     Position(int x, int y);
 
-    int &getX();
+    [[nodiscard]] int getX() const;
 
-    int &getY();
+    [[nodiscard]] int getY() const;
+
+    Position operator+(const Position &current) const;
+
+    Position operator+=(const Position &current);
+
+    Position operator-(const Position &current) const;
+
+    Position operator-=(const Position &current);
+
+    Position operator*(const int &scalar) const;
+
+    Position operator*=(const int &scalar);
+
+    Position operator/(const int &scalar) const;
+
+    Position operator/=(const int &scalar);
 
 private:
-    int _x;
-    int _y;
+    int _x = 0;
+    int _y = 0;
 };
 }
-
-zappy::data::Position operator+(zappy::data::Position current,
-    zappy::data::Position other);
-
-void operator+=(zappy::data::Position &current, zappy::data::Position other);
-
-zappy::data::Position operator-(zappy::data::Position current,
-    zappy::data::Position other);
-
-void operator-=(zappy::data::Position &current, zappy::data::Position other);
-
-zappy::data::Position operator*(zappy::data::Position current, double scalar);
-
-void operator*=(zappy::data::Position &current, double scalar);
-
-zappy::data::Position operator/(zappy::data::Position current, double scalar);
-
-void operator/=(zappy::data::Position &current, double scalar);
-
-bool operator==(zappy::data::Position current, zappy::data::Position other);
 
 #endif
