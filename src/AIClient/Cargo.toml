@@ -1,0 +1,4 @@
+[workspace]
+members = ["shell", "network", "app", "useful", "client_test", "behavior_tree"]
+resolver = "2"
+

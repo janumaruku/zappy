@@ -5,8 +5,8 @@
 ** Logger
 */
 
-#ifndef MYFTP_LOGGER_HPP
-#define MYFTP_LOGGER_HPP
+#ifndef ZAPPY_LOGGER_HPP
+#define ZAPPY_LOGGER_HPP
 
 #include <cstdint>
 #include <iostream>
@@ -59,4 +59,4 @@ constexpr Logger::EndLogger END = Logger::END;
 } // utils
 using ULogLevel = utils::Logger::Level;
 
-#endif //MYFTP_LOGGER_HPP
+#endif //ZAPPY_LOGGER_HPP
