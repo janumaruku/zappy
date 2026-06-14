@@ -9,6 +9,8 @@
 
 #include "Core.hpp"
 
+constexpr int EPITECH_FAIL = 84;
+
 int main(int, char** argv)
 {
     try {
@@ -16,6 +18,6 @@ int main(int, char** argv)
         core.run();
     } catch (const std::exception& error) {
         std::cerr << error.what() << std::endl;
-        return 84;
+        return EPITECH_FAIL;
     }
 }
