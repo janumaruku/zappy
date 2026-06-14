@@ -9,23 +9,25 @@
     #define AISESSION_HPP_
 
 #include <cstddef>
+#include <functional>
+#include <map>
 #include <queue>
 #include <string>
 #include <vector>
 #include "IClientSession.hpp"
 #include "Timer.hpp"
 #include "Player.hpp"
+#include "Network.hpp"
 
 namespace zappy::server {
-
-// remove this when possible
-class Server;
 
 // placeholder
 constexpr uint COMMAND_TRIGGER_DIVISOR = 1;
 constexpr uint RESPONSE_TIME = 1;
 constexpr std::string PLACEHOLDER_SERVER_RESPONSE = "Welcome !";
 //
+
+constexpr std::string COMMAND_NOT_FOUND = "ko\n";
 
 constexpr uint MAX_PENDING_COMMANDS = 10;
 
@@ -52,6 +54,7 @@ public:
 private:
 
     void onCommandComplete();
+    void executeNext();
 
     Server &_server;
     Player _player;
@@ -60,6 +63,7 @@ private:
     
     uint _pending_commands = 0;
     std::queue<std::vector<std::string>> _commandQueue;
+
 };
 
 }

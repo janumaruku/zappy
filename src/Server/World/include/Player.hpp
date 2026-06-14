@@ -9,12 +9,14 @@
     #define PLAYER_HPP_
 
     #include <cstdint>
+#include <functional>
     #include <string>
     #include <unordered_map>
     #include "Data.hpp"
     #include "Resources.hpp"
 
 namespace zappy::server {
+
 
 using PlayerId = std::string;
 using TeamId = std::string;

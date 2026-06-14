@@ -5,7 +5,6 @@
 ** main
 */
 
-#include "AISession.hpp"
 #include <algorithm>
 #include <initializer_list>
 #include <cctype>
@@ -14,6 +13,7 @@
 #include <chrono>
 #include <sys/types.h>
 #include <vector>
+#include "AISession.hpp"
 
 namespace zappy::server {
 
@@ -41,11 +41,38 @@ void AISession::handleTransmission()
     std::vector<std::string> splittedLine = sanitizedSplit(_transmission);
     if (_pending_commands >= MAX_PENDING_COMMANDS)
         return;
-    const auto &commandPrefix = splittedLine[0];
 
-    if (_server)
+    // const auto &commandPrefix = splittedLine[0];
+
+    if (false /* if !prefix exists in map */) {
+        _writeQueue.push(COMMAND_NOT_FOUND);
+        return;
+    }
+    bool wasEmpty = _commandQueue.empty();
+    _commandQueue.push(splittedLine);
+    _pending_commands++;
+    if (wasEmpty)
+        executeNext();
+    
     scheduleResponse(RESPONSE_TIME, PLACEHOLDER_SERVER_RESPONSE);
     _transmission.clear();
+}
+
+
+void AISession::executeNext()
+{
+    const auto &command = _commandQueue.front();
+    const auto prefix = command[0];
+
+    // execute(command, *this);
+}
+
+void AISession::onCommandComplete()
+{
+    _pending_commands--;
+    if (_commandQueue.empty())
+        return;
+    executeNext();
 }
 
 

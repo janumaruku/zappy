@@ -21,7 +21,6 @@ void Core::run()
 {
     buildServerCommands();
 
-<<<<<<< ZAP-5-Implement-Server-class-and-Acceptor
     shell::command::CommandContext context =
         _serverCommands.buildCommandContext(_argv);
 
@@ -29,9 +28,6 @@ void Core::run()
 
     Server server(_port);
     server.run();
-=======
-    _serverCommands.run(std::move(_argv));
->>>>>>> dev
 }
 
 void Core::buildServerCommands()

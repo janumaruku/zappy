@@ -1,6 +1,9 @@
-add_library(World STATIC Map.cpp
-        Player.cpp)
+add_library(zappy_server_world_headers INTERFACE)
+target_include_directories(zappy_server_world_headers INTERFACE include)
+
+add_library(World
+  Map.cpp
+  Player.cpp)
 
 target_include_directories(World PUBLIC include)
-
-target_link_libraries(World PUBLIC utils warning_options)
+target_link_libraries(World PUBLIC warning_options)
