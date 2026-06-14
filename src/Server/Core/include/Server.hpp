@@ -31,19 +31,18 @@ public:
     void broadcastToAll(const std::string &data);
 
 private:
-    network::IOContext _ioc;
+    network::IOContext _ioContext;
     network::Acceptor _acceptor;
 
-    Map *_map = nullptr; //PR needs to switch type from pointer to value
+    // Map *_map = nullptr; //PR needs to switch type from pointer to value
     std::vector<AISession *> _aiSessions; //PR needs to switch type from pointer to value
     std::vector<GUISession *> _guiSessions; //PR needs to switch type from pointer to value
 
     void startAccept();
 
     void onAccept(
-        const std::error_code &error,
         const std::shared_ptr<network::ConnectedSocket> &socket
-    );
+        );
 
     void aiHandshake(
         const std::shared_ptr<network::ConnectedSocket> &socket,

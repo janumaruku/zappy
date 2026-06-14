@@ -28,64 +28,52 @@ static void closeSocket(const std::shared_ptr<network::ConnectedSocket> &socket)
 
 namespace zappy::server {
 
-Server::Server(int port)
-    : _ioc(),
-      _acceptor(_ioc, network::Endpoint(port))
+Server::Server(int port): _acceptor(_ioContext, network::Endpoint(port))
 {
 }
 
 void Server::run()
 {
     startAccept();
-    _ioc.run();
+    _ioContext.run();
 }
 
 void Server::startAccept()
 {
-    _acceptor.asyncAccept(
-        [this](
-            const std::error_code &error,
-            const std::shared_ptr<network::ConnectedSocket> &socket
-        ) {
-            onAccept(error, socket);
-        }
-    );
+    _acceptor.asyncAccept([this](const std::error_code &error,
+        const std::shared_ptr<network::ConnectedSocket> &socket) {
+            if (error) {
+                std::cerr << "Accept error: " << error.message() << std::endl;
+                startAccept();
+                return;
+            }
+
+            std::cout << "Client connected from "
+                << socket->remoteEndpoint().getHostname()
+                << ":"
+                << socket->remoteEndpoint().getPort()
+                << std::endl;
+            onAccept(socket);
+        });
 }
 
 void Server::onAccept(
-    const std::error_code &error,
     const std::shared_ptr<network::ConnectedSocket> &socket)
 {
-    if (error) {
-        std::cerr << "Accept error: " << error.message() << std::endl;
-        startAccept();
-        return;
-    }
-
-    std::cout << "Client connected from "
-              << socket->remoteEndpoint().getHostname()
-              << ":"
-              << socket->remoteEndpoint().getPort()
-              << std::endl;
-
     auto welcome = std::make_shared<std::string>("WELCOME\n");
 
-    socket->asyncWrite(
-        network::buffer(*welcome),
-        [this, socket, welcome](const std::error_code &writeError, std::size_t) {
-            if (writeError) {
-                closeSocket(socket);
+    socket->asyncWrite(network::buffer(*welcome), [this, &socket](
+        const std::error_code &err, std::size_t) {
+            if (err) {
+                socket->close();
                 return;
             }
 
             auto input = std::make_shared<std::string>(4096, '\0');
 
-            socket->asyncReadSome(
-                network::buffer(*input, input->size()),
-                [this, socket, input](
-                    const std::error_code &readError,
-                    std::size_t bytesRead
-                ) {
+            socket->asyncReadSome(network::buffer(*input, input->size()),
+                [this, socket, input](const std::error_code &readError,
+                std::size_t bytesRead) {
                     if (readError || bytesRead == 0) {
                         closeSocket(socket);
                         return;
@@ -98,10 +86,8 @@ void Server::onAccept(
                         guiHandshake(socket);
                     else
                         aiHandshake(socket, clientName);
-                }
-            );
-        }
-    );
+                });
+        });
 
     startAccept();
 }
@@ -111,8 +97,8 @@ void Server::aiHandshake(
     const std::string &teamName)
 {
     std::cout << "AI client detected for team: "
-              << teamName
-              << std::endl;
+        << teamName
+        << std::endl;
     auto response = std::make_shared<std::string>("AI\n");
 
     socket->asyncWrite(
@@ -121,10 +107,11 @@ void Server::aiHandshake(
             if (error)
                 closeSocket(socket);
         }
-    );
+        );
 }
 
-void Server::guiHandshake(const std::shared_ptr<network::ConnectedSocket> &socket)
+void Server::guiHandshake(
+    const std::shared_ptr<network::ConnectedSocket> &socket)
 {
     std::cout << "GUI client detected" << std::endl;
     auto response = std::make_shared<std::string>("GUI\n");
@@ -135,7 +122,7 @@ void Server::guiHandshake(const std::shared_ptr<network::ConnectedSocket> &socke
             if (error)
                 closeSocket(socket);
         }
-    );
+        );
 }
 
 void Server::notifyGUI(const std::string &message)
