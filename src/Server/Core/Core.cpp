@@ -9,7 +9,7 @@
 
 #include "CommandBuilder.hpp"
 #include "CommandContext.hpp"
-#include "Server.hpp"
+#include "../Server/include/Server.hpp"
 
 Core::Core(char **argv)
 {

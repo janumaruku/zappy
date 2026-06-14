@@ -10,7 +10,6 @@
 #include <memory>
 #include <string>
 #include <vector>
-#include <system_error>
 
 #include "Acceptor.hpp"
 #include "ConnectedSocket.hpp"

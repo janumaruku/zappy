@@ -6,20 +6,23 @@
 */
 
 #ifndef GUISESSION_HPP_
-    #define GUISESSION_HPP_
+#define GUISESSION_HPP_
 
-    #include "IClientSession.hpp"
+#include "AClientSession.hpp"
+#include "Server.hpp"
+#include "Temp.hpp"
 
 namespace zappy::server {
 
-class GUISession : public IClientSession {
+class GUISession: public AClientSession {
 public:
-    GUISession();
+    GUISession(const std::shared_ptr<network::ConnectedSocket> &socket,
+        Server &server);
     ~GUISession() override = default;
 
-    void start() override;
-
 protected:
+    Server &_server;
+
     void handleTransmission(const std::size_t &bytes) override;
 };
 
