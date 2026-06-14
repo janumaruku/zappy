@@ -1,0 +1,11 @@
+add_library(world_state WorldState.cpp
+        GUIEgg.cpp
+        GUIMap.cpp
+        GUIPlayer.cpp
+        Team.cpp)
+
+target_include_directories(world_state PUBLIC include)
+
+target_link_libraries(world_state PUBLIC warning_options
+        zappy_data
+        )

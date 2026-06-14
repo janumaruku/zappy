@@ -8,8 +8,10 @@
 #include "IoContext.hpp"
 
 #include <algorithm>
+#include <chrono>
+#include <cstddef>
 #include <ranges>
-#include <system_error>
+#include "ContainerUtils.hpp"
 
 #include "constants.hpp"
 
@@ -63,12 +65,13 @@ void IOContext::run()
                 });
 
         handleReadyFileDescriptors();
+        drainExpiredTimers();
 
         if (_stop && std::ranges::all_of(_pendingOperations,
             [](const auto &entry) {
                 return entry.second.empty();
-            }))
-            break;
+            }) && _timerQueue.empty())
+            break;   
     }
 
     _running = false;
@@ -92,6 +95,7 @@ void IOContext::poll()
             {strerror(errno)});
 
     handleReadyFileDescriptors();
+    drainExpiredTimers();
 }
 
 void IOContext::pollAll()
@@ -101,8 +105,10 @@ void IOContext::pollAll()
             utils::RED + "Error: " + utils::RESET +
             "The IOContext loop is already running");
 
-    while (::poll(_pollFds.data(), _pollFds.size(), 0) > 0)
+    while (::poll(_pollFds.data(), _pollFds.size(), 0) > 0) {
         handleReadyFileDescriptors();
+    }
+    drainExpiredTimers();
 }
 
 void IOContext::updateEventType(const int &fileDescriptor)
@@ -130,7 +136,7 @@ void IOContext::handleReadyFileDescriptors()
     std::size_t itt = 0;
 
     while (itt < _pollFds.size()) {
-        if (_pollFds[itt].revents & (POLLHUP | POLLERR | POLLNVAL)) {
+        if ((_pollFds[itt].revents & (POLLHUP | POLLERR | POLLNVAL)) != 0) {
             _pendingOperations.erase(_pollFds[itt].fd);
             _pollFds.erase(_pollFds.begin() + itt);
             continue;
@@ -149,7 +155,7 @@ void IOContext::triggerHandler(const int &itt)
 {
     const int fd = _pollFds[itt].fd;
 
-    if (_pollFds[itt].revents & (POLLIN | POLLOUT) && (
+    if (((_pollFds[itt].revents & (POLLIN | POLLOUT)) != 0) && (
         _pendingOperations.contains(fd) && !_pendingOperations.
                                             at(fd).empty())) {
         const auto [opType, handler] = _pendingOperations.at(fd).
@@ -158,6 +164,38 @@ void IOContext::triggerHandler(const int &itt)
 
         handler();
         updateEventType(fd);
+    }
+}
+
+void IOContext::cancelTimer(const std::size_t &id)
+{
+    auto &values = container(_timerQueue);
+
+    const auto it = std::ranges::find_if(values,
+        [id](const TimerEntry &entry) {
+            return entry.id == id;
+        });
+    if (it != values.end())
+        it->cancellation = true;
+}
+
+void IOContext::drainExpiredTimers()
+{
+    const auto now = static_cast<float>(
+        std::chrono::high_resolution_clock::now().time_since_epoch().count());
+
+    while (!_timerQueue.empty()) {
+        const TimerEntry entry = _timerQueue.top();
+        if (entry.cancellation) {
+            _timerQueue.pop();
+            continue;
+        }
+        if (entry.timePoint <= now) {
+            entry.handler();
+            _timerQueue.pop();
+            continue;
+        } 
+        break;
     }
 }
 }

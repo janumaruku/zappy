@@ -5,8 +5,8 @@
 ** Options
 */
 
-#ifndef MYFTP_OPTIONS_HPP
-#define MYFTP_OPTIONS_HPP
+#ifndef ZAPPY_OPTIONS_HPP
+#define ZAPPY_OPTIONS_HPP
 
 #include <string>
 #include <vector>
@@ -48,4 +48,4 @@ private:
 
 } // namespace utils
 
-#endif // MYFTP_OPTIONS_HPP
+#endif // ZAPPY_OPTIONS_HPP
