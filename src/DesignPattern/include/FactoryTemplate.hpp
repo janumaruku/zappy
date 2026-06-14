@@ -5,8 +5,8 @@
 ** FactoryTemplate
 */
 
-#ifndef MYFTP_FACTORYTEMPLATE_HPP
-#define MYFTP_FACTORYTEMPLATE_HPP
+#ifndef ZAPPY_FACTORYTEMPLATE_HPP
+#define ZAPPY_FACTORYTEMPLATE_HPP
 
 #include <functional>
 #include <memory>
@@ -70,4 +70,4 @@ private:
 };
 } // namespace designPattern
 
-#endif // MYFTP_FACTORYTEMPLATE_HPP
+#endif // ZAPPY_FACTORYTEMPLATE_HPP

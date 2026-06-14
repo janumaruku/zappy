@@ -113,6 +113,7 @@ std::string formatHelp(const command::CommandDefinition &def)
             token += " <" + option.name + std::to_string(i + 1) + ">";
         appendUsageToken(usageLine, token, usageCont);
     }
+    usageLine += " ...";
 
     for (const auto &flag : def.flags) {
         if (flag.name == "help")
