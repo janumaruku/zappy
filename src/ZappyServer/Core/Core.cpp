@@ -9,7 +9,7 @@
 
 #include "CommandBuilder.hpp"
 #include "CommandContext.hpp"
-#include "../Server/include/Server.hpp"
+#include "Server.hpp"
 
 Core::Core(char **argv)
 {
@@ -21,15 +21,7 @@ void Core::run()
 {
     buildServerCommands();
 
-    // shell::command::CommandContext context =
-    //     _serverCommands.buildCommandContext(_argv);
-
-    // _serverCommands.handler(context);
     _serverCommands.run(std::move(_argv));
-
-    // zappy::server::Server server(_port, _width, _height, _teams,
-    //     _clientPerTeam, _frequency);
-    // server.run();
 }
 
 void Core::buildServerCommands()

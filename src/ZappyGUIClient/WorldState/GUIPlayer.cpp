@@ -9,7 +9,7 @@
 
 #include <iostream>
 
-#include "../../Utils/include/constants.hpp"
+#include "constants.hpp"
 
 namespace zappy::gui {
 GUIPlayer::GUIPlayer(const PlayerId &id, const std::string &team,

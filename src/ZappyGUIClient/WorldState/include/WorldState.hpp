@@ -11,7 +11,7 @@
 #include <unordered_map>
 #include <sys/types.h>
 
-#include "../../../Data/include/Egg.hpp"
+#include "Egg.hpp"
 #include "GUIMap.hpp"
 #include "GUIPlayer.hpp"
 #include "Team.hpp"

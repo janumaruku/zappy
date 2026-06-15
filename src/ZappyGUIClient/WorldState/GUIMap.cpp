@@ -7,7 +7,6 @@
 
 #include "GUIMap.hpp"
 
-#include <algorithm>
 #include <iostream>
 
 namespace zappy::gui {

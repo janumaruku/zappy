@@ -7,6 +7,7 @@
 
 #ifndef TCPCLIENT_HPP_
 #define TCPCLIENT_HPP_
+
 #include <string>
 
 #include "ConnectedSocket.hpp"

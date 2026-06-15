@@ -7,8 +7,8 @@
 
 #ifndef GUIPLAYER_HPP
 #define GUIPLAYER_HPP
+
 #include <cstdint>
-#include <map>
 #include <queue>
 #include <string>
 
