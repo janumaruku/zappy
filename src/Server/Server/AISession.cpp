@@ -18,17 +18,9 @@ AISession::AISession(const std::shared_ptr<network::ConnectedSocket> &socket,
     (void)_pending_commands;
 }
 
-void AISession::handleTransmission(const std::size_t &bytes)
+void AISession::handleTransmission()
 {
-    this->_transmission.append(this->_asyncReadBuffer.begin(),
-        this->_asyncReadBuffer.begin() + bytes);
-
-    if (this->_transmission.ends_with("\n")) {
-        // !todo()
-        this->_transmission.clear();
-        return;
-    }
-    this->handleRead();
+    // !todo(call protocol handler here)
 }
 
 } // namespace zappy::server

@@ -48,14 +48,5 @@ private:
     void onAccept(
         const std::shared_ptr<network::ConnectedSocket> &socket
         );
-
-    void aiHandshake(
-        const std::shared_ptr<network::ConnectedSocket> &socket,
-        const std::string &teamName
-        );
-
-    void guiHandshake(
-        const std::shared_ptr<network::ConnectedSocket> &socket
-        );
 };
 }

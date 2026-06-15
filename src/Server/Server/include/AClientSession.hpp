@@ -29,10 +29,13 @@ protected:
     std::shared_ptr<network::ConnectedSocket> _socket;
     std::string _readBuffer;
     std::string _asyncReadBuffer;
+    std::string _transmissionTemp;
     std::string _transmission;
 
     void handleRead() override;
     void handleWrite(const std::string& message) override;
+
+    bool isTransmissionReady(const size_t &bytes);
 };
 
 }

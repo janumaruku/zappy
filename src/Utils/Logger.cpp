@@ -29,6 +29,7 @@ Logger &Logger::operator<<(const EndLogger &)
         *_stream << RESET;
         *_stream << std::endl;
     }
+    _stream->flush();
     _shouldPrint = _isEnabled;
 
     return *this;
@@ -52,6 +53,15 @@ Logger &Logger::start(const Level &level, const std::string &context)
     }
 
     return *this;
+}
+
+void Logger::config(const LoggerConfig& config
+    )
+{
+    _context = config.context;
+    _level = config.level;
+    _isEnabled = config.enabled;
+    _shouldPrint = _isEnabled;
 }
 
 void Logger::setLevelColor(const Level &level) const
@@ -78,10 +88,8 @@ void Logger::chooseOutputStream(const Level &level)
 {
     switch (level) {
     case Level::INFO:
-        _stream = &std::cout;
-        break;
     case Level::DEBUG_LEVEL:
-        _stream = &std::clog;
+        _stream = &std::cout;
         break;
     case Level::ERROR:
     case Level::WARNING:
@@ -92,3 +100,12 @@ void Logger::chooseOutputStream(const Level &level)
     }
 }
 } // utils
+bool operator<(const LogLevel &lhs, const LogLevel &rhs)
+{
+    return static_cast<int>(lhs) < static_cast<int>(rhs);
+}
+
+bool operator==(const LogLevel &lhs, const LogLevel &rhs)
+{
+    return static_cast<int>(lhs) == static_cast<int>(rhs);
+}

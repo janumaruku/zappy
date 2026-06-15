@@ -14,17 +14,9 @@ GUISession::GUISession(const std::shared_ptr<network::ConnectedSocket> &socket,
 {
 }
 
-void GUISession::handleTransmission(const std::size_t &bytes)
+void GUISession::handleTransmission()
 {
-    this->_transmission.append(this->_asyncReadBuffer.begin(),
-        this->_asyncReadBuffer.begin() + bytes);
-
-    if (this->_transmission.ends_with("\n")) {
-        // !todo()
-        this->_transmission.clear();
-        return;
-    }
-    this->start();
+    // !todo(call protocol handler here)
 }
 
 }

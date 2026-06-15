@@ -16,6 +16,12 @@
 #include "Logger.hpp"
 
 namespace network {
+constexpr auto BASIC_CONFIG = utils::LoggerConfig{
+    .context = "SERVER",
+    .level = LogLevel::DEBUG_LEVEL,
+    .enabled = true
+};
+
 class IOContext;
 
 /**
@@ -42,23 +48,26 @@ public:
     /**
      * @brief Constructs a client-side socket. Call @ref connect to establish a connection.
      * @param ioContext The event loop that will drive async operations on this socket.
+     * @param config The logger configuration to set it to either DEBUG or INFO or ERROR, ...
      */
-    explicit ConnectedSocket(IOContext &ioContext);
+    explicit ConnectedSocket(IOContext &ioContext,
+        utils::LoggerConfig config = BASIC_CONFIG);
 
     /**
      * @brief Constructs a server-side socket from an already-accepted file descriptor.
      * @param ioContext The event loop that will drive async operations on this socket.
      * @param clientFd  The file descriptor returned by @c accept().
      * @param endpoint  The remote @ref Endpoint of the connected client.
+     * @param config The logger configuration to set it to either DEBUG or INFO or ERROR, ...
      */
     explicit ConnectedSocket(IOContext &ioContext, const int &clientFd,
-        Endpoint &&endpoint);
+        Endpoint &&endpoint, utils::LoggerConfig config = BASIC_CONFIG);
 
     /**
      * @brief Connects this socket to a remote @ref Endpoint (client-side use).
      * @param endpoint The address and port to connect to.
      */
-    void connect(Endpoint &endpoint);
+    void connect(const Endpoint &endpoint);
 
     /// @brief Returns the file descriptor of this socket.
     [[nodiscard]] int getFd() const noexcept;
@@ -67,21 +76,21 @@ public:
     [[nodiscard]] const Endpoint &remoteEndpoint() const noexcept;
 
     /// @brief Closes the socket.
-    void close() const;
+    void close();
 
     /**
      * @brief Sends data synchronously. Blocks until all bytes are written or an error occurs.
      * @param buffer  Data to send. See @ref ConstBuffer.
      * @param handler Called with the result when the write completes.
      */
-    void write(const ConstBuffer &buffer, const Callback &handler) const;
+    void write(const ConstBuffer &buffer, const Callback &handler);
 
     /**
      * @brief Receives data synchronously. Blocks until data is available or an error occurs.
      * @param buffer  Destination buffer. See @ref MutableBuffer.
      * @param handler Called with the result when the read completes.
      */
-    void read(MutableBuffer buffer, const Callback &handler) const;
+    void read(MutableBuffer buffer, const Callback &handler);
 
     /**
      * @brief Schedules an async read. Returns immediately and calls @p handler when data arrives.
@@ -93,7 +102,7 @@ public:
      * @param handler      Called with @c (error_code, bytes_read) when data is available.
      */
     void asyncReadSome(MutableBuffer outputBuffer,
-        const Callback &handler) const;
+        const Callback &handler);
 
     /**
      * @brief Schedules an async write. Returns immediately and calls @p handler when done.
@@ -103,7 +112,7 @@ public:
      * @param buffer  Data to send. See @ref ConstBuffer.
      * @param handler Called with @c (error_code, bytes_written) when the write completes.
      */
-    void asyncWrite(const ConstBuffer &buffer, const Callback &handler) const;
+    void asyncWrite(const ConstBuffer &buffer, const Callback &handler);
 
     /// @brief Returns the @ref IOContext this socket is registered with.
     [[nodiscard]] IOContext &getIOContext() const noexcept;
@@ -113,7 +122,7 @@ private:
     Endpoint _endpoint;                    ///< Remote peer address and port.
     IOContext &_ioContext;                 ///< Event loop driving async operations.
     std::queue<PendingOperation> _handlers; ///< Queue of pending async operations.
-    // utils::Logger _logger{"CONNECTED-SOCKET", ULogLevel::INFO, true};
+    utils::Logger _logger{"CONNECTED-SOCKET", LogLevel::INFO, true};
 };
 }
 

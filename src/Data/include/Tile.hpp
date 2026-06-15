@@ -31,6 +31,7 @@ enum class Resource : std::uint8_t {
 
 class Tile {
 public:
+    Tile() = delete;
     explicit Tile(Position position);
 
     [[nodiscard]] Position getPosition() const;

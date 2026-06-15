@@ -13,16 +13,19 @@
 #include <string>
 
 namespace utils {
+struct LoggerConfig;
+
 class Logger {
 public:
     enum class Level: std::uint8_t {
-        ERROR,
-        WARNING,
+        INFO = 0,
         DEBUG_LEVEL,
-        INFO,
+        WARNING,
+        ERROR,
     };
 
-    struct EndLogger {};
+    struct EndLogger {
+    };
 
     inline static const EndLogger END;
 
@@ -44,19 +47,32 @@ public:
 
     Logger &start(const Level &level, const std::string &context = "");
 
+    void config(const LoggerConfig &config);
+
 private:
-    bool _isEnabled   = true;
+    bool _isEnabled = true;
     bool _shouldPrint = true;
     std::string _context;
-    Level _level          = Level::INFO;
+    Level _level = Level::INFO;
     std::ostream *_stream = &std::cout;
 
     void setLevelColor(const Level &level) const;
 
     void chooseOutputStream(const Level &);
 };
+
+struct LoggerConfig {
+    std::string context;
+    Logger::Level level;
+    bool enabled;
+};
+
 constexpr Logger::EndLogger END = Logger::END;
 } // utils
-using ULogLevel = utils::Logger::Level;
+using LogLevel = utils::Logger::Level;
+
+bool operator<(const LogLevel &lhs, const LogLevel &rhs);
+
+bool operator==(const LogLevel &lhs, const LogLevel &rhs);
 
 #endif //ZAPPY_LOGGER_HPP

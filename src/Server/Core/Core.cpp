@@ -21,14 +21,15 @@ void Core::run()
 {
     buildServerCommands();
 
-    shell::command::CommandContext context =
-        _serverCommands.buildCommandContext(_argv);
+    // shell::command::CommandContext context =
+    //     _serverCommands.buildCommandContext(_argv);
 
-    _serverCommands.handler(context);
+    // _serverCommands.handler(context);
+    _serverCommands.run(std::move(_argv));
 
-    zappy::server::Server server(_port, _width, _height, _teams, _clientPerTeam,
-        _frequency);
-    server.run();
+    // zappy::server::Server server(_port, _width, _height, _teams,
+    //     _clientPerTeam, _frequency);
+    // server.run();
 }
 
 void Core::buildServerCommands()
@@ -67,5 +68,9 @@ void Core::buildServerCommands()
             _teams = ctx.xOption("name");
             _clientPerTeam = static_cast<uint>(std::stoi(ctx.option("clientsNb")));
             _frequency = static_cast<uint>(std::stoi(ctx.option("frequency")));
+
+            zappy::server::Server server(_port, _width, _height, _teams,
+                _clientPerTeam, _frequency);
+            server.run();
         }).build();
 }

@@ -26,7 +26,7 @@ public:
 protected:
     virtual void handleRead() = 0;
     virtual void handleWrite(const std::string& message) = 0;
-    virtual void handleTransmission(const std::size_t &bytes) = 0;
+    virtual void handleTransmission() = 0;
 };
 
 }

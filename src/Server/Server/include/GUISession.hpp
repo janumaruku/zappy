@@ -22,7 +22,7 @@ public:
 protected:
     Server &_server;
 
-    void handleTransmission(const std::size_t &bytes) override;
+    void handleTransmission() override;
 };
 
 }

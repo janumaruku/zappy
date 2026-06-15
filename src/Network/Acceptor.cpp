@@ -15,17 +15,25 @@
 #include "IoContext.hpp"
 
 namespace network {
-Acceptor::Acceptor(IOContext &ioContext, Endpoint &&endpoint): _endpoint(
-        std::move(endpoint)), _socket(ioContext),
+Acceptor::Acceptor(IOContext &ioContext, Endpoint &&endpoint,
+    const utils::LoggerConfig &config):
+    _endpoint(std::move(endpoint)), _socket(ioContext),
     _ioContext{ioContext}
 {
+    _logger.config(config);
+    std::ostringstream hostname;
+    hostname << _endpoint.getHostname() << ":" << _endpoint.getPort();
     const auto &address = _endpoint.getAddress();
     if (bind(_socket.getFd(), reinterpret_cast<const sockaddr *>(&address),
         sizeof(address)) == -1)
         throw std::runtime_error{"bind() failed"};
+    _logger.start(LogLevel::DEBUG_LEVEL) << "Bound to address "
+        << hostname.str() << utils::END;
 
     if (listen(_socket.getFd(), SOMAXCONN) == -1)
         throw std::runtime_error{"listen() failed"};
+    _logger.start(LogLevel::INFO) << "Listening on " << hostname.str() << " ..."
+        << utils::END;
 
     _ioContext.registerFileDescriptor(_socket.getFd());
 }
@@ -44,10 +52,18 @@ void Acceptor::asyncAccept(const ConnectionHandler &handler)
             return;
         }
 
-        _logger.start(ULogLevel::INFO) << "Connection received ..." <<
-            utils::END;
+        std::stringstream host;
+        host << clientSocket->remoteEndpoint().getHostname() << ":"
+            << clientSocket->remoteEndpoint().getHostname();
+        _logger.start(LogLevel::INFO) << "Connection received from "
+            << host.str() << utils::END;
         handler(std::error_code{}, clientSocket);
     });
+}
+
+void Acceptor::configLogger(const utils::LoggerConfig &config)
+{
+    _logger.config(config);
 }
 
 FtpErrorCode Acceptor::getAcceptorErrorCode(const int &error)
@@ -76,7 +92,7 @@ FtpErrorCode Acceptor::getAcceptorErrorCode(const int &error)
 std::shared_ptr<ConnectedSocket> Acceptor::acceptClient() const
 {
     sockaddr_in address{};
-    socklen_t size     = sizeof(address);
+    socklen_t size = sizeof(address);
     const int clientFd = accept(_socket.getFd(),
         reinterpret_cast<sockaddr *>(&address), &size);
 

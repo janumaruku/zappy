@@ -14,6 +14,15 @@ namespace zappy::server {
 
 Map::Map(const int width, const int height): _width(width), _height(height)
 {
+    auto len = width * height;
+
+    auto i = 0;
+    for (auto j = 0; j < len; ++j) {
+        if (j == width - 1)
+            ++i;
+
+        _tiles.emplace_back(data::Position{j % width, i});
+    }
     generate();
 }
 
@@ -68,8 +77,8 @@ void Map::generate()
 void Map::generateResource(const data::Resource &resource, const uint amount)
 {
     for (auto i = 0UL; i < amount; ++i) {
-        const auto x = utils::randomNumber(0, _width);
-        const auto y = utils::randomNumber(0, _height);
+        const auto x = utils::randomNumber(0, _width - 1);
+        const auto y = utils::randomNumber(0, _height - 1);
         const auto index = (y * _width) + x;
         auto &tile = _tiles[index];
         tile.dropResource(resource);

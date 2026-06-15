@@ -22,7 +22,7 @@ public:
     ~AISession() override = default;
 
 protected:
-    void handleTransmission(const std::size_t &bytes) override;
+    void handleTransmission() override;
 
 private:
     Server &_server;

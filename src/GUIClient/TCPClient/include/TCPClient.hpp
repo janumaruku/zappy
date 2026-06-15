@@ -21,21 +21,24 @@ public:
 
     void start();
 
-    void send(std::string data) const;
+    void send(std::string data);
 
     std::string receive();
 
     void pollAll() const;
+    bool isTransmissionReady(const std::size_t &bytes, const std::string& buffer);
 
 private:
     network::IOContext &_ioc;
     network::ConnectedSocket _socket;
     std::string _readBuffer;
-    std::string _readAsyncBuffer;
+    std::string _asyncReadBuffer;
     std::string _transmission;
+    std::string _transmissionTemp;
+    utils::Logger _logger{"TCP-CLIENT", LogLevel::INFO, true};
 
     // ProtocolHandler _protocol;
-    void handleTransmission(const size_t &bytes);
+    void handleTransmission();
 
     void startRead();
 };

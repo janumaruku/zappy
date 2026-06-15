@@ -28,7 +28,7 @@ public:
      * @param port     The port number.
      * @param hostName IPv4 address as a string. Defaults to @c INADDR_ANY when empty.
      */
-    explicit Endpoint(const int &port, const std::string &hostName = "");
+    explicit Endpoint(const int &port, const std::string &hostName = "127.0.0.1");
 
     /**
      * @brief Constructs an endpoint from an existing @c sockaddr_in structure.

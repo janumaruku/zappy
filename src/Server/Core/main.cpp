@@ -11,11 +11,11 @@
 
 int main(int, char** argv)
 {
-    try {
+    // try {
         Core core(argv);
         core.run();
-    } catch (const std::exception& error) {
-        std::cerr << error.what() << std::endl;
-        return 84;
-    }
+    // } catch (const std::exception& error) {
+    //     std::cerr << error.what() << std::endl;
+    //     return 84;
+    // }
 }

@@ -7,9 +7,11 @@
 
 #include "AClientSession.hpp"
 
+#include "ZappyConstants.hpp"
+
 namespace zappy::server {
 
-static constexpr std::size_t READ_BUFFER_SIZE = 4096;
+static constexpr std::size_t READ_BUFFER_SIZE = 1024;
 
 AClientSession::AClientSession(
     const std::shared_ptr<network::ConnectedSocket> &socket): IClientSession{},
@@ -27,19 +29,15 @@ void AClientSession::start()
 void AClientSession::send(std::string &data)
 {
     _socket->write(network::buffer(data),
-        [this, &data](const std::error_code &err, const std::size_t &bytes) {
+        [this](const std::error_code &err, const std::size_t &bytes) {
             if (err) {
                 std::cerr << err.message() << std::endl;
+                _socket->close();
                 return;
             }
 
-            if (bytes == 0) {
-                std::clog << "Client disconnected!" << std::endl;
+            if (bytes == 0)
                 this->_socket->close();
-                return;
-            }
-
-            std::clog << "Send: " << data << std::endl;
         });
 }
 
@@ -49,19 +47,23 @@ std::string AClientSession::receive()
         [this](const std::error_code &err, const std::size_t &bytes) {
             if (err) {
                 std::cerr << err.message() << std::endl;
-                return;
-            }
-
-            if (bytes == 0) {
-                std::clog << "Client disconnected" << std::endl;
                 _socket->close();
                 return;
             }
 
-            std::clog << "Received: " << _readBuffer << std::endl;
+            if (bytes == 0) {
+                _socket->close();
+                return;
+            }
+
+            if (!isTransmissionReady(bytes))
+                receive();
         });
 
-    return std::string{_readBuffer.data(), _readBuffer.size()};
+    const auto result = std::string{_transmission.data(), _transmission.size()};
+    _transmission.clear();
+
+    return result;
 }
 
 void AClientSession::handleRead()
@@ -70,36 +72,61 @@ void AClientSession::handleRead()
         [this](const std::error_code &ec, const std::size_t &bytes) {
             if (ec) {
                 std::cerr << ec.message() << std::endl;
-                return;
-            }
-
-            if (bytes == 0) {
-                std::clog << "Client disconnected!" << std::endl;
                 _socket->close();
                 return;
             }
 
-            handleTransmission(bytes);
+            if (bytes == 0) {
+                _socket->close();
+                return;
+            }
+
+            if (!isTransmissionReady(bytes))
+                handleRead();
+            handleTransmission();
         });
 }
 
 void AClientSession::handleWrite(const std::string &message)
 {
     _socket->asyncWrite(network::buffer(message),
-        [this, &message](const std::error_code &ec, const std::size_t &bytes) {
+        [this](const std::error_code &ec, const std::size_t &bytes) {
             if (ec) {
                 std::cerr << ec.message() << std::endl;
-                return;
-            }
-
-            if (bytes == 0) {
-                std::clog << "Client disconnected!" << std::endl;
                 _socket->close();
                 return;
             }
 
-            std::clog << "Sent: " << message << std::endl;
+            if (bytes == 0) {
+                _socket->close();
+                return;
+            }
+
             handleRead();
         });
+}
+
+bool AClientSession::isTransmissionReady(const size_t &bytes)
+{
+    const auto index = _asyncReadBuffer.find(data::PACKET_END);
+
+    if (index == std::string::npos) {
+        _transmission.append(_transmissionTemp.begin(),
+            _transmissionTemp.end());
+        _transmission.append(_asyncReadBuffer.begin(),
+        _asyncReadBuffer.begin() + bytes);
+
+        _transmissionTemp.clear();
+        return false;
+    }
+
+    _transmission.append(_asyncReadBuffer.begin(),
+        _asyncReadBuffer.begin() + index);
+
+    _transmissionTemp.assign(
+        _asyncReadBuffer.begin() + index + data::PACKET_END.size(),
+        _asyncReadBuffer.end());
+    return true;
+
 }
 }

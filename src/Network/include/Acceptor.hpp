@@ -58,7 +58,8 @@ public:
      *
      * @throw std::runtime_error when the bind call or listen call fails.
      */
-    explicit Acceptor(IOContext &ioContext, Endpoint &&endpoint);
+    explicit Acceptor(IOContext &ioContext, Endpoint &&endpoint,
+        const utils::LoggerConfig &config = BASIC_CONFIG);
 
     /**
      * @brief Returns the file descriptor of the underlying listening socket.
@@ -80,11 +81,16 @@ public:
      */
     void asyncAccept(const ConnectionHandler &handler);
 
+    void configLogger(const utils::LoggerConfig &config);
+
 private:
     Endpoint _endpoint; ///< Local address and port the acceptor is bound to.
-    ListeningSocket _socket; ///< Underlying passive socket that listens for connections.
-    std::queue<ConnectionHandler> _handlerFunction; ///< Queue of pending accept callbacks.
-    utils::Logger _logger{"ACCEPTOR", ULogLevel::INFO, true}; ///< Logger for accept events.
+    ListeningSocket _socket;
+    ///< Underlying passive socket that listens for connections.
+    std::queue<ConnectionHandler> _handlerFunction;
+    ///< Queue of pending accept callbacks.
+    utils::Logger _logger{"ACCEPTOR", LogLevel::INFO, false};
+    ///< Logger for accept events.
     IOContext &_ioContext; ///< Event loop that drives async accept operations.
 
     static FtpErrorCode getAcceptorErrorCode(const int &error);

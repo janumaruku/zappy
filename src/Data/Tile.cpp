@@ -15,6 +15,7 @@ Tile::Tile(const Position position): _position(position)
 {
     for (auto i = 0; i < 7; ++i)
         _resources[static_cast<Resource>(i)] = 0;
+
 }
 
 Position Tile::getPosition() const
@@ -41,8 +42,8 @@ void Tile::takeResource(const Resource &resource)
     _resources.at(resource)--;
 }
 
-void Tile::dropResource(const Resource &resource)
+void Tile::dropResource(const Resource &/*resource*/)
 {
-    _resources.at(resource)++;
+    _resources.at(Resource::FOOD)++;
 }
 }
