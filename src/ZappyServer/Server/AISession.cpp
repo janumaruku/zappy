@@ -21,7 +21,7 @@
 namespace zappy::server {
 AISession::AISession(const std::shared_ptr<network::ConnectedSocket> &socket,
     Server &server, Player &player): AClientSession{socket}, _server{server},
-    _player{player}²
+    _player{player}
 {
     (void)_server;
     (void)_player;
