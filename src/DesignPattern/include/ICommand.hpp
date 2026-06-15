@@ -6,16 +6,16 @@
 */
 
 #ifndef ZAPPY_ICOMMAND_HPP
-    #define ZAPPY_ICOMMAND_HPP
-    #include <list>
-    #include <string>
+#define ZAPPY_ICOMMAND_HPP
 
 template <typename... Args>
 class ICommand {
-    public:
-        ~ICommand() = default;
-        virtual bool execute(Args ...args) = 0;
-        virtual bool operator()(Args ...args) = 0;
+public:
+    virtual ~ICommand() = default;
+
+    virtual bool execute(Args... args) = 0;
+
+    virtual bool operator()(Args... args) = 0;
 };
 
 #endif

@@ -6,23 +6,31 @@
 */
 
 #ifndef ZAPPY_PROTOCOLHANDLER_HPP
-    #define ZAPPY_PROTOCOLHANDLER_HPP
-    #include <string>
-    #include "ICommand.hpp"
-    #include "WorldState.hpp"
-    #include "FactoryTemplate.hpp"
+#define ZAPPY_PROTOCOLHANDLER_HPP
+
+#include <string>
+#include "WorldState.hpp"
+#include "FactoryTemplate.hpp"
+#include "ICommand.hpp"
+#include "IguiCommand.hpp"
+
+namespace zappy::gui {
+using GUICommand = ICommand<WorldState &, const std::vector<std::string> &>;
+using CommandFactory = designPattern::FactoryTemplate<GUICommand, std::string>;
 
 class ProtocolHandler {
 public:
-    using CommandFactory = FactoryTemplate<ICommand,std::string, WorldState&,
-        const std::vector<std::string> &>
-    ProtocolHandler(WorldState& worldState) noexcept = default;
+    explicit ProtocolHandler(WorldState &worldState) noexcept;
 
-    void handleLine(const std::string line) noexcept;
+    static void handleLine(const std::string &line) noexcept;
+
+    void registerCommand(
+        ) noexcept;
 
 private:
-    WorldState& _worldState;
+    WorldState &_worldState;
     CommandFactory _factory;
 
 };
+}
 #endif

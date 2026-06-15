@@ -6,61 +6,91 @@
 */
 
 #ifndef COMMANDS_HPP
-    #define COMMANDS_HPP
-    // #include "include/ICommand.hpp"
+#define COMMANDS_HPP
+#include <functional>
 
-// class MszCommand : ICommand {
-//     private:
-//         void execute(WorldState& worldState, const std::list<std::string>& args) = 0;
-//         void getMsz() const;
-// };
-//
-// class MctCommand : ICommand {
-//     private:
-//         void execute(WorldState& worldState, const std::list<std::string>& args) = 0;
-//         void getMct() const;
-// };
-//
-// class BctCommand : ICommand {
-//     private:
-//         void execute(WorldState& worldState, const std::list<std::string>& args) = 0;
-//         void getBct() const;
-// };
-//
-// class TnaCommand : ICommand {
-//     private:
-//         void execute(WorldState& worldState, const std::list<std::string>& args) = 0;
-//         void getTna() const;
-// };
-//
-// class PpoCommand : ICommand {
-//     private:
-//         void execute(WorldState& worldState, const std::list<std::string>& args) = 0;
-//         void getPpo() const;
-// };
-//
-// class PlvCommand : ICommand {
-//     private:
-//         void execute(WorldState& worldState, const std::list<std::string>& args) = 0;
-//         void getPlv() const;
-// };
-//
-// class PinCommand : ICommand {
-//     private:
-//         void execute(WorldState& worldState, const std::list<std::string>& args) = 0;
-//         void getPin() const;
-// };
-//
-// class SgtCommand : ICommand {
-//     private:
-//         void execute(WorldState& worldState, const std::list<std::string>& args) = 0;
-//         void getSgt() const;
-// };
-//
-// class SstCommand : ICommand {
-//     private:
-//         void execute(WorldState& worldState, const std::list<std::string>& args) = 0;
-//         void getSst() const;
-// };
+#include "ProtocolHandler.hpp"
+#include "WorldState.hpp"
 
+namespace zappy::gui {
+
+class MszCommand: public GUICommand {
+public:
+    ~MszCommand() override = default;
+
+    bool execute(WorldState &worldState,
+        const std::vector<std::string> &args) override;
+
+    bool operator()(WorldState &worldState,
+        const std::vector<std::string> &args) override;
+
+    static std::unique_ptr<GUICommand> create();
+};
+
+/*
+class MctCommand: designPattern::ICommand<> {
+public:
+    bool execute(WorldState &worldState,
+        const std::vector<std::string> &args) override;
+
+    bool getMct() const;
+};
+
+class BctCommand: designPattern::ICommand {
+public:
+    bool execute(WorldState &worldState,
+        const std::vector<std::string> &args) = 0;
+
+    bool getBct() const;
+};
+
+class TnaCommand: designPattern::ICommand<> {
+public:
+    bool execute(WorldState &worldState,
+        const std::vector<std::string> &args) = 0;
+
+    bool getTna() const;
+};
+
+class PpoCommand: designPattern::ICommand {
+public:
+    bool execute(WorldState &worldState,
+        const std::vector<std::string> &args) = 0;
+
+    bool getPpo() const;
+};
+
+class PlvCommand: designPattern::ICommand {
+public:
+    bool execute(WorldState &worldState,
+        const std::vector<std::string> &args) = 0;
+
+    bool getPlv() const;
+};
+
+class PinCommand: designPattern::ICommand {
+public:
+    bool execute(WorldState &worldState,
+        const std::vector<std::string> &args) = 0;
+
+    bool getPin() const;
+};
+
+class SgtCommand: designPattern::ICommand {
+public:
+    bool execute(WorldState &worldState,
+        const std::vector<std::string> &args) = 0;
+
+    bool getSgt() const;
+};
+
+class SstCommand: designPattern::ICommand {
+public:
+    bool execute(WorldState &worldState,
+        const std::vector<std::string> &args) = 0;
+
+    bool getSst() const;
+};
+*/
+}
 #endif
