@@ -39,5 +39,7 @@ void ProtocolHandler::registerCommand(
     ) noexcept
 {
     _factory.registerCreator<MszCommand>("msz");
+    _factory.registerCreator<BctCommand>("bct");
+    _factory.registerCreator<MctCommand>("mct");
 }
 }
