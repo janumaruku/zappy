@@ -14,18 +14,18 @@
 
 namespace zappy::server {
 
-class IShellCommand {
+class ICommand {
 public:
-    IShellCommand() = default;
+    ICommand() = default;
 
-    virtual ~IShellCommand() = default;
+    virtual ~ICommand() = default;
 
     virtual bool operator()(
         AISession &session,
-        std::vector<std::string> cmd) = 0;
+        const std::vector<std::string> &cmd) = 0;
 
     virtual bool execute(AISession &session,
-        std::vector<std::string> cmd) = 0;
+        const std::vector<std::string> &cmd) = 0;
 };
 
 }

@@ -16,6 +16,7 @@
 #include <string>
 #include <vector>
 #include "AClientSession.hpp"
+#include "AIProtocolHandler.hpp"
 #include "ConnectedSocket.hpp"
 #include "Timer.hpp"
 #include "Player.hpp"
@@ -60,6 +61,8 @@ private:
     
     uint _pending_commands = 0;
     std::queue<std::vector<std::string>> _commandQueue;
+
+    AIProtocolHandler _protocolHandler;
 
 };
 
