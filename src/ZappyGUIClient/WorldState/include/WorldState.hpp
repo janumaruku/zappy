@@ -42,7 +42,8 @@ public:
 
     void onPlayerDeath(const PlayerId &id);
 
-    void onTileContent(data::Position pos, std::unordered_map<data::Resource, uint> resources);
+    void onTileContent(data::Position pos,
+        std::unordered_map<data::Resource, uint> resources);
 
     void onTimeUnit(uint t);
 

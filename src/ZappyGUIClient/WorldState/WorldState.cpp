@@ -63,7 +63,9 @@ void WorldState::onPlayerDeath(const PlayerId &id)
     _players.erase(id);
 }
 
-void WorldState::onTileContent(const data::Position pos, std::unordered_map<data::Resource, uint> resources){
+void WorldState::onTileContent(const data::Position pos,
+    std::unordered_map<data::Resource, uint> resources)
+{
     _map.updateTile(pos, resources);
 }
 
