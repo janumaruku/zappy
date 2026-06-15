@@ -19,15 +19,13 @@
 #include "AISession.hpp"
 
 namespace zappy::server {
-
-void AISession::start()
+AISession::AISession(const std::shared_ptr<network::ConnectedSocket> &socket,
+    Server &server, Player &player): AClientSession{socket}, _server{server},
+    _player{player}²
 {
-    //remove this when you implement the override
     (void)_server;
     (void)_player;
     (void)_pending_commands;
-    (void)_command_timer;
-    (void)_starvation_timer;
 }
 
 void AISession::handleTransmission()

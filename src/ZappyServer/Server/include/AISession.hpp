@@ -11,10 +11,12 @@
 #include <cstddef>
 #include <functional>
 #include <map>
+#include <memory>
 #include <queue>
 #include <string>
 #include <vector>
 #include "AClientSession.hpp"
+#include "ConnectedSocket.hpp"
 #include "Timer.hpp"
 #include "Player.hpp"
 #include "Server.hpp"
@@ -31,23 +33,18 @@ constexpr std::string COMMAND_NOT_FOUND = "ko\n";
 
 constexpr uint MAX_PENDING_COMMANDS = 10;
 
-constexpr char END_OF_TRANSMISSION = '\n';
-
 class AISession : public AClientSession {
 public:
 
     AISession() = delete;
+    explicit AISession(const std::shared_ptr<network::ConnectedSocket> &socket,
+        Server &server, Player &player);
     ~AISession() override = default;
 
-    void start() override;
     void handleTransmission() override;
 
     [[nodiscard]] const Player &getPlayer() const noexcept;
     [[nodiscard]] const Server &getServer() const noexcept;
-
-    [[nodiscard]] static std::size_t getResultSize(const std::string &str);
-    [[nodiscard]] static std::vector<std::string> sanitizedSplit(const std::string &str);
-
 
     void scheduleResponse(const uint &durationConstant, const std::string &response);
 
@@ -57,7 +54,7 @@ private:
     void executeNext();
 
     Server &_server;
-    Player _player;
+    Player &_player;
     SteadyTimer _command_timer;
     SteadyTimer _starvation_timer;
     
