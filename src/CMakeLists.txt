@@ -1,13 +1,5 @@
-add_subdirectory(DesignPattern)
+add_subdirectory(ZappyGUIClient)
 
-add_subdirectory(Utils)
+add_subdirectory(ZappyServer)
 
-add_subdirectory(Shell)
-
-add_subdirectory(Network)
-
-add_subdirectory(GUIClient)
-
-add_subdirectory(Server)
-
-add_subdirectory(Data)
+add_subdirectory(ZappyData)

@@ -77,4 +77,4 @@ docs/generated
 # misc
 compile_flags.txt
 .gitignore
-src/AIClient/target/
+src/ZappyAIClient/target/
