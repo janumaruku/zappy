@@ -57,6 +57,6 @@ void GUIMap::updateTile(const data::Position pos,
 
     const auto index = (pos.getY() * _width) + pos.getX();
 
-    _tiles[index].setResources(resources);
+    _tiles[index].addResources(resources);
 }
 }
