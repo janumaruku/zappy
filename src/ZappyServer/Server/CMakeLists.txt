@@ -3,6 +3,8 @@ add_library(server STATIC
     AISession.cpp
     GUISession.cpp
     Server.cpp
+    ForwardCommand.cpp
+    LeftCommand.hpp
 )
 
 target_include_directories(server PUBLIC include)
