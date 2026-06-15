@@ -23,7 +23,7 @@ Position Tile::getPosition() const
     return _position;
 }
 
-const std::unordered_map<Resource, uint> & Tile::getResources() const
+const std::unordered_map<Resource, uint> &Tile::getResources() const
 {
     return _resources;
 }
@@ -32,6 +32,14 @@ void Tile::setResources(const std::unordered_map<Resource, uint> &resources)
 {
     _resources = resources;
 }
+
+void Tile::addResources(const std::unordered_map<Resource, uint> &resources)
+{
+    for (auto &it: resources) {
+        _resources.at(it.first) += it.second;
+    }
+}
+
 bool Tile::hasResource(const Resource &resource) const
 {
     return _resources.at(resource) != 0;
@@ -42,8 +50,8 @@ void Tile::takeResource(const Resource &resource)
     _resources.at(resource)--;
 }
 
-void Tile::dropResource(const Resource &/*resource*/)
+void Tile::dropResource(const Resource &resource)
 {
-    _resources.at(Resource::FOOD)++;
+    _resources.at(resource)++;
 }
 }
