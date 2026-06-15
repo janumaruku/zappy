@@ -38,6 +38,8 @@
 *.exe
 *.out
 *.app
+zappy_gui
+zappy_server
 
 # Build directories
 build/
@@ -71,3 +73,8 @@ Testing/
 # useless files and folders
 .idea
 docs/generated
+
+# misc
+compile_flags.txt
+.gitignore
+src/ZappyAIClient/target/
