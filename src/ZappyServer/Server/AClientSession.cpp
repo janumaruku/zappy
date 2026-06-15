@@ -26,7 +26,7 @@ void AClientSession::start()
     handleRead();
 }
 
-void AClientSession::send(std::string &data)
+void AClientSession::send(const std::string &data)
 {
     _socket->write(network::buffer(data),
         [this](const std::error_code &err, const std::size_t &bytes) {
