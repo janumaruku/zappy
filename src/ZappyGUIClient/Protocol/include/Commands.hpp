@@ -7,7 +7,6 @@
 
 #ifndef COMMANDS_HPP
 #define COMMANDS_HPP
-#include <functional>
 
 #include "ProtocolHandler.hpp"
 #include "WorldState.hpp"
@@ -27,27 +26,30 @@ public:
     static std::unique_ptr<GUICommand> create();
 };
 
-/*
 class MctCommand: public GUICommand {
 public:
     bool execute(WorldState &worldState,
         const std::vector<std::string> &args) override;
 
     bool operator()(WorldState &worldState,
-    const std::vector<std::string> &args) override;
+        const std::vector<std::string> &args) override;
 
     static std::unique_ptr<GUICommand> create();
 };
 
-class BctCommand: GUICommand {
+class BctCommand: public GUICommand {
 public:
     bool execute(WorldState &worldState,
-        const std::vector<std::string> &args) = 0;
+        const std::vector<std::string> &args) override;
 
-    bool getBct() const;
+    bool operator()(WorldState &worldState,
+        const std::vector<std::string> &args) override;
+
+    static std::unique_ptr<GUICommand> create();
 };
 
-class TnaCommand: GUICommand {
+/*
+class TnaCommand: public GUICommand {
 public:
     bool execute(WorldState &worldState,
         const std::vector<std::string> &args) = 0;
@@ -55,7 +57,7 @@ public:
     bool getTna() const;
 };
 
-class PpoCommand: GUICommand {
+class PpoCommand: public GUICommand {
 public:
     bool execute(WorldState &worldState,
         const std::vector<std::string> &args) = 0;
@@ -63,15 +65,15 @@ public:
     bool getPpo() const;
 };
 
-class PlvCommand: GUICommand {
+class PlvCommand: public GUICommand {
 public:
     bool execute(WorldState &worldState,
         const std::vector<std::string> &args) = 0;
 
     bool getPlv() const;
 };
-/*
-class PinCommand: GUICommand {
+
+class PinCommand: public GUICommand {
 public:
     bool execute(WorldState &worldState,
         const std::vector<std::string> &args) = 0;
@@ -79,7 +81,7 @@ public:
     bool getPin() const;
 };
 
-class SgtCommand: GUICommand {
+class SgtCommand: public GUICommand {
 public:
     bool execute(WorldState &worldState,
         const std::vector<std::string> &args) = 0;
@@ -87,7 +89,7 @@ public:
     bool getSgt() const;
 };
 
-class SstCommand: GUICommand {
+class SstCommand: public GUICommand {
 public:
     bool execute(WorldState &worldState,
         const std::vector<std::string> &args) = 0;
