@@ -22,6 +22,7 @@ class WorldState {
 
 public:
     WorldState() = default;
+
     WorldState(const std::unordered_map<std::string, Team> &teams,
         uint timeUnit, uint width, uint height);
 
@@ -48,6 +49,8 @@ public:
     //void onEggLaid(uint eggId, PlayerId playerId, Position pos);
 
     void onEggDeath(uint eggId);
+
+    void onMapDimension(uint width, uint height);
 
 private:
     GUIMap _map;
