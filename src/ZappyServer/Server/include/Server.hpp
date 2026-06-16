@@ -36,6 +36,8 @@ public:
     [[nodiscard]] network::IOContext &getIoContext();
     [[nodiscard]] const network::IOContext &getIoContext() const;
 
+    [[nodiscard]] const uint &getFrequency() const;
+
 private:
     network::IOContext _ioContext;
     network::Acceptor _acceptor;

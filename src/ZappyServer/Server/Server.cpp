@@ -42,6 +42,11 @@ void Server::run()
     return _ioContext;
 }
 
+[[nodiscard]] const uint &Server::getFrequency() const
+{
+    return _frequency;
+}
+
 
 void Server::startAccept()
 {

@@ -74,7 +74,7 @@ void AISession::onCommandComplete()
 
 void AISession::scheduleResponse(const uint &durationConstant, const std::string &response)
 {
-    _command_timer.asyncWait(std::chrono::high_resolution_clock::duration(durationConstant / COMMAND_TRIGGER_DIVISOR),
+    _command_timer.asyncWait(std::chrono::high_resolution_clock::duration(durationConstant / _server.getFrequency()),
     [this, response](){
         send(response);
     });
@@ -91,7 +91,5 @@ const Server &AISession::getServer() const noexcept
 {
     return _server;
 }
-
-// free functions
 
 } // namespace zappy::server
