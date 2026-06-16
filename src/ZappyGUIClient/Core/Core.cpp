@@ -11,6 +11,7 @@
 
 #include "CommandBuilder.hpp"
 #include "CommandContext.hpp"
+#include "Renderer.hpp"
 
 namespace zappy::gui {
 Core::Core(char **argv)
@@ -25,6 +26,9 @@ void Core::run()
     buildGUICommands();
 
     _guiCommands.run(std::move(_argv));
+    while (_renderer.isWindowOpen()) {
+        _renderer.render(_worldState);
+    }
 }
 
 void Core::buildGUICommands()
