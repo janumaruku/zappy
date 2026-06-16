@@ -23,7 +23,7 @@ bool ConnectNbrCommand::operator()(const std::vector<std::string> &cmd, AISessio
 
 bool ConnectNbrCommand::execute(const std::vector<std::string> &, AISession &session)
 {
-    session.send("ConnectNbrCommand" + zappy::data::PACKET_END);
+    session.send("ConnectNbr" + zappy::data::PACKET_END);
     return true;
 }
 

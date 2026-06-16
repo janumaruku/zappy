@@ -21,9 +21,9 @@ bool SetCommand::operator()(const std::vector<std::string> &cmd, AISession &sess
     return execute(cmd, session);
 }
 
-bool SetCommand::execute(const std::vector<std::string> &cmd, AISession &session)
+bool SetCommand::execute(const std::vector<std::string> &, AISession &session)
 {
-    session.send("SetCommand" + zappy::data::PACKET_END);
+    session.send("Set" + zappy::data::PACKET_END);
     return true;
 }
 

@@ -21,9 +21,9 @@ bool RightCommand::operator()(const std::vector<std::string> &cmd, AISession &se
     return execute(cmd, session);
 }
 
-bool RightCommand::execute(const std::vector<std::string> &cmd, AISession &session)
+bool RightCommand::execute(const std::vector<std::string> &, AISession &session)
 {
-    session.send("RightCommand" + zappy::data::PACKET_END);
+    session.send("Right" + zappy::data::PACKET_END);
     return true;
 }
 

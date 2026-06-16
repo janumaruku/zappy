@@ -23,7 +23,7 @@ bool TakeCommand::operator()(const std::vector<std::string> &cmd, AISession &ses
 
 bool TakeCommand::execute(const std::vector<std::string> &cmd, AISession &session)
 {
-    session.send("TakeCommand" + zappy::data::PACKET_END);
+    session.send("Take" + cmd[0] + zappy::data::PACKET_END);
     return true;
 }
 

@@ -23,7 +23,7 @@ bool EjectCommand::operator()(const std::vector<std::string> &cmd, AISession &se
 
 bool EjectCommand::execute(const std::vector<std::string> &, AISession &session)
 {
-    session.send("EjectCommand" + zappy::data::PACKET_END);
+    session.send("Eject" + zappy::data::PACKET_END);
     return true;
 }
 

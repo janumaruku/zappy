@@ -21,9 +21,9 @@ bool ForwardCommand::operator()(const std::vector<std::string> &cmd, AISession &
     return execute(cmd, session);
 }
 
-bool ForwardCommand::execute(const std::vector<std::string> &cmd, AISession &session)
+bool ForwardCommand::execute(const std::vector<std::string> &, AISession &session)
 {
-    session.send("ForwardCommand" + zappy::data::PACKET_END);
+    session.send("Forward" + zappy::data::PACKET_END);
     return true;
 }
 

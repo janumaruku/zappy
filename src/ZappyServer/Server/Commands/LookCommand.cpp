@@ -21,9 +21,9 @@ bool LookCommand::operator()(const std::vector<std::string> &cmd, AISession &ses
     return execute(cmd, session);
 }
 
-bool LookCommand::execute(const std::vector<std::string> &cmd, AISession &session)
+bool LookCommand::execute(const std::vector<std::string> &, AISession &session)
 {
-    session.send("LookCommand" + zappy::data::PACKET_END);
+    session.send("Look" + zappy::data::PACKET_END);
     return true;
 }
 

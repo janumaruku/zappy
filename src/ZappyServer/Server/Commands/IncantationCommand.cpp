@@ -21,9 +21,9 @@ bool IncantationCommand::operator()(const std::vector<std::string> &cmd, AISessi
     return execute(cmd, session);
 }
 
-bool IncantationCommand::execute(const std::vector<std::string> &cmd, AISession &session)
+bool IncantationCommand::execute(const std::vector<std::string> &, AISession &session)
 {
-    session.send("IncantationCommand" + zappy::data::PACKET_END);
+    session.send("Incantation" + zappy::data::PACKET_END);
     return true;
 }
 

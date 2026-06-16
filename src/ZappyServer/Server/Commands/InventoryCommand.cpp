@@ -21,9 +21,9 @@ bool InventoryCommand::operator()(const std::vector<std::string> &cmd, AISession
     return execute(cmd, session);
 }
 
-bool InventoryCommand::execute(const std::vector<std::string> &cmd, AISession &session)
+bool InventoryCommand::execute(const std::vector<std::string> &, AISession &session)
 {
-    session.send("InventoryCommand" + zappy::data::PACKET_END);
+    session.send("Inventory" + zappy::data::PACKET_END);
     return true;
 }
 
