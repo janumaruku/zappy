@@ -6,13 +6,23 @@
 */
 
 #include <sstream>
+#include <iostream>
+#include "Commands.hpp"
 #include "StringUtils.hpp"
 #include "include/Commands.hpp"
 #include "include/ProtocolHandler.hpp"
-
-#include <iostream>
+#include "BctCommand.hpp"
+#include "MctCommand.hpp"
+#include "MszCommand.hpp"
 
 namespace zappy::gui {
+
+ProtocolHandler::ProtocolHandler() noexcept
+{
+    _registerCommand<BctCommand>();
+    _registerCommand<MctCommand>();
+    _registerCommand<MszCommand>();
+}
 
 void ProtocolHandler::handleLine(const std::string& line) noexcept
 {

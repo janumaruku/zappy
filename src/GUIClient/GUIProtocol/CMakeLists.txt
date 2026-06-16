@@ -1,7 +1,7 @@
 add_library(gui_protocol STATIC
 BctCommand.cpp
 MctCommand.cpp
-MscCommand.cpp
+MszCommand.cpp
 ProtocolHandler.cpp)
 
 target_include_directories(gui_protocol PUBLIC include)

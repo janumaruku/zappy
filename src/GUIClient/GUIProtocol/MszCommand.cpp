@@ -2,23 +2,23 @@
 ** EPITECH PROJECT, 2025
 ** ZPY
 ** File description:
-** BctCommand.cpp
+** MszCommand.cpp
 */
 
-#include "BctCommand.hpp"
+#include "MszCommand.hpp"
 #include <memory>
 
 namespace zappy::gui {
 
 template<typename... Args>
-bool BctCommand::execute(Args...args)
+bool MszCommand::execute(Args...args)
 {
     return true;
 }
 
 template<typename... Args>
 
-bool BctCommand::operator()(Args...args)
+bool MszCommand::operator()(Args...args)
 {
     return true;
 }
@@ -26,7 +26,7 @@ bool BctCommand::operator()(Args...args)
 template<typename... Args>
 std::unique_ptr<ICommand<Args...>>> create()
 {
-    return std::make_unique<ICommand<Args...>>(BctCommand<Args...>());
+    return std::make_unique<ICommand<Args...>>(MszCommand<Args...>());
 }
 
 }
