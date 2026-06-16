@@ -6,43 +6,35 @@
 */
 
 #include <sstream>
+#include <iostream>
+#include "Commands.hpp"
+#include "StringUtils.hpp"
 #include "include/Commands.hpp"
 #include "include/ProtocolHandler.hpp"
-
-#include <iostream>
+#include "BctCommand.hpp"
+#include "MctCommand.hpp"
+#include "MszCommand.hpp"
 
 namespace zappy::gui {
 
-ProtocolHandler::ProtocolHandler(WorldState &worldState) noexcept: _worldState{worldState}
+ProtocolHandler::ProtocolHandler() noexcept
 {
-    (void)_worldState;
-
-    _factory.registerCreator<MctCommand>("mct");
-    _factory.registerCreator<MszCommand>("msz");
-    _factory.registerCreator<BctCommand>("bct");
+    _registerCommand<BctCommand>();
+    _registerCommand<MctCommand>();
+    _registerCommand<MszCommand>();
 }
 
-void ProtocolHandler::handleLine(const std::string &line) noexcept
+void ProtocolHandler::handleLine(const std::string& line) noexcept
 {
+    auto cmd = utils::StringUtils::split(line);
+    auto toExec = _factory.create(cmd[0]);
+
     try {
-        std::vector<std::string> args;
-        std::istringstream iss(line);
-        std::string command;
-
-        while (iss >> command)
-            args.push_back(command);
-
-        // _factory.create(args[0], _worldState, args)
-    } catch (std::exception &e) {
-        std::cerr << e.what() << std::endl;
+        toExec->execute(_worldState, cmd);
+    } catch (const std::exception &e) {
+        std::cerr << "ko\n";
+        std::cerr.flush();
     }
 }
 
-void ProtocolHandler::registerCommand(
-    ) noexcept
-{
-    _factory.registerCreator<MszCommand>("msz");
-    _factory.registerCreator<BctCommand>("bct");
-    _factory.registerCreator<MctCommand>("mct");
-}
 }

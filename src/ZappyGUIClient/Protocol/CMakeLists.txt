@@ -1,4 +1,6 @@
-add_library(gui_protocol STATIC ProtocolHandler.cpp Commands.cpp)
+add_subdirectory(Commands)
+
+add_library(gui_protocol STATIC ProtocolHandler.cpp)
 
 target_include_directories(gui_protocol PUBLIC include)
 
