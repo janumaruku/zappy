@@ -63,7 +63,7 @@ private:
     uint _pending_commands = 0;
     std::queue<std::vector<std::string>> _commandQueue;
 
-    AIProtocolHandler &_protocolHandler;
+    std::unique_ptr<AIProtocolHandler> _protocolHandler;
 
 };
 
