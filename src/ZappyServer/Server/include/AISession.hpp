@@ -5,8 +5,7 @@
 ** New header
 */
 
-#ifndef AISESSION_HPP_
-    #define AISESSION_HPP_
+#pragma once
 
 #include <cstddef>
 #include <functional>
@@ -16,7 +15,6 @@
 #include <string>
 #include <vector>
 #include "AClientSession.hpp"
-#include "AIProtocolHandler.hpp"
 #include "ConnectedSocket.hpp"
 #include "Timer.hpp"
 #include "Player.hpp"
@@ -24,7 +22,7 @@
 
 namespace zappy::server {
 
-// placeholder
+    // placeholder
 constexpr uint COMMAND_TRIGGER_DIVISOR = 1;
 constexpr uint RESPONSE_TIME = 1;
 constexpr std::string PLACEHOLDER_SERVER_RESPONSE = "Welcome !";
@@ -33,6 +31,9 @@ constexpr std::string PLACEHOLDER_SERVER_RESPONSE = "Welcome !";
 constexpr std::string COMMAND_NOT_FOUND = "ko\n";
 
 constexpr uint MAX_PENDING_COMMANDS = 10;
+
+
+class AIProtocolHandler;
 
 class AISession : public AClientSession {
 public:
@@ -62,10 +63,8 @@ private:
     uint _pending_commands = 0;
     std::queue<std::vector<std::string>> _commandQueue;
 
-    AIProtocolHandler _protocolHandler;
+    AIProtocolHandler &_protocolHandler;
 
 };
 
 }
-
-#endif

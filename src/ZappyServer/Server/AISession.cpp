@@ -18,6 +18,7 @@
 #include "StringUtils.hpp"
 #include "ZappyConstants.hpp"
 #include "AISession.hpp"
+#include "AIProtocolHandler.hpp"
 
 namespace zappy::server {
 AISession::AISession(const std::shared_ptr<network::ConnectedSocket> &socket,
