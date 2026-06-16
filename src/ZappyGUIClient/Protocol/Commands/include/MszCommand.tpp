@@ -5,7 +5,6 @@
 ** MszCommand.cpp
 */
 
-
 #pragma once
 
 #include <memory>
@@ -20,9 +19,9 @@ bool MszCommand<Args...>::execute(Args...)
 }
 
 template<typename... Args>
-bool MszCommand<Args...>::operator()(Args...)
+bool MszCommand<Args...>::operator()(Args...args)
 {
-    return true;
+    return execute(args...);
 }
 
 template<typename... Args>

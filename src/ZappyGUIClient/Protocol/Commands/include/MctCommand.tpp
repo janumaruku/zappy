@@ -19,9 +19,9 @@ bool MctCommand<Args...>::execute(Args...)
 }
 
 template<typename... Args>
-bool MctCommand<Args...>::operator()(Args...)
+bool MctCommand<Args...>::operator()(Args...args)
 {
-    return true;
+    return execute(args...);
 }
 
 template<typename... Args>

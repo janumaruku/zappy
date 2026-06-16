@@ -19,9 +19,9 @@ bool BctCommand<Args...>::execute(Args...)
 }
 
 template<typename... Args>
-bool BctCommand<Args...>::operator()(Args...)
+bool BctCommand<Args...>::operator()(Args...args)
 {
-    return true;
+    return execute(args...);
 }
 
 template<typename... Args>
