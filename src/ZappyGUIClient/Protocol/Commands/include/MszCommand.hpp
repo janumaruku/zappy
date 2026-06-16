@@ -1,10 +1,9 @@
 /*
-** EPITECH PROJECT, 2025
-** ZPY
+** EPITECH PROJECT, 2026
+** zappy
 ** File description:
-** MctCommand.hpp
+** Commands
 */
-
 
 #pragma once
 
@@ -15,15 +14,17 @@
 namespace zappy::gui {
 
 template <typename...Args>
-class MctCommand: public ICommand<Args...> {
+class MszCommand: public ICommand<Args...> {
 public:
-    virtual ~MctCommand() = default;
+    virtual ~MszCommand() = default;
 
     bool execute(Args...args) override;
 
     bool operator()(Args...args) override;
 
-    static std::unique_ptr<ICommand<Args...>>> create();
+    static std::unique_ptr<ICommand<Args...>> create();
 };
 
 }
+
+#include "MszCommand.tpp"

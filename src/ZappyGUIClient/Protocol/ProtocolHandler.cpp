@@ -7,21 +7,22 @@
 
 #include <sstream>
 #include <iostream>
-#include "Commands.hpp"
+#include <string>
+#include <vector>
 #include "StringUtils.hpp"
-#include "include/Commands.hpp"
-#include "include/ProtocolHandler.hpp"
-#include "BctCommand.hpp"
-#include "MctCommand.hpp"
-#include "MszCommand.hpp"
+#include "ProtocolHandler.hpp"
+#include "Commands/include/BctCommand.hpp"
+#include "Commands/include/MctCommand.hpp"
+#include "Commands/include/MszCommand.hpp"
+#include "WorldState.hpp"
 
 namespace zappy::gui {
 
-ProtocolHandler::ProtocolHandler() noexcept
+ProtocolHandler::ProtocolHandler(WorldState &w) noexcept : _worldState(w)
 {
-    _registerCommand<BctCommand>();
-    _registerCommand<MctCommand>();
-    _registerCommand<MszCommand>();
+    registerCommand<BctCommand<WorldState &, std::vector<std::string>>>("bct");
+    registerCommand<MctCommand<WorldState &, std::vector<std::string>>>("mct");
+    registerCommand<MszCommand<WorldState &, std::vector<std::string>>>("msz");
 }
 
 void ProtocolHandler::handleLine(const std::string& line) noexcept

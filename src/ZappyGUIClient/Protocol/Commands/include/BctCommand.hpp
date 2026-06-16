@@ -22,7 +22,9 @@ public:
 
     bool operator()(Args...args) override;
 
-    static std::unique_ptr<ICommand<Args...>>> create();
+    static std::unique_ptr<ICommand<Args...>> create();
 };
 
 }
+
+#include "BctCommand.tpp"

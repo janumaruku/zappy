@@ -16,9 +16,6 @@
 #include "FactoryTemplate.hpp"
 #include "ICommand.hpp"
 #include "WorldState.hpp"
-#include "MctCommand.hpp"
-#include "BctCommand.hpp"
-#include "MszCommand.hpp"
 
 namespace zappy::gui {
 
@@ -27,7 +24,8 @@ public:
 using ProtocolCommand = ICommand<WorldState &, std::vector<std::string>>;
 using CommandFactory = designPattern::FactoryTemplate<ProtocolCommand, std::string>;
 
-    ProtocolHandler() noexcept;
+    ProtocolHandler() = delete;
+    ProtocolHandler(WorldState &) noexcept;
 
     void handleLine(const std::string &line) noexcept;
 
