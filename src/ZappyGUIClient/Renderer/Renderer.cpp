@@ -61,4 +61,9 @@ void Renderer::updateAnimation(const GUIPlayer &player)
 {
     (void)player;
 }
+
+Vector2 Renderer::tileToPixel(const data::Position pos) const
+{
+    return {pos.getX() * TILE_SIZE, pos.getY() * TILE_SIZE};
+}
 } // namespace zappy::gui
