@@ -28,9 +28,9 @@ ProtocolHandler::ProtocolHandler(WorldState &w) noexcept : _worldState(w)
 void ProtocolHandler::handleLine(const std::string& line) noexcept
 {
     auto cmd = utils::StringUtils::split(line);
-    auto toExec = _factory.create(cmd[0]);
-
+    
     try {
+        auto toExec = _factory.create(cmd[0]);
         toExec->execute(_worldState, cmd);
     } catch (const std::exception &e) {
         std::cerr << "ko\n";
