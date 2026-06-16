@@ -17,7 +17,9 @@
 
 namespace zappy::server {
 
-using AICommandFactory = designPattern::FactoryTemplate<ICommand, std::string>;
+using AIProtocolCommand = ICommand<AISession&, std::vector<std::string>>;
+using AICommandFactory = designPattern::FactoryTemplate<AIProtocolCommand, std::string>;
+
 class AIProtocolHandler {
 public:
 
@@ -27,7 +29,10 @@ public:
 
     void handleLine(const std::vector<std::string>&, AISession &);
 
-    const std::vector<std::string> &getAvailableCommands() const;
+    const std::vector<std::string> &getAvailableCommands() const noexcept;
+
+    template<typename T>
+    void registerCreator(const std::string &name) noexcept;
 
 private:
     AICommandFactory _factory;
