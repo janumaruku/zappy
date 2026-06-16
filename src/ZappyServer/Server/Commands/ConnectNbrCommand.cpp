@@ -18,6 +18,7 @@ namespace zappy::server {
 
 bool ConnectNbrCommand::execute(AISession& s, const std::vector<std::string>& v)
 {
+    s.send(v[0]);
     return true;
 }
 

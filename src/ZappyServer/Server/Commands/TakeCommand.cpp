@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <format>
 #include <memory>
 #include <string>
 #include <vector>
@@ -18,6 +19,7 @@ namespace zappy::server {
 
 bool TakeCommand::execute(AISession& s, const std::vector<std::string>& v)
 {
+    s.send(std::format("{} {}", v[0], v[1]));
     return true;
 }
 
