@@ -5,7 +5,7 @@
 ** TakeCommand.cpp
 */
 
-#pragma once
+
 
 #include <format>
 #include <memory>

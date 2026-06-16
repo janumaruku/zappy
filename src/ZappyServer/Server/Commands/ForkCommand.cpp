@@ -5,7 +5,7 @@
 ** ForkCommand.cpp
 */
 
-#pragma once
+
 
 #include <memory>
 #include <string>
