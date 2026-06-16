@@ -13,10 +13,13 @@
 
 namespace zappy::gui {
 
-ProtocolHandler::ProtocolHandler(WorldState &worldState) noexcept: _worldState(
-    worldState)
+ProtocolHandler::ProtocolHandler(WorldState &worldState) noexcept: _worldState{worldState}
 {
-    registerCommand();
+    (void)_worldState;
+
+    _factory.registerCreator<MctCommand>("mct");
+    _factory.registerCreator<MszCommand>("msz");
+    _factory.registerCreator<BctCommand>("bct");
 }
 
 void ProtocolHandler::handleLine(const std::string &line) noexcept

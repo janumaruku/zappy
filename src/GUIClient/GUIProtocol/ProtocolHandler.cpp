@@ -6,6 +6,7 @@
 */
 
 #include <sstream>
+#include "StringUtils.hpp"
 #include "include/Commands.hpp"
 #include "include/ProtocolHandler.hpp"
 
@@ -13,33 +14,17 @@
 
 namespace zappy::gui {
 
-ProtocolHandler::ProtocolHandler(WorldState &worldState) noexcept : _worldState(
-    worldState)
-{
-    registerCommand();
-}
-
-
 void ProtocolHandler::handleLine(const std::string& line) noexcept
 {
+    auto cmd = utils::StringUtils::split(line);
+    auto toExec = _factory.create(cmd[0]);
+
     try {
-        std::vector<std::string> args;
-        std::istringstream iss(line);
-        std::string command;
-
-        while (iss >> command)
-            args.push_back(command);
-
-        // _factory.create(args[0], _worldState, args)->execute(_worldState, args);
-    } catch (std::exception &e) {
-        std::cerr << e.what() << std::endl;
+        toExec->execute(_worldState, cmd);
+    } catch (const std::exception &e) {
+        std::cerr << "ko\n";
+        std::cerr.flush();
     }
 }
 
-
-void ProtocolHandler::registerCommand(
-    ) noexcept
-{
-    _factory.registerCreator<MszCommand>("msz");
-}
 }
