@@ -5,6 +5,7 @@
 ** BroadcastCommand.cpp
 */
 
+#include <cstddef>
 #include <memory>
 #include <string>
 #include <vector>
@@ -21,9 +22,17 @@ bool BroadcastCommand::operator()(const std::vector<std::string> &cmd, AISession
     return execute(cmd, session);
 }
 
-bool BroadcastCommand::execute(const std::vector<std::string> &, AISession &session)
+bool BroadcastCommand::execute(const std::vector<std::string> &cmd, AISession &session)
 {
-    session.send("Broadcast" + zappy::data::PACKET_END);
+    std::string message;
+    std::size_t messageWords = cmd.size() - 1;
+
+    for (std::size_t i = 0; i != messageWords; i++) {
+        message.append(cmd[i]);
+        if (i < messageWords)
+            message.append(" ");
+    }
+    session.send("Broadcast" + message + zappy::data::PACKET_END);
     return true;
 }
 
