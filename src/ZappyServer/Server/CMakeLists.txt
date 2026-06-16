@@ -3,10 +3,10 @@ add_library(server STATIC
     AISession.cpp
     GUISession.cpp
     Server.cpp
-    ForwardCommand.cpp
-    LeftCommand.hpp
 )
+
+add_subdirectory(Commands)
 
 target_include_directories(server PUBLIC include)
 
-target_link_libraries(server PUBLIC network world utils warning_options)
+target_link_libraries(server PUBLIC network world server_commands utils warning_options)

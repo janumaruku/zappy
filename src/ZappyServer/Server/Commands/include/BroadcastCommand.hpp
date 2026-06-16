@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2025
 ** ZPY
 ** File description:
-** ForwardCommand.hpp
+** BroadcastCommand.hpp
 */
 
 #pragma once
@@ -11,11 +11,11 @@
 
 namespace zappy::server {
 
-class ForwardCommand : public ICommand {
+class BroadcastCommand : public ICommand {
 public:
-    ForwardCommand() = default;
+    BroadcastCommand() = default;
 
-    ~ForwardCommand() override = default;
+    ~BroadcastCommand() override = default;
 
     bool operator()(
         AISession &session,
