@@ -7,7 +7,6 @@
 
 #include "AIProtocolHandler.hpp"
 #include <string>
-#include <unordered_map>
 #include <vector>
 #include <exception>
 #include "AISession.hpp"
@@ -17,38 +16,26 @@ namespace zappy::server {
 
 AIProtocolHandler::AIProtocolHandler()
 {
-    registerCreator<BroadcastCommand<AISession, std::vector<std::string>>>("Broadcast");
-    _availableCommands.emplace_back("Broadcast");
-    registerCreator<ConnectNbrCommand<AISession, std::vector<std::string>>>("Connect_nbr");
-    _availableCommands.emplace_back("Connect_nbr");
-    registerCreator<EjectCommand<AISession, std::vector<std::string>>>("Eject");
-    _availableCommands.emplace_back("Eject");
-    registerCreator<ForkCommand<AISession, std::vector<std::string>>>("Fork");
-    _availableCommands.emplace_back("Fork");
-    registerCreator<ForwardCommand<AISession, std::vector<std::string>>>("Forward");
-    _availableCommands.emplace_back("Forward");
-    registerCreator<IncantationCommand<AISession, std::vector<std::string>>>("Incantation");
-    _availableCommands.emplace_back("Incantation");
-    registerCreator<InventoryCommand<AISession, std::vector<std::string>>>("Inventory");
-    _availableCommands.emplace_back("Inventory");
-    registerCreator<LeftCommand<AISession, std::vector<std::string>>>("Left");
-    _availableCommands.emplace_back("Left");
-    registerCreator<LookCommand<AISession, std::vector<std::string>>>("Look");
-    _availableCommands.emplace_back("Look");
-    registerCreator<RightCommand<AISession, std::vector<std::string>>>("Right");
-    _availableCommands.emplace_back("Right");
-    registerCreator<SetCommand<AISession, std::vector<std::string>>>("Set");
-    _availableCommands.emplace_back("Set");
-    registerCreator<TakeCommand<AISession, std::vector<std::string>>>("Take");
-    _availableCommands.emplace_back("Take");
+    registerCreators();
+}
+
+void AIProtocolHandler::registerCreators() noexcept
+{
+    _factory.registerCreator<BroadcastCommand>("Broadcast");
+    _factory.registerCreator<ConnectNbrCommand>("Connect_nbr");
+    _factory.registerCreator<EjectCommand>("Eject");
+    _factory.registerCreator<ForkCommand>("Fork");
+    _factory.registerCreator<ForwardCommand>("Forward");
+    _factory.registerCreator<IncantationCommand>("Incantation");
+    _factory.registerCreator<InventoryCommand>("Inventory");
+    _factory.registerCreator<LeftCommand>("Left");
+    _factory.registerCreator<LookCommand>("Look");
+    _factory.registerCreator<RightCommand>("Right");
+    _factory.registerCreator<SetCommand>("Set");
+    _factory.registerCreator<TakeCommand>("Take");
 }
 
 AIProtocolHandler::~AIProtocolHandler() = default;
-
-const std::vector<std::string> &AIProtocolHandler::getAvailableCommands() const noexcept
-{
-    return _availableCommands;
-}
 
 void AIProtocolHandler::handleLine(const std::vector<std::string> &cmd, AISession &session)
 {
@@ -59,5 +46,10 @@ void AIProtocolHandler::handleLine(const std::vector<std::string> &cmd, AISessio
         session.send(COMMAND_NOT_FOUND);
     }
 }
+
+const AICommandFactory &AIProtocolHandler::getFactory() const
+{
+    return _factory;
+} 
 
 }

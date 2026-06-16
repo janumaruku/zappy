@@ -34,14 +34,8 @@ void AISession::handleTransmission()
         return;
 
     const auto &commandPrefix = splittedLine[0];
-    const auto &availableCommands = _protocolHandler->getAvailableCommands();
 
-    auto it = std::ranges::find_if(availableCommands,
-        [availableCommands, commandPrefix](const std::string &str) {
-            return str == commandPrefix;
-        }
-    );
-    if (it == availableCommands.end()) {
+    if (!_protocolHandler->getFactory().getCreatorsMap().contains(commandPrefix)) {
         send(COMMAND_NOT_FOUND);
         return;
     }
