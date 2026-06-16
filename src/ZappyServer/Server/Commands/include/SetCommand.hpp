@@ -8,20 +8,20 @@
 #pragma once
 
 #include "ICommand.hpp"
+#include "AIProtocolHandler.hpp"
 
 namespace zappy::server {
-template<typename... Args>
-class SetCommand : public ICommand<Args...> {
+class SetCommand : public AIProtocolCommand {
 public:
     SetCommand() = default;
 
     ~SetCommand() override = default;
 
-    bool operator()(Args... args) override;
+    bool operator()(AISession &, const std::vector<std::string> &) override;
 
-    bool execute(Args... args) override;
+    bool execute(AISession &, const std::vector<std::string> &) override;
 
-    static std::unique_ptr<ICommand<Args...>> create();
+    static std::unique_ptr<AIProtocolCommand> create();
 
 };
 
