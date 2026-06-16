@@ -5,8 +5,10 @@
 ** IncantationCommand.cpp
 */
 
+#include <memory>
 #include <string>
 #include <vector>
+#include "ICommand.hpp"
 #include "Server.hpp"
 #include "IncantationCommand.hpp"
 #include "AISession.hpp"
@@ -19,10 +21,15 @@ bool IncantationCommand::operator()(AISession &session, const std::vector<std::s
     return execute(session, cmd);
 }
 
-bool IncantationCommand::execute(AISession &session, const std::vector<std::string> &cmd)
+bool IncantationCommand::execute(AISession &session, const std::vector<std::string> &)
 {
-    session.send("Incantation" + zappy::data::PACKET_END);
+    session.send("IncantationCommand" + zappy::data::PACKET_END);
     return true;
+}
+
+std::unique_ptr<ICommand> IncantationCommand::create()
+{
+    return std::unique_ptr<IncantationCommand>(new IncantationCommand());
 }
 
 }

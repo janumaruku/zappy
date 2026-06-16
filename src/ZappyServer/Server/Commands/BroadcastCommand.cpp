@@ -5,8 +5,10 @@
 ** BroadcastCommand.cpp
 */
 
+#include <memory>
 #include <string>
 #include <vector>
+#include "ICommand.hpp"
 #include "Server.hpp"
 #include "BroadcastCommand.hpp"
 #include "AISession.hpp"
@@ -19,10 +21,15 @@ bool BroadcastCommand::operator()(AISession &session, const std::vector<std::str
     return execute(session, cmd);
 }
 
-bool BroadcastCommand::execute(AISession &session, const std::vector<std::string> &cmd)
+bool BroadcastCommand::execute(AISession &session, const std::vector<std::string> &)
 {
     session.send("Broadcast" + zappy::data::PACKET_END);
     return true;
+}
+
+std::unique_ptr<ICommand> BroadcastCommand::create()
+{
+    return std::unique_ptr<BroadcastCommand>(new BroadcastCommand());
 }
 
 }

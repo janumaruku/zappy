@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2025
 ** ZPY
 ** File description:
-** RightCommand.hpp
+** TakeCommand.hpp
 */
 
 #pragma once
@@ -11,11 +11,11 @@
 
 namespace zappy::server {
 
-class RightCommand : public ICommand {
+class TakeCommand : public ICommand {
 public:
-    RightCommand() = default;
+    TakeCommand() = default;
 
-    ~RightCommand() override = default;
+    ~TakeCommand() override = default;
 
     bool operator()(
         AISession &session,
@@ -23,6 +23,9 @@ public:
 
     bool execute(AISession &session,
         const std::vector<std::string> &cmd) override;
+
+    static std::unique_ptr<ICommand> create();
+
 };
 
 }

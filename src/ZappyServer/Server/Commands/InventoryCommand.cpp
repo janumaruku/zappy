@@ -5,8 +5,10 @@
 ** InventoryCommand.cpp
 */
 
+#include <memory>
 #include <string>
 #include <vector>
+#include "ICommand.hpp"
 #include "Server.hpp"
 #include "InventoryCommand.hpp"
 #include "AISession.hpp"
@@ -19,10 +21,15 @@ bool InventoryCommand::operator()(AISession &session, const std::vector<std::str
     return execute(session, cmd);
 }
 
-bool InventoryCommand::execute(AISession &session, const std::vector<std::string> &cmd)
+bool InventoryCommand::execute(AISession &session, const std::vector<std::string> &)
 {
-    session.send("Inventory" + zappy::data::PACKET_END);
+    session.send("InventoryCommand" + zappy::data::PACKET_END);
     return true;
+}
+
+std::unique_ptr<ICommand> InventoryCommand::create()
+{
+    return std::unique_ptr<InventoryCommand>(new InventoryCommand());
 }
 
 }

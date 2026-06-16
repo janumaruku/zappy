@@ -6,18 +6,18 @@
 */
 
 #pragma once
-
 #include <string>
 #include <unordered_map>
 #include <vector>
 #include "FactoryTemplate.hpp"
-#include "ForwardCommand.hpp"
 #include "ICommand.hpp"
 #include "Server.hpp"
+#include "AISessionCommands.hpp"
 
 namespace zappy::server {
 
 class AIProtocolHandler {
+
 public:
 using AICommandFactory = designPattern::FactoryTemplate<ICommand, std::string>;
 
@@ -29,5 +29,4 @@ using AICommandFactory = designPattern::FactoryTemplate<ICommand, std::string>;
 private:
     AICommandFactory _factory;
 };
-
 }

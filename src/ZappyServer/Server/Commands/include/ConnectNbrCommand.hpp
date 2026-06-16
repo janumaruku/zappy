@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2025
 ** ZPY
 ** File description:
-** ConnectCommand.hpp
+** ConnectNbrCommand.hpp
 */
 
 #pragma once
@@ -11,11 +11,11 @@
 
 namespace zappy::server {
 
-class ConnectCommand : public ICommand {
+class ConnectNbrCommand : public ICommand {
 public:
-    ConnectCommand() = default;
+    ConnectNbrCommand() = default;
 
-    ~ConnectCommand() override = default;
+    ~ConnectNbrCommand() override = default;
 
     bool operator()(
         AISession &session,
@@ -23,6 +23,9 @@ public:
 
     bool execute(AISession &session,
         const std::vector<std::string> &cmd) override;
+
+    static std::unique_ptr<ICommand> create();
+
 };
 
 }

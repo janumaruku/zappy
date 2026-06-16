@@ -23,6 +23,9 @@ public:
 
     bool execute(AISession &session,
         const std::vector<std::string> &cmd) override;
+
+    static std::unique_ptr<ICommand> create();
+
 };
 
 }

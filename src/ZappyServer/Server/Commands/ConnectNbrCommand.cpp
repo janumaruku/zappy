@@ -5,8 +5,10 @@
 ** ConnectNbrCommand.cpp
 */
 
+#include <memory>
 #include <string>
 #include <vector>
+#include "ICommand.hpp"
 #include "Server.hpp"
 #include "ConnectNbrCommand.hpp"
 #include "AISession.hpp"
@@ -19,10 +21,15 @@ bool ConnectNbrCommand::operator()(AISession &session, const std::vector<std::st
     return execute(session, cmd);
 }
 
-bool ConnectNbrCommand::execute(AISession &session, const std::vector<std::string> &cmd)
+bool ConnectNbrCommand::execute(AISession &session, const std::vector<std::string> &)
 {
-    session.send("ConnectNbr" + zappy::data::PACKET_END);
+    session.send("ConnectNbrCommand" + zappy::data::PACKET_END);
     return true;
+}
+
+std::unique_ptr<ICommand> ConnectNbrCommand::create()
+{
+    return std::unique_ptr<ConnectNbrCommand>(new ConnectNbrCommand());
 }
 
 }

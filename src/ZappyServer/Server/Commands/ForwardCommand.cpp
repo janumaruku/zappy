@@ -5,8 +5,10 @@
 ** ForwardCommand.cpp
 */
 
+#include <memory>
 #include <string>
 #include <vector>
+#include "ICommand.hpp"
 #include "Server.hpp"
 #include "ForwardCommand.hpp"
 #include "AISession.hpp"
@@ -19,10 +21,15 @@ bool ForwardCommand::operator()(AISession &session, const std::vector<std::strin
     return execute(session, cmd);
 }
 
-bool ForwardCommand::execute(AISession &session, const std::vector<std::string> &cmd)
+bool ForwardCommand::execute(AISession &session, const std::vector<std::string> &)
 {
-    session.send("Forward" + zappy::data::PACKET_END);
+    session.send("ForwardCommand" + zappy::data::PACKET_END);
     return true;
+}
+
+std::unique_ptr<ICommand> ForwardCommand::create()
+{
+    return std::unique_ptr<ForwardCommand>(new ForwardCommand());
 }
 
 }

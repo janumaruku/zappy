@@ -5,8 +5,10 @@
 ** SetCommand.cpp
 */
 
+#include <memory>
 #include <string>
 #include <vector>
+#include "ICommand.hpp"
 #include "Server.hpp"
 #include "SetCommand.hpp"
 #include "AISession.hpp"
@@ -19,10 +21,15 @@ bool SetCommand::operator()(AISession &session, const std::vector<std::string> &
     return execute(session, cmd);
 }
 
-bool SetCommand::execute(AISession &session, const std::vector<std::string> &cmd)
+bool SetCommand::execute(AISession &session, const std::vector<std::string> &)
 {
-    session.send("Set" + cmd[1] + zappy::data::PACKET_END);
+    session.send("SetCommand" + zappy::data::PACKET_END);
     return true;
+}
+
+std::unique_ptr<ICommand> SetCommand::create()
+{
+    return std::unique_ptr<SetCommand>(new SetCommand());
 }
 
 }
