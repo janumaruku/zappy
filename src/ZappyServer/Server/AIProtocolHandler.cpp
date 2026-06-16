@@ -43,6 +43,8 @@ AIProtocolHandler::AIProtocolHandler()
     _availableCommands.emplace_back("Take");
 }
 
+AIProtocolHandler::~AIProtocolHandler() = default;
+
 const std::vector<std::string> &AIProtocolHandler::getAvailableCommands() const
 {
     return _availableCommands;
