@@ -11,4 +11,4 @@ target_include_directories(server PUBLIC
     include
     Commands/include
 )
-target_link_libraries(server PUBLIC network world zappy_server_commands utils warning_options)
+target_link_libraries(server PUBLIC network world utils warning_options)
