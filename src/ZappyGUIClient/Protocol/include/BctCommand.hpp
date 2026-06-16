@@ -13,7 +13,7 @@
 
 namespace zappy::gui {
 
-class BctCommand : public ProtocolCommand  {
+class BctCommand : public IGUICommand  {
 public:
     ~BctCommand() override = default;
 
@@ -21,7 +21,7 @@ public:
 
     bool operator()(WorldState &, const std::vector<std::string> &) override;
 
-    static std::unique_ptr<ProtocolCommand> create();
+    static std::unique_ptr<IGUICommand> create();
 };
 
 }

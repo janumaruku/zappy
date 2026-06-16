@@ -19,11 +19,11 @@
 
 namespace zappy::gui {
 
-using ProtocolCommand = ICommand<WorldState &, const std::vector<std::string> &>;
+using IGUICommand = ICommand<WorldState &, const std::vector<std::string> &>;
 
 class ProtocolHandler {
 public:
-using CommandFactory = designPattern::FactoryTemplate<ProtocolCommand, std::string>;
+using CommandFactory = designPattern::FactoryTemplate<IGUICommand, std::string>;
 
     ProtocolHandler() = delete;
     ProtocolHandler(WorldState &) noexcept;
