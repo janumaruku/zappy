@@ -33,6 +33,9 @@ public:
     void notifyGUI(const std::string &message);
     void broadcastToAll(const std::string &data);
 
+    [[nodiscard]] network::IOContext &getIoContext();
+    [[nodiscard]] const network::IOContext &getIoContext() const;
+
 private:
     network::IOContext _ioContext;
     network::Acceptor _acceptor;

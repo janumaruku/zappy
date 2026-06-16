@@ -32,6 +32,17 @@ void Server::run()
     _ioContext.run();
 }
 
+[[nodiscard]] network::IOContext &Server::getIoContext()
+{
+    return _ioContext;
+}
+
+[[nodiscard]] const network::IOContext &Server::getIoContext() const
+{
+    return _ioContext;
+}
+
+
 void Server::startAccept()
 {
     _acceptor.asyncAccept([this](const std::error_code &error,

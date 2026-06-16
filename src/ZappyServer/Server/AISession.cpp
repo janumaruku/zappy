@@ -22,7 +22,8 @@
 
 namespace zappy::server {
 AISession::AISession(const std::shared_ptr<network::ConnectedSocket> &socket,
-    Server &server, Player &player): AClientSession{socket}, _server{server}, _player{player}
+    Server &server, Player &player): AClientSession{socket}, _server{server}, _player{player},
+    _command_timer(server.getIoContext(), 1), _starvation_timer(server.getIoContext(), 1)
 {
 }
 
@@ -33,7 +34,7 @@ void AISession::handleTransmission()
         return;
 
     const auto &commandPrefix = splittedLine[0];
-    const auto &availableCommands = _protocolHandler.getAvailableCommands();
+    const auto &availableCommands = _protocolHandler->getAvailableCommands();
 
     auto it = std::ranges::find_if(availableCommands,
         [availableCommands, commandPrefix](const std::string &str) {
@@ -59,7 +60,7 @@ void AISession::executeNext()
 {
     const auto &command = _commandQueue.front();
 
-    _protocolHandler.handleLine(command, *this);
+    _protocolHandler->handleLine(command, *this);
 }
 
 void AISession::onCommandComplete()

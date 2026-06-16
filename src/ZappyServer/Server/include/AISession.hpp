@@ -41,7 +41,7 @@ public:
     AISession() = delete;
     explicit AISession(const std::shared_ptr<network::ConnectedSocket> &socket,
         Server &server, Player &player);
-    ~AISession() override = default;
+    ~AISession() override;
 
     void handleTransmission() override;
 
