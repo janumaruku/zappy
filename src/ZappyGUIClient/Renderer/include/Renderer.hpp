@@ -14,7 +14,10 @@
 #include "WorldState.hpp"
 
 namespace zappy::gui {
+
+
 class Renderer {
+    const float TILE_SIZE = 10;
 public:
     Renderer();
     ~Renderer();
@@ -29,6 +32,7 @@ private:
             &players);
     static void renderEggs(const std::map<unsigned int, data::Egg> &eggs);
     static void updateAnimation(const GUIPlayer &player);
+    Vector2 tileToPixel(data::Position pos) const;
 
     std::map<std::string, Texture2D> _textures;
     // std::map<data::PlayerId, Animation> _animations;
