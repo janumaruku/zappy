@@ -22,7 +22,7 @@ Player::Player(const PlayerId &id, const TeamId &team,
 
 void Player::left()
 {
-    if (static_cast<int>(_orientation) == 0) {
+    if (static_cast<int>(_orientation) - 1 == 0) {
         _orientation = data::Orientation::LEFT;
         return;
     }
