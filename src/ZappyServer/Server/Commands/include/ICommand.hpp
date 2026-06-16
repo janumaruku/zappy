@@ -14,19 +14,16 @@
 
 namespace zappy::server {
 
+template <typename... Args>
 class ICommand {
 public:
-    ICommand() = default;
-
     virtual ~ICommand() = default;
 
-    virtual bool operator()(
-        const std::vector<std::string> &cmd,
-        AISession &session) = 0;
+    virtual bool execute(Args... args) = 0;
 
-    virtual bool execute(const std::vector<std::string> &cmd,
-        AISession &session) = 0;
+    virtual bool operator()(Args... args) = 0;
 };
+
 
 }
 #endif // !ICOMMAND_HPP

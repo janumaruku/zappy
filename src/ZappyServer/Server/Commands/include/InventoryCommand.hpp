@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2025
 ** ZPY
 ** File description:
-** InventoryCommand.hpp
+** InventoryCommandCommand.hpp
 */
 
 #pragma once
@@ -10,21 +10,18 @@
 #include "ICommand.hpp"
 
 namespace zappy::server {
-
-class InventoryCommand : public ICommand {
+template<typename... Args>
+class InventoryCommandCommand : public ICommand<Args...> {
 public:
-    InventoryCommand() = default;
+    InventoryCommandCommand() = default;
 
-    ~InventoryCommand() override = default;
+    ~InventoryCommandCommand() override = default;
 
-    bool operator()(
-        const std::vector<std::string> &cmd,
-        AISession &session) override;
+    bool operator()(Args... args) override;
 
-    bool execute(const std::vector<std::string> &cmd,
-        AISession &session) override;
+    bool execute(Args... args) override;
 
-    static std::unique_ptr<ICommand> create();
+    static std::unique_ptr<ICommand<Args...>> create();
 
 };
 

@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2025
 ** ZPY
 ** File description:
-** SetCommand.hpp
+** SetCommandCommand.hpp
 */
 
 #pragma once
@@ -10,21 +10,18 @@
 #include "ICommand.hpp"
 
 namespace zappy::server {
-
-class SetCommand : public ICommand {
+template<typename... Args>
+class SetCommandCommand : public ICommand<Args...> {
 public:
-    SetCommand() = default;
+    SetCommandCommand() = default;
 
-    ~SetCommand() override = default;
+    ~SetCommandCommand() override = default;
 
-    bool operator()(
-        const std::vector<std::string> &cmd,
-        AISession &session) override;
+    bool operator()(Args... args) override;
 
-    bool execute(const std::vector<std::string> &cmd,
-        AISession &session) override;
+    bool execute(Args... args) override;
 
-    static std::unique_ptr<ICommand> create();
+    static std::unique_ptr<ICommand<Args...>> create();
 
 };
 

@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2025
 ** ZPY
 ** File description:
-** ForwardCommand.hpp
+** ForwardCommandCommand.hpp
 */
 
 #pragma once
@@ -10,21 +10,18 @@
 #include "ICommand.hpp"
 
 namespace zappy::server {
-
-class ForwardCommand : public ICommand {
+template<typename... Args>
+class ForwardCommandCommand : public ICommand<Args...> {
 public:
-    ForwardCommand() = default;
+    ForwardCommandCommand() = default;
 
-    ~ForwardCommand() override = default;
+    ~ForwardCommandCommand() override = default;
 
-    bool operator()(
-        const std::vector<std::string> &cmd,
-        AISession &session) override;
+    bool operator()(Args... args) override;
 
-    bool execute(const std::vector<std::string> &cmd,
-        AISession &session) override;
+    bool execute(Args... args) override;
 
-    static std::unique_ptr<ICommand> create();
+    static std::unique_ptr<ICommand<Args...>> create();
 
 };
 

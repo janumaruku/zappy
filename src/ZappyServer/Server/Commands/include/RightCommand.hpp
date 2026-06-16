@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2025
 ** ZPY
 ** File description:
-** RightCommand.hpp
+** RightCommandCommand.hpp
 */
 
 #pragma once
@@ -10,21 +10,18 @@
 #include "ICommand.hpp"
 
 namespace zappy::server {
-
-class RightCommand : public ICommand {
+template<typename... Args>
+class RightCommandCommand : public ICommand<Args...> {
 public:
-    RightCommand() = default;
+    RightCommandCommand() = default;
 
-    ~RightCommand() override = default;
+    ~RightCommandCommand() override = default;
 
-    bool operator()(
-        const std::vector<std::string> &cmd,
-        AISession &session) override;
+    bool operator()(Args... args) override;
 
-    bool execute(const std::vector<std::string> &cmd,
-        AISession &session) override;
+    bool execute(Args... args) override;
 
-    static std::unique_ptr<ICommand> create();
+    static std::unique_ptr<ICommand<Args...>> create();
 
 };
 

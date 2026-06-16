@@ -10,21 +10,18 @@
 #include "ICommand.hpp"
 
 namespace zappy::server {
-
-class BroadcastCommand : public ICommand {
+template<typename... Args>
+class BroadcastCommand : public ICommand<Args...> {
 public:
     BroadcastCommand() = default;
 
     ~BroadcastCommand() override = default;
 
-    bool operator()(
-        const std::vector<std::string> &cmd,
-        AISession &session) override;
+    bool operator()(Args... args) override;
 
-    bool execute(const std::vector<std::string> &cmd,
-        AISession &session) override;
+    bool execute(Args... args) override;
 
-    static std::unique_ptr<ICommand> create();
+    static std::unique_ptr<ICommand<Args...>> create();
 
 };
 

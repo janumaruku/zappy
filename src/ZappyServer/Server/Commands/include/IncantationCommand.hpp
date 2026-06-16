@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2025
 ** ZPY
 ** File description:
-** IncantationCommand.hpp
+** IncantationCommandCommand.hpp
 */
 
 #pragma once
@@ -10,21 +10,18 @@
 #include "ICommand.hpp"
 
 namespace zappy::server {
-
-class IncantationCommand : public ICommand {
+template<typename... Args>
+class IncantationCommandCommand : public ICommand<Args...> {
 public:
-    IncantationCommand() = default;
+    IncantationCommandCommand() = default;
 
-    ~IncantationCommand() override = default;
+    ~IncantationCommandCommand() override = default;
 
-    bool operator()(
-        const std::vector<std::string> &cmd,
-        AISession &session) override;
+    bool operator()(Args... args) override;
 
-    bool execute(const std::vector<std::string> &cmd,
-        AISession &session) override;
+    bool execute(Args... args) override;
 
-    static std::unique_ptr<ICommand> create();
+    static std::unique_ptr<ICommand<Args...>> create();
 
 };
 
