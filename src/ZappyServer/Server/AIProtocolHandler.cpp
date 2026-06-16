@@ -39,8 +39,8 @@ AIProtocolHandler::~AIProtocolHandler() = default;
 
 void AIProtocolHandler::handleLine(const std::vector<std::string> &cmd, AISession &session)
 {
-    auto toExec = _factory.create(cmd[0]);
     try {
+        auto toExec = _factory.create(cmd[0]);
         toExec->execute(session, cmd);
     } catch (const std::exception &e) {
         session.send(COMMAND_NOT_FOUND);
