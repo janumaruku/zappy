@@ -30,15 +30,13 @@ using CommandFactory = designPattern::FactoryTemplate<ProtocolCommand, std::stri
 
     void handleLine(const std::string &line) noexcept;
 
-    template<typename T>
-    void registerCommand(const std::string &name) noexcept;
-
+    
 private:
+    void registerCommands() noexcept;
+
     WorldState& _worldState;
     CommandFactory _factory;
 };
 
 }
 #endif
-
-#include "ProtocolHandler.tpp"
