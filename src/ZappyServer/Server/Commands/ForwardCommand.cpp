@@ -16,12 +16,12 @@
 
 namespace zappy::server {
 
-bool ForwardCommand::operator()(AISession &session, const std::vector<std::string> &cmd)
+bool ForwardCommand::operator()(const std::vector<std::string> &cmd, AISession &session)
 {
-    return execute(session, cmd);
+    return execute(cmd, session);
 }
 
-bool ForwardCommand::execute(AISession &session, const std::vector<std::string> &)
+bool ForwardCommand::execute(const std::vector<std::string> &cmd, AISession &session)
 {
     session.send("ForwardCommand" + zappy::data::PACKET_END);
     return true;
@@ -29,7 +29,7 @@ bool ForwardCommand::execute(AISession &session, const std::vector<std::string> 
 
 std::unique_ptr<ICommand> ForwardCommand::create()
 {
-    return std::unique_ptr<ForwardCommand>(new ForwardCommand());
+    return std::make_unique<ForwardCommand>(ForwardCommand());
 }
 
 }

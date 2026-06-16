@@ -18,12 +18,13 @@ public:
     ~ConnectNbrCommand() override = default;
 
     bool operator()(
-        AISession &session,
-        const std::vector<std::string> &cmd) override;
+        const std::vector<std::string> &cmd,
+        AISession &session) override;
 
-    bool execute(AISession &session,
-        const std::vector<std::string> &cmd) override;
+    bool execute(const std::vector<std::string> &cmd,
+        AISession &session) override;
 
+        
     static std::unique_ptr<ICommand> create();
 
 };

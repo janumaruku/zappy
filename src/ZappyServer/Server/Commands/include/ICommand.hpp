@@ -21,11 +21,11 @@ public:
     virtual ~ICommand() = default;
 
     virtual bool operator()(
-        AISession &session,
-        const std::vector<std::string> &cmd) = 0;
+        const std::vector<std::string> &cmd,
+        AISession &session) = 0;
 
-    virtual bool execute(AISession &session,
-        const std::vector<std::string> &cmd) = 0;
+    virtual bool execute(const std::vector<std::string> &cmd,
+        AISession &session) = 0;
 };
 
 }

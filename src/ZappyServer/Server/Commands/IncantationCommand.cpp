@@ -16,12 +16,12 @@
 
 namespace zappy::server {
 
-bool IncantationCommand::operator()(AISession &session, const std::vector<std::string> &cmd)
+bool IncantationCommand::operator()(const std::vector<std::string> &cmd, AISession &session)
 {
-    return execute(session, cmd);
+    return execute(cmd, session);
 }
 
-bool IncantationCommand::execute(AISession &session, const std::vector<std::string> &)
+bool IncantationCommand::execute(const std::vector<std::string> &cmd, AISession &session)
 {
     session.send("IncantationCommand" + zappy::data::PACKET_END);
     return true;
@@ -29,7 +29,7 @@ bool IncantationCommand::execute(AISession &session, const std::vector<std::stri
 
 std::unique_ptr<ICommand> IncantationCommand::create()
 {
-    return std::unique_ptr<IncantationCommand>(new IncantationCommand());
+    return std::make_unique<IncantationCommand>(IncantationCommand());
 }
 
 }

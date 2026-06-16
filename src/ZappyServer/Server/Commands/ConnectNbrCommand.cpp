@@ -16,12 +16,12 @@
 
 namespace zappy::server {
 
-bool ConnectNbrCommand::operator()(AISession &session, const std::vector<std::string> &cmd)
+bool ConnectNbrCommand::operator()(const std::vector<std::string> &cmd, AISession &session)
 {
-    return execute(session, cmd);
+    return execute(cmd, session);
 }
 
-bool ConnectNbrCommand::execute(AISession &session, const std::vector<std::string> &)
+bool ConnectNbrCommand::execute(const std::vector<std::string> &, AISession &session)
 {
     session.send("ConnectNbrCommand" + zappy::data::PACKET_END);
     return true;
@@ -29,7 +29,7 @@ bool ConnectNbrCommand::execute(AISession &session, const std::vector<std::strin
 
 std::unique_ptr<ICommand> ConnectNbrCommand::create()
 {
-    return std::unique_ptr<ConnectNbrCommand>(new ConnectNbrCommand());
+    return std::make_unique<ConnectNbrCommand>(ConnectNbrCommand());
 }
 
 }

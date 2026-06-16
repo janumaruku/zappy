@@ -16,12 +16,12 @@
 
 namespace zappy::server {
 
-bool InventoryCommand::operator()(AISession &session, const std::vector<std::string> &cmd)
+bool InventoryCommand::operator()(const std::vector<std::string> &cmd, AISession &session)
 {
-    return execute(session, cmd);
+    return execute(cmd, session);
 }
 
-bool InventoryCommand::execute(AISession &session, const std::vector<std::string> &)
+bool InventoryCommand::execute(const std::vector<std::string> &cmd, AISession &session)
 {
     session.send("InventoryCommand" + zappy::data::PACKET_END);
     return true;
@@ -29,7 +29,7 @@ bool InventoryCommand::execute(AISession &session, const std::vector<std::string
 
 std::unique_ptr<ICommand> InventoryCommand::create()
 {
-    return std::unique_ptr<InventoryCommand>(new InventoryCommand());
+    return std::make_unique<InventoryCommand>(InventoryCommand());
 }
 
 }

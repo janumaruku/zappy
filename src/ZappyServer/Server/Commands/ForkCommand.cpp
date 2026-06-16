@@ -16,20 +16,20 @@
 
 namespace zappy::server {
 
-bool ForkCommand::operator()(AISession &session, const std::vector<std::string> &cmd)
+bool ForkCommand::operator()(const std::vector<std::string> &cmd, AISession &session)
 {
-    return execute(session, cmd);
+    return execute(cmd, session);
 }
 
-bool ForkCommand::execute(AISession &session, const std::vector<std::string> &)
+bool ForkCommand::execute(const std::vector<std::string> &, AISession &session)
 {
-    session.send("ForkCommand" + zappy::data::PACKET_END);
+    session.send("Fork" + zappy::data::PACKET_END);
     return true;
 }
 
 std::unique_ptr<ICommand> ForkCommand::create()
 {
-    return std::unique_ptr<ForkCommand>(new ForkCommand());
+    return std::make_unique<ForkCommand>(ForkCommand());
 }
 
 }

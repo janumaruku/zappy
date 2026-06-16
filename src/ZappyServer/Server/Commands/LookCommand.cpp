@@ -16,12 +16,12 @@
 
 namespace zappy::server {
 
-bool LookCommand::operator()(AISession &session, const std::vector<std::string> &cmd)
+bool LookCommand::operator()(const std::vector<std::string> &cmd, AISession &session)
 {
-    return execute(session, cmd);
+    return execute(cmd, session);
 }
 
-bool LookCommand::execute(AISession &session, const std::vector<std::string> &)
+bool LookCommand::execute(const std::vector<std::string> &cmd, AISession &session)
 {
     session.send("LookCommand" + zappy::data::PACKET_END);
     return true;
@@ -29,7 +29,7 @@ bool LookCommand::execute(AISession &session, const std::vector<std::string> &)
 
 std::unique_ptr<ICommand> LookCommand::create()
 {
-    return std::unique_ptr<LookCommand>(new LookCommand());
+    return std::make_unique<LookCommand>(LookCommand());
 }
 
 }

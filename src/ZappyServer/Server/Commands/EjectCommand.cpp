@@ -16,12 +16,12 @@
 
 namespace zappy::server {
 
-bool EjectCommand::operator()(AISession &session, const std::vector<std::string> &cmd)
+bool EjectCommand::operator()(const std::vector<std::string> &cmd, AISession &session)
 {
-    return execute(session, cmd);
+    return execute(cmd, session);
 }
 
-bool EjectCommand::execute(AISession &session, const std::vector<std::string> &)
+bool EjectCommand::execute(const std::vector<std::string> &, AISession &session)
 {
     session.send("EjectCommand" + zappy::data::PACKET_END);
     return true;
@@ -29,7 +29,7 @@ bool EjectCommand::execute(AISession &session, const std::vector<std::string> &)
 
 std::unique_ptr<ICommand> EjectCommand::create()
 {
-    return std::unique_ptr<EjectCommand>(new EjectCommand());
+    return std::make_unique<EjectCommand>(EjectCommand());
 }
 
 }
