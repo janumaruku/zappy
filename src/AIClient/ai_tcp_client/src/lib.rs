@@ -131,4 +131,8 @@ impl AiTcpClient {
     pub fn connect(&mut self, endpoint: Endpoint) -> Result<(), NetworkError> {
         self.socket.borrow_mut().connect(endpoint)
     }
+
+    pub fn close(&mut self) {
+        self.socket.borrow_mut().close();
+    }
 }
