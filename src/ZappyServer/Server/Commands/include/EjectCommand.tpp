@@ -2,43 +2,32 @@
 ** EPITECH PROJECT, 2025
 ** ZPY
 ** File description:
-** EjectCommandCommand.cpp
+** EjectCommand.cpp
 */
 
-#include <cstddef>
+#pragma once
+
 #include <memory>
-#include <string>
-#include <vector>
-#include "ICommand.hpp"
-#include "Server.hpp"
-#include "EjectCommandCommand.hpp"
-#include "AISession.hpp"
-#include "ZappyConstants.hpp"
+#include "EjectCommand.hpp"
 
 namespace zappy::server {
 
-bool EjectCommandCommand::operator()(const std::vector<std::string> &cmd, AISession &session)
+template<typename... Args>
+bool EjectCommand<Args...>::execute(Args...)
 {
-    return execute(cmd, session);
-}
-
-bool EjectCommandCommand::execute(const std::vector<std::string> &cmd, AISession &session)
-{
-    std::string message;
-    std::size_t messageWords = cmd.size() - 1;
-
-    for (std::size_t i = 0; i != messageWords; i++) {
-        message.append(cmd[i]);
-        if (i < messageWords)
-            message.append(" ");
-    }
-    session.send("EjectCommand" + message + zappy::data::PACKET_END);
     return true;
 }
 
-std::unique_ptr<ICommand> EjectCommandCommand::create()
+template<typename... Args>
+bool EjectCommand<Args...>::operator()(Args...args)
 {
-    return std::make_unique<EjectCommandCommand>(EjectCommandCommand());
+    return execute(args...);
+}
+
+template<typename... Args>
+std::unique_ptr<ICommand<Args...>> EjectCommand<Args...>::create()
+{
+    return std::make_unique<EjectCommand<Args...>>(EjectCommand<Args...>());
 }
 
 }

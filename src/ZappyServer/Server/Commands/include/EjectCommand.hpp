@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2025
 ** ZPY
 ** File description:
-** EjectCommandCommand.hpp
+** EjectCommand.hpp
 */
 
 #pragma once
@@ -11,11 +11,11 @@
 
 namespace zappy::server {
 template<typename... Args>
-class EjectCommandCommand : public ICommand<Args...> {
+class EjectCommand : public ICommand<Args...> {
 public:
-    EjectCommandCommand() = default;
+    EjectCommand() = default;
 
-    ~EjectCommandCommand() override = default;
+    ~EjectCommand() override = default;
 
     bool operator()(Args... args) override;
 

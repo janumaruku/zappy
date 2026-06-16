@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2025
 ** ZPY
 ** File description:
-** RightCommandCommand.hpp
+** RightCommand.hpp
 */
 
 #pragma once
@@ -11,11 +11,11 @@
 
 namespace zappy::server {
 template<typename... Args>
-class RightCommandCommand : public ICommand<Args...> {
+class RightCommand : public ICommand<Args...> {
 public:
-    RightCommandCommand() = default;
+    RightCommand() = default;
 
-    ~RightCommandCommand() override = default;
+    ~RightCommand() override = default;
 
     bool operator()(Args... args) override;
 

@@ -2,43 +2,32 @@
 ** EPITECH PROJECT, 2025
 ** ZPY
 ** File description:
-** ForkCommandCommand.cpp
+** ForkCommand.cpp
 */
 
-#include <cstddef>
+#pragma once
+
 #include <memory>
-#include <string>
-#include <vector>
-#include "ICommand.hpp"
-#include "Server.hpp"
-#include "ForkCommandCommand.hpp"
-#include "AISession.hpp"
-#include "ZappyConstants.hpp"
+#include "ForkCommand.hpp"
 
 namespace zappy::server {
 
-bool ForkCommandCommand::operator()(const std::vector<std::string> &cmd, AISession &session)
+template<typename... Args>
+bool ForkCommand<Args...>::execute(Args...)
 {
-    return execute(cmd, session);
-}
-
-bool ForkCommandCommand::execute(const std::vector<std::string> &cmd, AISession &session)
-{
-    std::string message;
-    std::size_t messageWords = cmd.size() - 1;
-
-    for (std::size_t i = 0; i != messageWords; i++) {
-        message.append(cmd[i]);
-        if (i < messageWords)
-            message.append(" ");
-    }
-    session.send("ForkCommand" + message + zappy::data::PACKET_END);
     return true;
 }
 
-std::unique_ptr<ICommand> ForkCommandCommand::create()
+template<typename... Args>
+bool ForkCommand<Args...>::operator()(Args...args)
 {
-    return std::make_unique<ForkCommandCommand>(ForkCommandCommand());
+    return execute(args...);
+}
+
+template<typename... Args>
+std::unique_ptr<ICommand<Args...>> ForkCommand<Args...>::create()
+{
+    return std::make_unique<ForkCommand<Args...>>(ForkCommand<Args...>());
 }
 
 }

@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2025
 ** ZPY
 ** File description:
-** TakeCommandCommand.hpp
+** TakeCommand.hpp
 */
 
 #pragma once
@@ -11,11 +11,11 @@
 
 namespace zappy::server {
 template<typename... Args>
-class TakeCommandCommand : public ICommand<Args...> {
+class TakeCommand : public ICommand<Args...> {
 public:
-    TakeCommandCommand() = default;
+    TakeCommand() = default;
 
-    ~TakeCommandCommand() override = default;
+    ~TakeCommand() override = default;
 
     bool operator()(Args... args) override;
 

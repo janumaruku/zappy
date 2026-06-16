@@ -2,43 +2,32 @@
 ** EPITECH PROJECT, 2025
 ** ZPY
 ** File description:
-** TakeCommandCommand.cpp
+** TakeCommand.cpp
 */
 
-#include <cstddef>
+#pragma once
+
 #include <memory>
-#include <string>
-#include <vector>
-#include "ICommand.hpp"
-#include "Server.hpp"
-#include "TakeCommandCommand.hpp"
-#include "AISession.hpp"
-#include "ZappyConstants.hpp"
+#include "TakeCommand.hpp"
 
 namespace zappy::server {
 
-bool TakeCommandCommand::operator()(const std::vector<std::string> &cmd, AISession &session)
+template<typename... Args>
+bool TakeCommand<Args...>::execute(Args...)
 {
-    return execute(cmd, session);
-}
-
-bool TakeCommandCommand::execute(const std::vector<std::string> &cmd, AISession &session)
-{
-    std::string message;
-    std::size_t messageWords = cmd.size() - 1;
-
-    for (std::size_t i = 0; i != messageWords; i++) {
-        message.append(cmd[i]);
-        if (i < messageWords)
-            message.append(" ");
-    }
-    session.send("TakeCommand" + message + zappy::data::PACKET_END);
     return true;
 }
 
-std::unique_ptr<ICommand> TakeCommandCommand::create()
+template<typename... Args>
+bool TakeCommand<Args...>::operator()(Args...args)
 {
-    return std::make_unique<TakeCommandCommand>(TakeCommandCommand());
+    return execute(args...);
+}
+
+template<typename... Args>
+std::unique_ptr<ICommand<Args...>> TakeCommand<Args...>::create()
+{
+    return std::make_unique<TakeCommand<Args...>>(TakeCommand<Args...>());
 }
 
 }

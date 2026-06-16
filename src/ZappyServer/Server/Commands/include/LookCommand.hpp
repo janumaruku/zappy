@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2025
 ** ZPY
 ** File description:
-** LookCommandCommand.hpp
+** LookCommand.hpp
 */
 
 #pragma once
@@ -11,11 +11,11 @@
 
 namespace zappy::server {
 template<typename... Args>
-class LookCommandCommand : public ICommand<Args...> {
+class LookCommand : public ICommand<Args...> {
 public:
-    LookCommandCommand() = default;
+    LookCommand() = default;
 
-    ~LookCommandCommand() override = default;
+    ~LookCommand() override = default;
 
     bool operator()(Args... args) override;
 

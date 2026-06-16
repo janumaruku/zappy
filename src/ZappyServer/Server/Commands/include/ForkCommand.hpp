@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2025
 ** ZPY
 ** File description:
-** ForkCommandCommand.hpp
+** ForkCommand.hpp
 */
 
 #pragma once
@@ -11,11 +11,11 @@
 
 namespace zappy::server {
 template<typename... Args>
-class ForkCommandCommand : public ICommand<Args...> {
+class ForkCommand : public ICommand<Args...> {
 public:
-    ForkCommandCommand() = default;
+    ForkCommand() = default;
 
-    ~ForkCommandCommand() override = default;
+    ~ForkCommand() override = default;
 
     bool operator()(Args... args) override;
 

@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2025
 ** ZPY
 ** File description:
-** InventoryCommandCommand.hpp
+** InventoryCommand.hpp
 */
 
 #pragma once
@@ -11,11 +11,11 @@
 
 namespace zappy::server {
 template<typename... Args>
-class InventoryCommandCommand : public ICommand<Args...> {
+class InventoryCommand : public ICommand<Args...> {
 public:
-    InventoryCommandCommand() = default;
+    InventoryCommand() = default;
 
-    ~InventoryCommandCommand() override = default;
+    ~InventoryCommand() override = default;
 
     bool operator()(Args... args) override;
 

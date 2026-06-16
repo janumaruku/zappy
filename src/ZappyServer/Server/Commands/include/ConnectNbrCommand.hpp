@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2025
 ** ZPY
 ** File description:
-** ConnectNbrCommandCommand.hpp
+** ConnectNbrCommand.hpp
 */
 
 #pragma once
@@ -11,11 +11,11 @@
 
 namespace zappy::server {
 template<typename... Args>
-class ConnectNbrCommandCommand : public ICommand<Args...> {
+class ConnectNbrCommand : public ICommand<Args...> {
 public:
-    ConnectNbrCommandCommand() = default;
+    ConnectNbrCommand() = default;
 
-    ~ConnectNbrCommandCommand() override = default;
+    ~ConnectNbrCommand() override = default;
 
     bool operator()(Args... args) override;
 

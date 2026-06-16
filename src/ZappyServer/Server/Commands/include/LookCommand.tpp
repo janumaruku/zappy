@@ -2,43 +2,32 @@
 ** EPITECH PROJECT, 2025
 ** ZPY
 ** File description:
-** LookCommandCommand.cpp
+** LookCommand.cpp
 */
 
-#include <cstddef>
+#pragma once
+
 #include <memory>
-#include <string>
-#include <vector>
-#include "ICommand.hpp"
-#include "Server.hpp"
-#include "LookCommandCommand.hpp"
-#include "AISession.hpp"
-#include "ZappyConstants.hpp"
+#include "LookCommand.hpp"
 
 namespace zappy::server {
 
-bool LookCommandCommand::operator()(const std::vector<std::string> &cmd, AISession &session)
+template<typename... Args>
+bool LookCommand<Args...>::execute(Args...)
 {
-    return execute(cmd, session);
-}
-
-bool LookCommandCommand::execute(const std::vector<std::string> &cmd, AISession &session)
-{
-    std::string message;
-    std::size_t messageWords = cmd.size() - 1;
-
-    for (std::size_t i = 0; i != messageWords; i++) {
-        message.append(cmd[i]);
-        if (i < messageWords)
-            message.append(" ");
-    }
-    session.send("LookCommand" + message + zappy::data::PACKET_END);
     return true;
 }
 
-std::unique_ptr<ICommand> LookCommandCommand::create()
+template<typename... Args>
+bool LookCommand<Args...>::operator()(Args...args)
 {
-    return std::make_unique<LookCommandCommand>(LookCommandCommand());
+    return execute(args...);
+}
+
+template<typename... Args>
+std::unique_ptr<ICommand<Args...>> LookCommand<Args...>::create()
+{
+    return std::make_unique<LookCommand<Args...>>(LookCommand<Args...>());
 }
 
 }

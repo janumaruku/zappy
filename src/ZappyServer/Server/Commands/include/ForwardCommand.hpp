@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2025
 ** ZPY
 ** File description:
-** ForwardCommandCommand.hpp
+** ForwardCommand.hpp
 */
 
 #pragma once
@@ -11,11 +11,11 @@
 
 namespace zappy::server {
 template<typename... Args>
-class ForwardCommandCommand : public ICommand<Args...> {
+class ForwardCommand : public ICommand<Args...> {
 public:
-    ForwardCommandCommand() = default;
+    ForwardCommand() = default;
 
-    ~ForwardCommandCommand() override = default;
+    ~ForwardCommand() override = default;
 
     bool operator()(Args... args) override;
 

@@ -2,43 +2,32 @@
 ** EPITECH PROJECT, 2025
 ** ZPY
 ** File description:
-** SetCommandCommand.cpp
+** SetCommand.cpp
 */
 
-#include <cstddef>
+#pragma once
+
 #include <memory>
-#include <string>
-#include <vector>
-#include "ICommand.hpp"
-#include "Server.hpp"
-#include "SetCommandCommand.hpp"
-#include "AISession.hpp"
-#include "ZappyConstants.hpp"
+#include "SetCommand.hpp"
 
 namespace zappy::server {
 
-bool SetCommandCommand::operator()(const std::vector<std::string> &cmd, AISession &session)
+template<typename... Args>
+bool SetCommand<Args...>::execute(Args...)
 {
-    return execute(cmd, session);
-}
-
-bool SetCommandCommand::execute(const std::vector<std::string> &cmd, AISession &session)
-{
-    std::string message;
-    std::size_t messageWords = cmd.size() - 1;
-
-    for (std::size_t i = 0; i != messageWords; i++) {
-        message.append(cmd[i]);
-        if (i < messageWords)
-            message.append(" ");
-    }
-    session.send("SetCommand" + message + zappy::data::PACKET_END);
     return true;
 }
 
-std::unique_ptr<ICommand> SetCommandCommand::create()
+template<typename... Args>
+bool SetCommand<Args...>::operator()(Args...args)
 {
-    return std::make_unique<SetCommandCommand>(SetCommandCommand());
+    return execute(args...);
+}
+
+template<typename... Args>
+std::unique_ptr<ICommand<Args...>> SetCommand<Args...>::create()
+{
+    return std::make_unique<SetCommand<Args...>>(SetCommand<Args...>());
 }
 
 }

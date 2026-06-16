@@ -2,43 +2,32 @@
 ** EPITECH PROJECT, 2025
 ** ZPY
 ** File description:
-** LeftCommandCommand.cpp
+** LeftCommand.cpp
 */
 
-#include <cstddef>
+#pragma once
+
 #include <memory>
-#include <string>
-#include <vector>
-#include "ICommand.hpp"
-#include "Server.hpp"
-#include "LeftCommandCommand.hpp"
-#include "AISession.hpp"
-#include "ZappyConstants.hpp"
+#include "LeftCommand.hpp"
 
 namespace zappy::server {
 
-bool LeftCommandCommand::operator()(const std::vector<std::string> &cmd, AISession &session)
+template<typename... Args>
+bool LeftCommand<Args...>::execute(Args...)
 {
-    return execute(cmd, session);
-}
-
-bool LeftCommandCommand::execute(const std::vector<std::string> &cmd, AISession &session)
-{
-    std::string message;
-    std::size_t messageWords = cmd.size() - 1;
-
-    for (std::size_t i = 0; i != messageWords; i++) {
-        message.append(cmd[i]);
-        if (i < messageWords)
-            message.append(" ");
-    }
-    session.send("LeftCommand" + message + zappy::data::PACKET_END);
     return true;
 }
 
-std::unique_ptr<ICommand> LeftCommandCommand::create()
+template<typename... Args>
+bool LeftCommand<Args...>::operator()(Args...args)
 {
-    return std::make_unique<LeftCommandCommand>(LeftCommandCommand());
+    return execute(args...);
+}
+
+template<typename... Args>
+std::unique_ptr<ICommand<Args...>> LeftCommand<Args...>::create()
+{
+    return std::make_unique<LeftCommand<Args...>>(LeftCommand<Args...>());
 }
 
 }

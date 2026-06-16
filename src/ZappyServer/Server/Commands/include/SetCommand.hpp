@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2025
 ** ZPY
 ** File description:
-** SetCommandCommand.hpp
+** SetCommand.hpp
 */
 
 #pragma once
@@ -11,11 +11,11 @@
 
 namespace zappy::server {
 template<typename... Args>
-class SetCommandCommand : public ICommand<Args...> {
+class SetCommand : public ICommand<Args...> {
 public:
-    SetCommandCommand() = default;
+    SetCommand() = default;
 
-    ~SetCommandCommand() override = default;
+    ~SetCommand() override = default;
 
     bool operator()(Args... args) override;
 

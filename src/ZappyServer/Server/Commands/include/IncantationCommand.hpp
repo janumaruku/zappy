@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2025
 ** ZPY
 ** File description:
-** IncantationCommandCommand.hpp
+** IncantationCommand.hpp
 */
 
 #pragma once
@@ -11,11 +11,11 @@
 
 namespace zappy::server {
 template<typename... Args>
-class IncantationCommandCommand : public ICommand<Args...> {
+class IncantationCommand : public ICommand<Args...> {
 public:
-    IncantationCommandCommand() = default;
+    IncantationCommand() = default;
 
-    ~IncantationCommandCommand() override = default;
+    ~IncantationCommand() override = default;
 
     bool operator()(Args... args) override;
 

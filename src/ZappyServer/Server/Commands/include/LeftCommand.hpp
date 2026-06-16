@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2025
 ** ZPY
 ** File description:
-** LeftCommandCommand.hpp
+** LeftCommand.hpp
 */
 
 #pragma once
@@ -11,11 +11,11 @@
 
 namespace zappy::server {
 template<typename... Args>
-class LeftCommandCommand : public ICommand<Args...> {
+class LeftCommand : public ICommand<Args...> {
 public:
-    LeftCommandCommand() = default;
+    LeftCommand() = default;
 
-    ~LeftCommandCommand() override = default;
+    ~LeftCommand() override = default;
 
     bool operator()(Args... args) override;
 

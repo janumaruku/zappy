@@ -8,9 +8,7 @@
 #ifndef ICOMMAND_HPP
 #define ICOMMAND_HPP
 
-#include <vector>
-#include <string>
-#include "Server.hpp"
+#include <memory>
 
 namespace zappy::server {
 

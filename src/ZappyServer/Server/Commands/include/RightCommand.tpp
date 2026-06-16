@@ -2,43 +2,32 @@
 ** EPITECH PROJECT, 2025
 ** ZPY
 ** File description:
-** RightCommandCommand.cpp
+** RightCommand.cpp
 */
 
-#include <cstddef>
+#pragma once
+
 #include <memory>
-#include <string>
-#include <vector>
-#include "ICommand.hpp"
-#include "Server.hpp"
-#include "RightCommandCommand.hpp"
-#include "AISession.hpp"
-#include "ZappyConstants.hpp"
+#include "RightCommand.hpp"
 
 namespace zappy::server {
 
-bool RightCommandCommand::operator()(const std::vector<std::string> &cmd, AISession &session)
+template<typename... Args>
+bool RightCommand<Args...>::execute(Args...)
 {
-    return execute(cmd, session);
-}
-
-bool RightCommandCommand::execute(const std::vector<std::string> &cmd, AISession &session)
-{
-    std::string message;
-    std::size_t messageWords = cmd.size() - 1;
-
-    for (std::size_t i = 0; i != messageWords; i++) {
-        message.append(cmd[i]);
-        if (i < messageWords)
-            message.append(" ");
-    }
-    session.send("RightCommand" + message + zappy::data::PACKET_END);
     return true;
 }
 
-std::unique_ptr<ICommand> RightCommandCommand::create()
+template<typename... Args>
+bool RightCommand<Args...>::operator()(Args...args)
 {
-    return std::make_unique<RightCommandCommand>(RightCommandCommand());
+    return execute(args...);
+}
+
+template<typename... Args>
+std::unique_ptr<ICommand<Args...>> RightCommand<Args...>::create()
+{
+    return std::make_unique<RightCommand<Args...>>(RightCommand<Args...>());
 }
 
 }
