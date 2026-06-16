@@ -65,6 +65,11 @@ public:
         throw std::runtime_error(sstream.str());
     }
 
+    const CreatorMap &getCreatorsMap() const
+    {
+        return _creators;
+    }
+
 private:
     CreatorMap _creators{};
 };
