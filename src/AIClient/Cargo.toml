@@ -1,4 +1,4 @@
 [workspace]
-members = ["shell", "network", "app", "useful", "client_test", "behavior_tree"]
+members = ["shell", "network", "app", "useful", "client_test", "behavior_tree", "ai_data"]
 resolver = "2"
 
