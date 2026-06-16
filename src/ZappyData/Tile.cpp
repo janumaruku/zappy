@@ -35,9 +35,8 @@ void Tile::setResources(const std::unordered_map<Resource, uint> &resources)
 
 void Tile::addResources(const std::unordered_map<Resource, uint> &resources)
 {
-    for (auto &it: resources) {
-        _resources.at(it.first) += it.second;
-    }
+    for (const auto &[resource, count]: resources)
+        _resources.at(resource) += count;
 }
 
 bool Tile::hasResource(const Resource &resource) const
