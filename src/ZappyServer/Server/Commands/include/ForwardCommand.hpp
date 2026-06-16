@@ -15,7 +15,7 @@ class ForwardCommand : public AIProtocolCommand {
 public:
     ForwardCommand() = default;
 
-    ~ForwardCommand() override = default;
+    ~ForwardCommand() override;
 
     bool operator()(AISession &, const std::vector<std::string> &) override;
 

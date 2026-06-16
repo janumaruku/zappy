@@ -15,7 +15,7 @@ class TakeCommand : public AIProtocolCommand {
 public:
     TakeCommand() = default;
 
-    ~TakeCommand() override = default;
+    ~TakeCommand() override;
 
     bool operator()(AISession &, const std::vector<std::string> &) override;
 

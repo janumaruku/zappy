@@ -18,7 +18,6 @@ namespace zappy::server {
 
 bool SetCommand::execute(AISession& s, const std::vector<std::string>& v)
 {
-    
     return true;
 }
 

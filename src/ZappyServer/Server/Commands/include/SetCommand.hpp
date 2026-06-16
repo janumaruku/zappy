@@ -15,7 +15,7 @@ class SetCommand : public AIProtocolCommand {
 public:
     SetCommand() = default;
 
-    ~SetCommand() override = default;
+    ~SetCommand() override;
 
     bool operator()(AISession &, const std::vector<std::string> &) override;
 

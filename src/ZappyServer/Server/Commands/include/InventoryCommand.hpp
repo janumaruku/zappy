@@ -15,7 +15,7 @@ class InventoryCommand : public AIProtocolCommand {
 public:
     InventoryCommand() = default;
 
-    ~InventoryCommand() override = default;
+    ~InventoryCommand() override;
 
     bool operator()(AISession &, const std::vector<std::string> &) override;
 

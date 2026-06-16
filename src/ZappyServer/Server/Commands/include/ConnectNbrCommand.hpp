@@ -15,7 +15,7 @@ class ConnectNbrCommand : public AIProtocolCommand {
 public:
     ConnectNbrCommand() = default;
 
-    ~ConnectNbrCommand() override = default;
+    ~ConnectNbrCommand() override;
 
     bool operator()(AISession &, const std::vector<std::string> &) override;
 
