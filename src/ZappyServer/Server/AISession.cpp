@@ -11,6 +11,7 @@
 #include <ranges>
 #include <cstddef>
 #include <chrono>
+#include <string>
 #include <sys/types.h>
 #include <type_traits>
 #include <vector>
@@ -34,9 +35,15 @@ void AISession::handleTransmission()
     if (_pending_commands >= MAX_PENDING_COMMANDS)
         return;
 
-    // const auto &commandPrefix = splittedLine[0];
+    const auto &commandPrefix = splittedLine[0];
+    const auto &availableCommands = _protocolHandler.getAvailableCommands();
 
-    if (false /* if !prefix exists in map */) {
+    auto it = std::ranges::find_if(availableCommands,
+        [availableCommands, commandPrefix](const std::string &str) {
+            return str == commandPrefix;
+        }
+    );
+    if (it == availableCommands.end()) {
         send(COMMAND_NOT_FOUND);
         return;
     }
@@ -54,9 +61,8 @@ void AISession::handleTransmission()
 void AISession::executeNext()
 {
     const auto &command = _commandQueue.front();
-    const auto prefix = command[0];
 
-    // execute(command, *this);
+    _protocolHandler.handleLine(command, *this);
 }
 
 void AISession::onCommandComplete()
