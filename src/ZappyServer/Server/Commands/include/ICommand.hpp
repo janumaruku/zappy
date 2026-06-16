@@ -9,6 +9,8 @@
 #define ICOMMAND_HPP
 
 #include <memory>
+#include <vector>
+#include "AISession.hpp"
 
 namespace zappy::server {
 
