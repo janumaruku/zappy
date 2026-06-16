@@ -29,7 +29,7 @@ public:
 
     void handleLine(const std::vector<std::string>&, AISession &);
 
-    void registerCreators(void) noexcept;
+    void registerCreators() noexcept;
 
     const AICommandFactory &getFactory() const;
 
