@@ -8,6 +8,7 @@
 #pragma once
 
 #include <memory>
+#include "AISession.hpp"
 #include "InventoryCommand.hpp"
 
 namespace zappy::server {
@@ -28,6 +29,16 @@ template<typename... Args>
 std::unique_ptr<ICommand<Args...>> InventoryCommand<Args...>::create()
 {
     return std::make_unique<InventoryCommand<Args...>>(InventoryCommand<Args...>());
+}
+
+// specialisations
+
+template<>
+bool InventoryCommand<AISession &, const std::vector<std::string> &>::
+execute(AISession &session, const std::vector<std::string> &cmd)
+{
+    session.send(cmd[0]);
+    return true;
 }
 
 }

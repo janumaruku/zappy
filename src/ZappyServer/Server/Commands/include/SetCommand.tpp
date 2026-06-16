@@ -8,6 +8,7 @@
 #pragma once
 
 #include <memory>
+#include "AISession.hpp"
 #include "SetCommand.hpp"
 
 namespace zappy::server {
@@ -29,5 +30,16 @@ std::unique_ptr<ICommand<Args...>> SetCommand<Args...>::create()
 {
     return std::make_unique<SetCommand<Args...>>(SetCommand<Args...>());
 }
+
+// specialisations
+
+template<>
+bool SetCommand<AISession &, const std::vector<std::string> &>::
+execute(AISession &session, const std::vector<std::string> &cmd)
+{
+    session.send(cmd[0] + " " + cmd[1]);
+    return true;
+}
+
 
 }

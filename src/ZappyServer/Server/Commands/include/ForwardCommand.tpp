@@ -8,6 +8,7 @@
 #pragma once
 
 #include <memory>
+#include "AISession.hpp"
 #include "ForwardCommand.hpp"
 
 namespace zappy::server {
@@ -29,5 +30,16 @@ std::unique_ptr<ICommand<Args...>> ForwardCommand<Args...>::create()
 {
     return std::make_unique<ForwardCommand<Args...>>(ForwardCommand<Args...>());
 }
+
+// specialisations
+
+template<>
+bool ForwardCommand<AISession &, const std::vector<std::string> &>::
+execute(AISession &session, const std::vector<std::string> &cmd)
+{
+    session.send(cmd[0]);
+    return true;
+}
+ 
 
 }

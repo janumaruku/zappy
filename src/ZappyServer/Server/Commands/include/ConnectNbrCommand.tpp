@@ -8,6 +8,7 @@
 #pragma once
 
 #include <memory>
+#include "AISession.hpp"
 #include "ConnectNbrCommand.hpp"
 
 namespace zappy::server {
@@ -28,6 +29,16 @@ template<typename... Args>
 std::unique_ptr<ICommand<Args...>> ConnectNbrCommand<Args...>::create()
 {
     return std::make_unique<ConnectNbrCommand<Args...>>(ConnectNbrCommand<Args...>());
+}
+
+// specialisations
+
+template<>
+bool ConnectNbrCommand<AISession &, const std::vector<std::string> &>::
+execute(AISession &session, const std::vector<std::string> &cmd)
+{
+    session.send(cmd[0]);
+    return true;
 }
 
 }
