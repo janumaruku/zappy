@@ -8,6 +8,7 @@
 #ifndef AISESSION_HPP_
     #define AISESSION_HPP_
 
+    #include <string>
     #include "AClientSession.hpp"
     #include "Server.hpp"
     #include "Timer.hpp"
@@ -20,6 +21,11 @@ public:
     explicit AISession(const std::shared_ptr<network::ConnectedSocket> &socket,
         Server &server, Player &player);
     ~AISession() override = default;
+
+    Player &getPlayer() noexcept { return _player; }
+    [[nodiscard]] const Player &getPlayer() const noexcept { return _player; }
+
+    void scheduleResponse(int delay, const std::string &response);
 
 protected:
     void handleTransmission() override;
