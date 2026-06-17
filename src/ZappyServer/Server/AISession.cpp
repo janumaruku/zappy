@@ -39,13 +39,11 @@ void AISession::handleTransmission()
         send(COMMAND_NOT_FOUND);
         return;
     }
-    bool wasEmpty = _commandQueue.empty();
     _commandQueue.push(splittedLine);
     _pending_commands++;
-    if (wasEmpty)
+    if (_pending_commands == 1)
         executeNext();
     
-    scheduleResponse(RESPONSE_TIME, PLACEHOLDER_SERVER_RESPONSE);
     _transmission.clear();
 }
 
@@ -69,10 +67,10 @@ void AISession::onCommandComplete()
 void AISession::scheduleResponse(const uint &durationConstant, const std::string &response)
 {
     _command_timer.asyncWait(std::chrono::high_resolution_clock::duration(durationConstant / _server.getFrequency()),
-    [this, response](){
+    [this, response]() {
         send(response);
+        onCommandComplete();
     });
-    onCommandComplete();
 }
 
 
