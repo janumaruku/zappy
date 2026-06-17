@@ -43,7 +43,6 @@ void AISession::handleTransmission()
     _transmission.clear();
 }
 
-
 void AISession::executeNext()
 {
     const auto &command = _commandQueue.front();
@@ -60,7 +59,6 @@ void AISession::onCommandComplete()
     executeNext();
 }
 
-
 void AISession::scheduleResponse(const uint &durationConstant, const std::string &response)
 {
     _command_timer.asyncWait(std::chrono::high_resolution_clock::duration(durationConstant / _server.getFrequency()),
@@ -69,7 +67,6 @@ void AISession::scheduleResponse(const uint &durationConstant, const std::string
         onCommandComplete();
     });
 }
-
 
 const Player &AISession::getPlayer() const noexcept
 {
