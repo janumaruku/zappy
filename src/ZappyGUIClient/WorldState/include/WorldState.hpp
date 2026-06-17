@@ -26,7 +26,7 @@ public:
     WorldState(const std::unordered_map<std::string, Team> &teams,
         uint timeUnit, uint width, uint height);
 
-    [[nodiscard]] GUIMap &getMap() const noexcept;
+    [[nodiscard]] const GUIMap &getMap() const noexcept;
 
     const std::unordered_map<PlayerId, GUIPlayer> &getPlayers() const noexcept;
 
@@ -51,7 +51,7 @@ public:
 
     void onEggDeath(uint eggId);
 
-    void onMapDimension(uint width, uint height);
+    void onMapDimension(uint& width, uint &height);
 
 private:
     GUIMap _map;

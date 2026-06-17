@@ -7,6 +7,7 @@
 
 #ifndef TILE_HPP
 #define TILE_HPP
+#include <cstddef>
 #include <cstdint>
 #include <list>
 #include <map>
@@ -18,6 +19,8 @@
 
 namespace zappy::data {
 using PlayerId = std::string;
+
+constexpr std::size_t EXISTING_RESSOURCES = 7;
 
 enum class Resource : std::uint8_t {
     FOOD = 0,

@@ -6,16 +6,45 @@
 */
 
 
+#include <array>
+#include <cassert>
 #include <memory>
+#include <stdexcept>
 #include <string>
+#include <unordered_map>
 #include <vector>
+#include "Position.hpp"
 #include "ProtocolHandler.hpp"
+#include "Tile.hpp"
 #include "BctCommand.hpp"
 
 namespace zappy::gui {
 
-bool BctCommand::execute(WorldState&, const std::vector<std::string>&)
+bool BctCommand::execute(WorldState&s, const std::vector<std::string>&cmd)
 {
+    data::Position tilePos(std::stoi(cmd[0]), std::stoi(cmd[1]));
+
+    auto qts = [&cmd]() {
+        std::vector<uint> res;
+        for (auto it = cmd.begin() + 2; it != cmd.end(); it++)
+            res.push_back(static_cast<uint>(std::stoul(*it)));
+        return res;
+    }();
+
+
+    if (qts.size() != data::EXISTING_RESSOURCES)
+        throw std::invalid_argument("Missing ressources in request");
+
+    const std::unordered_map<data::Resource, uint> resources = {
+        {data::Resource::FOOD, qts[0]},
+        {data::Resource::LINEMATE,qts[1]},
+        {data::Resource::DERAUMERE, qts[2]},
+        {data::Resource::SIBUR, qts[3]},
+        {data::Resource::MENDIANE, qts[4]},
+        {data::Resource::PHIRAS, qts[4]},
+        {data::Resource::THYSTAME, qts[5]}
+    };
+    s.onTileContent(tilePos, resources);
     return true;
 }
 

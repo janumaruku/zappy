@@ -95,7 +95,7 @@ void WorldState::onEggDeath(const uint eggId)
     _eggs.erase(eggId);
 }
 
-void WorldState::onMapDimension(const uint width, const uint height)
+void WorldState::onMapDimension(const uint &width, const uint &height)
 {
     _map.updateWidth(width);
     _map.updateHeight(height);

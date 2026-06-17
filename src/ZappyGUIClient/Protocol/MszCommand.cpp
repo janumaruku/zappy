@@ -17,8 +17,10 @@ namespace zappy::gui {
 
 bool MszCommand::execute(WorldState& s, const std::vector<std::string>&cmd)
 {
-    s.getMap().updateWidth(std::stoi(cmd[0]));
-    s.getMap().updateHeight(std::stoi(cmd[1]));
+    uint mapX = std::stoul(cmd[0]);
+    uint mapY = std::stoul(cmd[1]);
+
+    s.onMapDimension(mapX, mapY);
     return true;
 }
 
