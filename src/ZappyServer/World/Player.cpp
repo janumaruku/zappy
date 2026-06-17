@@ -22,9 +22,13 @@ Player::Player(const PlayerId &id, const TeamId &team,
 
 void Player::left()
 {
-    _orientation = static_cast<data::Orientation>((static_cast<int>(
-            _orientation)
-        + 1) % 4);
+    if (static_cast<int>(_orientation) - 1 == 0) {
+        _orientation = data::Orientation::LEFT;
+        return;
+    }
+
+    _orientation = static_cast<data::Orientation>(static_cast<int>(_orientation)
+        - 1);
 }
 
 void Player::forward(const int width, const int height)
@@ -48,13 +52,9 @@ void Player::forward(const int width, const int height)
 
 void Player::right()
 {
-    if (static_cast<int>(_orientation) == 0) {
-        _orientation = data::Orientation::LEFT;
-        return;
-    }
-
-    _orientation = static_cast<data::Orientation>(static_cast<int>(_orientation)
-        - 1);
+    _orientation = static_cast<data::Orientation>((static_cast<int>(
+            _orientation)
+        + 1) % 4);
 }
 
 void Player::takeResource(const data::Resource &resource)
