@@ -10,12 +10,15 @@
 #include <string>
 #include <vector>
 #include "ProtocolHandler.hpp"
+#include "WorldState.hpp"
 #include "MszCommand.hpp"
 
 namespace zappy::gui {
 
-bool MszCommand::execute(WorldState&, const std::vector<std::string>&)
+bool MszCommand::execute(WorldState& s, const std::vector<std::string>&cmd)
 {
+    s.getMap().updateWidth(std::stoi(cmd[0]));
+    s.getMap().updateHeight(std::stoi(cmd[1]));
     return true;
 }
 

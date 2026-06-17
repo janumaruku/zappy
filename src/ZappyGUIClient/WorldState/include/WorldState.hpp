@@ -26,7 +26,7 @@ public:
     WorldState(const std::unordered_map<std::string, Team> &teams,
         uint timeUnit, uint width, uint height);
 
-    [[nodiscard]] const GUIMap &getMap() const noexcept;
+    [[nodiscard]] GUIMap &getMap() const noexcept;
 
     const std::unordered_map<PlayerId, GUIPlayer> &getPlayers() const noexcept;
 
