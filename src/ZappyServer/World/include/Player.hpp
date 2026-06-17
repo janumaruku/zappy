@@ -34,6 +34,7 @@ public:
     [[nodiscard]] TeamId getTeam() const noexcept;
     [[nodiscard]] data::Position getPosition() const noexcept;
     [[nodiscard]] std::uint8_t getLevel() const noexcept;
+    [[nodiscard]] data::Orientation getOrientation() const noexcept;
 
 private:
     PlayerId _id;
