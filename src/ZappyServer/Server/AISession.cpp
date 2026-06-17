@@ -29,16 +29,10 @@ AISession::AISession(const std::shared_ptr<network::ConnectedSocket> &socket,
 
 void AISession::handleTransmission()
 {
-    std::vector<std::string> splittedLine = utils::StringUtils::split(_transmission);
     if (_pending_commands >= MAX_PENDING_COMMANDS)
         return;
 
-    const auto &commandPrefix = splittedLine[0];
-
-    if (!_protocolHandler->getFactory().getCreatorsMap().contains(commandPrefix)) {
-        send(COMMAND_NOT_FOUND);
-        return;
-    }
+    std::vector<std::string> splittedLine = utils::StringUtils::split(_transmission);
     _commandQueue.push(splittedLine);
     _pending_commands++;
     if (_pending_commands == 1)
@@ -58,6 +52,7 @@ void AISession::executeNext()
 void AISession::onCommandComplete()
 {
     _pending_commands--;
+    _commandQueue.pop();
     if (_commandQueue.empty())
         return;
     executeNext();
