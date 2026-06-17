@@ -21,7 +21,7 @@ public:
 
     virtual bool execute(Args... args) = 0;
 
-    virtual bool operator()(AISession& s, const std::vector<std::string>& v) = 0;
+    virtual bool operator()(Args... args) = 0;
 };
 
 
