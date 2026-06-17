@@ -79,4 +79,9 @@ std::uint8_t Player::getLevel() const noexcept
 {
     return _level;
 }
+
+data::Orientation Player::getOrientation() const noexcept
+{
+    return _orientation;
+}
 }
