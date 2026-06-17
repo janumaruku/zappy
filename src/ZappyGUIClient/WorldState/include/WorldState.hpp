@@ -51,7 +51,7 @@ public:
 
     void onEggDeath(uint eggId);
 
-    void onMapDimension(uint& width, uint &height);
+    void onMapDimension(const uint& width, const uint &height);
 
 private:
     GUIMap _map;

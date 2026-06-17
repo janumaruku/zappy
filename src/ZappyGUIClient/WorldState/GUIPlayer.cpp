@@ -5,14 +5,15 @@
 ** GUIPlayer.cpp
 */
 
-#include "GUIPlayer.hpp"
 
 #include <iostream>
 
 #include "Position.hpp"
+#include "GUIPlayer.hpp"
 #include "constants.hpp"
 
 namespace zappy::gui {
+
 GUIPlayer::GUIPlayer(const PlayerId &id, const std::string &team,
     const data::Position &position, data::Orientation orientation,
     const uint8_t level): _id(id), _team(team),
@@ -49,7 +50,6 @@ data::Orientation GUIPlayer::getOrientation() const
 void GUIPlayer::setOrientation(const data::Orientation &to)
 {
     _orientation = to;
-}
 }
 
 uint8_t &GUIPlayer::getLevel()
