@@ -54,20 +54,20 @@ static std::vector<data::Position> buildFOVPositions(const data::Position &playe
 
             switch (orientation) {
             case data::Orientation::UP:
-                x = playerPos.getX() + i;
-                y = playerPos.getY() - r;
+                x += i;
+                y -= r;
                 break;
             case data::Orientation::RIGHT:
-                x = playerPos.getX() + r;
-                y = playerPos.getY() + i;
+                x += r;
+                y += i;
                 break;
             case data::Orientation::DOWN:
-                x = playerPos.getX() - i;
-                y = playerPos.getY() + r;
+                x -= i;
+                y += r;
                 break;
             case data::Orientation::LEFT:
-                x = playerPos.getX() - r;
-                y = playerPos.getY() - i;
+                x  -= r;
+                y -= i;
                 break;
             }
 
