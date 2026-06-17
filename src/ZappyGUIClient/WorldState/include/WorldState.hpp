@@ -22,6 +22,7 @@ class WorldState {
 
 public:
     WorldState() = default;
+
     WorldState(const std::unordered_map<std::string, Team> &teams,
         uint timeUnit, uint width, uint height);
 
@@ -35,19 +36,22 @@ public:
 
     uint getTimeUnit() const;
 
-    void onPlayerNew(const GUIPlayer &player);
+    void onPlayerNew(GUIPlayer player);
 
-    //void onPlayerPosition(Position pos, Orientation orientation);
+    void onPlayerPosition(const std::string &id, const data::Position &pos, const data::Orientation &orientation);
 
     void onPlayerDeath(const PlayerId &id);
 
-    //void onTileContent(Position pos, map<Resource, uint> resources);
+    void onTileContent(data::Position pos,
+        const std::unordered_map<data::Resource, uint> &resources);
 
     void onTimeUnit(uint t);
 
     //void onEggLaid(uint eggId, PlayerId playerId, Position pos);
 
     void onEggDeath(uint eggId);
+
+    void onMapDimension(const uint& width, const uint &height);
 
 private:
     GUIMap _map;

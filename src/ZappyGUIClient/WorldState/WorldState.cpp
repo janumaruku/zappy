@@ -41,15 +41,18 @@ const std::unordered_map<std::string, Team> &WorldState::getTeams()
     return _teams;
 }
 
-void WorldState::onPlayerNew(const GUIPlayer &player)
+void WorldState::onPlayerNew(GUIPlayer player)
 {
     _players.emplace(player.getId(), player);
     std::clog << "New Player " << player.getId() << " has joined" << std::endl;
 }
 
-/*void WorldState::onPlayerPosition(Position pos, Orientation orientation){
-
-}*/
+void WorldState::onPlayerPosition(const std::string &id, const data::Position &pos, const data::Orientation &orientation)
+{
+    auto &player = _players.at(id);
+    player.setOrientation(orientation);
+    player.setPosition(pos);
+}
 
 void WorldState::onPlayerDeath(const PlayerId &id)
 {
@@ -63,9 +66,11 @@ void WorldState::onPlayerDeath(const PlayerId &id)
     _players.erase(id);
 }
 
-/*void WorldState::onTileContent(Position pos, std::map<Resource, uint> resources){
-
-}*/
+void WorldState::onTileContent(const data::Position pos,
+    const std::unordered_map<data::Resource, uint> &resources)
+{
+    _map.updateTile(pos, resources);
+}
 
 /*void WorldState::onTimeUnit(uint t)
 {
@@ -88,5 +93,11 @@ void WorldState::onEggDeath(const uint eggId)
         return;
     }
     _eggs.erase(eggId);
+}
+
+void WorldState::onMapDimension(const uint &width, const uint &height)
+{
+    _map.updateWidth(width);
+    _map.updateHeight(height);
 }
 }

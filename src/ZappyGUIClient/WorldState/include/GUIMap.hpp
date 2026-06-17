@@ -16,6 +16,7 @@ namespace zappy::gui {
 class GUIMap {
 public:
     GUIMap() = default;
+
     GUIMap(const uint &width, const uint &height);
 
     [[nodiscard]] uint getWidth() const;
@@ -23,6 +24,10 @@ public:
     [[nodiscard]] uint getHeight() const;
 
     [[nodiscard]] const data::Tile &getTile(data::Position pos) const;
+
+    void updateWidth(uint width);
+
+    void updateHeight(uint height);
 
     void updateTile(data::Position pos,
         const std::unordered_map<data::Resource, uint> &resources);

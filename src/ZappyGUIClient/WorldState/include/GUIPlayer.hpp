@@ -49,8 +49,10 @@ public:
     [[nodiscard]] std::string getTeam() const;
 
     [[nodiscard]] data::Position getPosition() const;
+    void setPosition(const data::Position &);
 
     [[nodiscard]] data::Orientation getOrientation() const;
+    void setOrientation(const data::Orientation &);
 
     uint8_t &getLevel();
 

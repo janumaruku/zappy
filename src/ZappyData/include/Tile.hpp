@@ -7,6 +7,7 @@
 
 #ifndef TILE_HPP
 #define TILE_HPP
+#include <cstddef>
 #include <cstdint>
 #include <list>
 #include <map>
@@ -18,6 +19,8 @@
 
 namespace zappy::data {
 using PlayerId = std::string;
+
+constexpr std::size_t EXISTING_RESSOURCES = 7;
 
 enum class Resource : std::uint8_t {
     FOOD = 0,
@@ -32,6 +35,7 @@ enum class Resource : std::uint8_t {
 class Tile {
 public:
     Tile() = delete;
+
     explicit Tile(Position position);
 
     [[nodiscard]] Position getPosition() const;
@@ -40,6 +44,8 @@ public:
     getResources() const;
 
     void setResources(const std::unordered_map<Resource, uint> &resources);
+
+    void addResources(const std::unordered_map<Resource, uint> &resources);
 
     bool hasResource(const Resource &resource) const;
 

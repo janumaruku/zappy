@@ -12,7 +12,8 @@
 namespace zappy::gui {
 GUIMap::GUIMap(const uint &width, const uint &height): _width(width),
     _height(height)
-{}
+{
+}
 
 uint GUIMap::getWidth() const
 {
@@ -36,6 +37,16 @@ const data::Tile &GUIMap::getTile(data::Position pos) const
     return _tiles[index];
 }
 
+void GUIMap::updateWidth(const uint width)
+{
+    _width = width;
+}
+
+void GUIMap::updateHeight(const uint height)
+{
+    _height = height;
+}
+
 void GUIMap::updateTile(const data::Position pos,
     const std::unordered_map<data::Resource, uint> &resources)
 {
@@ -46,6 +57,6 @@ void GUIMap::updateTile(const data::Position pos,
 
     const auto index = (pos.getY() * _width) + pos.getX();
 
-    _tiles[index].setResources(resources);
+    _tiles[index].addResources(resources);
 }
 }
