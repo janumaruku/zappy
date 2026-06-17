@@ -33,6 +33,9 @@ public:
     void notifyGUI(const std::string &message);
     void broadcastToAll(const std::string &data);
 
+    [[nodiscard]] const Map &getMap() const noexcept { return _map; }
+    [[nodiscard]] Map &getMap() noexcept { return _map; }
+
 private:
     network::IOContext _ioContext;
     network::Acceptor _acceptor;
