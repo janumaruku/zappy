@@ -1,4 +1,8 @@
-add_library(design_pattern STATIC FactoryTemplate.cpp)
+add_library(design_pattern STATIC
+    FactoryTemplate.cpp
+    AObserver.cpp
+    ASubject.cpp
+)
 
 target_include_directories(design_pattern PUBLIC include)
 
