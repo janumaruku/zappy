@@ -66,7 +66,7 @@ static std::vector<data::Position> buildFOVPositions(const data::Position &playe
                 y += r;
                 break;
             case data::Orientation::LEFT:
-                x  -= r;
+                x -= r;
                 y -= i;
                 break;
             }
