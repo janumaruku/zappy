@@ -32,8 +32,10 @@ bool BctCommand::execute(WorldState&s, const std::vector<std::string>&cmd)
     }();
 
 
-    if (qts.size() != data::EXISTING_RESSOURCES)
-        throw std::invalid_argument("Missing ressources in request");
+    if (qts.size() != data::EXISTING_RESSOURCES) {
+        std::cerr << "Missing ressources in request" << std::endl;
+        return;
+    }
 
     const std::unordered_map<data::Resource, uint> resources = {
         {data::Resource::FOOD, qts[0]},
