@@ -7,6 +7,7 @@
 
 #include "Look.hpp"
 
+#include <cstddef>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -51,7 +52,7 @@ static std::vector<data::Position> buildFOVPositions(const data::Position &playe
     data::Orientation orientation, std::uint8_t level, int mapWidth, int mapHeight)
 {
     std::vector<data::Position> positions;
-    positions.reserve((level + 1) * (level + 1) * 2);
+    positions.reserve(static_cast<std::uint8_t>((level + 1) * (level + 1) * 2));
 
     for (int r = 0; r <= static_cast<int>(level); ++r) {
         for (int i = -r; i <= r; ++i) {
@@ -137,7 +138,7 @@ void Look::execute(AISession &session, Server &server, const std::string &args)
         }
 
         for (size_t i = 0; i < contents.size(); ++i) {
-            if (i)
+            if (i != 0)
                 response << " ";
             response << contents[i];
         }
