@@ -79,4 +79,12 @@ std::uint8_t Player::getLevel() const noexcept
 {
     return _level;
 }
+const std::unordered_map<data::Resource, std::uint8_t> &Player::getInventory() const noexcept
+{
+    return _inventory;
+}
+data::Orientation Player::getOrientation() const noexcept
+{
+    return _orientation;
+}
 }
