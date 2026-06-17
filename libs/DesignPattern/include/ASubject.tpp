@@ -8,6 +8,7 @@
 #pragma once
 
 #include <exception>
+#include <ranges>
 #include <stdexcept>
 #include "ASubject.hpp"
 
@@ -16,6 +17,8 @@ namespace designPattern {
 template<typename EventType, typename KeyType>
 void ASubject<EventType, KeyType>::addObserver(KeyType observerType, IObserver<EventType>* observer)
 {
+    if (!_observers.contains(observerType))
+        _observers.emplace(observerType);
     _observers[observerType].emplace_front(observer);
 }
 
@@ -30,11 +33,8 @@ void ASubject<EventType, KeyType>::removeObserver(KeyType observerType, IObserve
 template<typename EventType, typename KeyType>
 void ASubject<EventType, KeyType>::notify(KeyType observerType, const EventType &event)
 {
-    try {
-        _observers[observerType];
-    } catch (const std::exception &) {
+    if (!_observers.contains(observerType))
         return;
-    }
     for (const auto &observer : _observers[observerType])
         observer.onNotify(event);
 }
@@ -42,7 +42,7 @@ void ASubject<EventType, KeyType>::notify(KeyType observerType, const EventType 
 template<typename EventType, typename KeyType>
 void ASubject<EventType, KeyType>::notifyAll(const EventType &event)
 {
-    for (const auto &[keyType, list] : _observers)
+    for (const auto keyType : _observers | std::ranges::views::keys)
         notify(keyType, event);
 }
 
