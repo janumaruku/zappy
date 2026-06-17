@@ -83,20 +83,12 @@ static std::vector<data::Position> buildFOVPositions(const data::Position &playe
 
 bool LookCommand::execute(AISession& session, const std::vector<std::string>& v)
 {
-    session.send(v[0]);
-    const Server &server = session.getServer();
-    const Player &player = session.getPlayer();
-    const Map &map = server.getMap();
-
-    const auto playerPos = player.getPosition();
-    const auto level = player.getLevel();
-    const auto orientation = player.getOrientation(); 
-
-    const int mapWidth = map.getWidth();
-    const int mapHeight = map.getHeight();
-
-    const auto positions = buildFOVPositions(playerPos, orientation, level,
-        mapWidth, mapHeight);
+    const auto positions = buildFOVPositions(
+        session.getPlayer().getPosition(),
+        session.getPlayer().getOrientation(),
+        session.getPlayer().getLevel(),
+        session.getServer().getMap().getWidth(),
+        session.getServer().getMap().getHeight());
 
     std::ostringstream response;
     response << "[";
@@ -109,11 +101,12 @@ bool LookCommand::execute(AISession& session, const std::vector<std::string>& v)
             response << ", ";
         firstTile = false;
 
-        const data::Tile &tile = map.getTile(pos);
+        const data::Tile &tile = session.getServer().getMap().getTile(pos);
 
         std::vector<std::string> contents;
 
-        if (pos.getX() == playerPos.getX() && pos.getY() == playerPos.getY()) {
+        if (pos.getX() == session.getPlayer().getPosition().getX()
+            && pos.getY() == session.getPlayer().getPosition().getY()) {
             contents.emplace_back("player");
         }
 
