@@ -10,17 +10,17 @@
 #include <iostream>
 
 namespace zappy::gui {
-GUIMap::GUIMap(const uint &width, const uint &height): _width(width),
+GUIMap::GUIMap(const int &width, const int &height): _width(width),
     _height(height)
 {
 }
 
-uint GUIMap::getWidth() const
+int GUIMap::getWidth() const
 {
     return _width;
 }
 
-uint GUIMap::getHeight() const
+int GUIMap::getHeight() const
 {
     return _height;
 }
@@ -37,21 +37,21 @@ const data::Tile &GUIMap::getTile(data::Position pos) const
     return _tiles[index];
 }
 
-void GUIMap::updateWidth(const uint width)
+void GUIMap::updateWidth(const int width)
 {
     _width = width;
 }
 
-void GUIMap::updateHeight(const uint height)
+void GUIMap::updateHeight(const int height)
 {
     _height = height;
 }
 
 void GUIMap::updateTile(const data::Position pos,
-    const std::unordered_map<data::Resource, uint> &resources)
+    const std::unordered_map<data::Resource, int> &resources)
 {
-    if (pos.getX() > static_cast<int>(_width) || pos.getX() < 0 ||
-        pos.getY() > static_cast<int>(_height) || pos.getY() < 0) {
+    if (pos.getX() > _width || pos.getX() < 0 ||
+        pos.getY() > _height || pos.getY() < 0) {
         throw std::runtime_error("getTile position out of bound");
     }
 
