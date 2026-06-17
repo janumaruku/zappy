@@ -143,26 +143,25 @@ impl CommandDefinition {
     }
 
     pub fn run(&self, tokens: &[String]) {
+        if tokens.contains(&"--help".to_string()) || tokens.contains(&"-h".to_string()) {
+            if tokens.len() == 2 {
+                println!("{}", format_help(&self));
+                return;
+            } else {
+                eprintln!(
+                    "{}Error: {}see {} --help",
+                    useful::color::RED,
+                    useful::color::RESET,
+                    self.name
+                );
+                return;
+            }
+        }
+
         let context = self.build_context(tokens);
 
         match context {
-            Ok(context) => match context.flag("help") {
-                true => {
-                    if context.args_count() != 0
-                        || context.flags_count() != 1
-                    {
-                        eprintln!(
-                            "{}Error: {}see {} --help",
-                            useful::color::RED,
-                            useful::color::RESET,
-                            self.name
-                        )
-                    } else {
-                        println!("{}", format_help(&self))
-                    }
-                }
-                false => (self.handler)(&context),
-            },
+            Ok(context) => (self.handler)(&context),
             Err(error) => {
                 eprintln!("{error}. See {} --help", self.name);
             }

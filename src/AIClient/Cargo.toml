@@ -1,4 +1,11 @@
 [workspace]
-members = ["shell", "network", "app", "useful", "client_test", "behavior_tree", "ai_data"]
+members = [
+    "shell"
+    , "network"
+    , "useful"
+    , "behavior_tree"
+    , "ai_data"
+    , "ai_tcp_client"
+    , "zappy_ai"
+]
 resolver = "2"
-

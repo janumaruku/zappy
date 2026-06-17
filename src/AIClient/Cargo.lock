@@ -5,9 +5,12 @@ version = 4
 [[package]]
 name = "ai_data"
 version = "0.1.0"
+dependencies = [
+ "behavior_tree",
+]
 
 [[package]]
-name = "app"
+name = "ai_tcp_client"
 version = "0.1.0"
 dependencies = [
  "network",
@@ -17,13 +20,6 @@ dependencies = [
 [[package]]
 name = "behavior_tree"
 version = "0.1.0"
-
-[[package]]
-name = "client_test"
-version = "0.1.0"
-dependencies = [
- "network",
-]
 
 [[package]]
 name = "colored"
@@ -72,4 +68,11 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ae137229bcbd6cdf0f7b80a31df61766145077ddf49416a728b02cb3921ff3fc"
 dependencies = [
  "windows-link",
+]
+
+[[package]]
+name = "zappy_ai"
+version = "0.1.0"
+dependencies = [
+ "shell",
 ]
