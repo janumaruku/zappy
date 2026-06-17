@@ -9,6 +9,8 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include "PnwCommand.hpp"
+#include "PpoCommand.hpp"
 #include "StringUtils.hpp"
 #include "ProtocolHandler.hpp"
 #include "BctCommand.hpp"
@@ -28,6 +30,8 @@ void ProtocolHandler::registerCommands() noexcept
     _factory.registerCreator<BctCommand>("bct");
     _factory.registerCreator<MctCommand>("mct");
     _factory.registerCreator<MszCommand>("msz");
+    _factory.registerCreator<PnwCommand>("pnw");
+    _factory.registerCreator<PpoCommand>("ppo");
 }
 
 void ProtocolHandler::handleLine(const std::string& line) noexcept
