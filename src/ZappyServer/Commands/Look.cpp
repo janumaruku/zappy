@@ -19,6 +19,7 @@
 #include "Tile.hpp"
 #include "Player.hpp"
 #include "Position.hpp"
+#include "AISession.hpp"
 
 namespace zappy::server {
 
@@ -88,7 +89,7 @@ static std::vector<data::Position> buildFOVPositions(const data::Position &playe
 
 void Look::execute(AISession &session, Server &server, const std::string &args)
 {
-    const Player &player = session.getPlyer();
+    const Player &player = session.getPlayer();
     const Map &map = server.getMap();
 
     const auto playerPos = player.getPosition();
