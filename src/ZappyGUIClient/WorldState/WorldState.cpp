@@ -47,9 +47,12 @@ void WorldState::onPlayerNew(GUIPlayer player)
     std::clog << "New Player " << player.getId() << " has joined" << std::endl;
 }
 
-/*void WorldState::onPlayerPosition(Position pos, Orientation orientation){
-
-}*/
+void WorldState::onPlayerPosition(const std::string &id, const data::Position &pos, const data::Orientation &orientation)
+{
+    auto &player = _players.at(id);
+    player.setOrientation(orientation);
+    player.setPosition(pos);
+}
 
 void WorldState::onPlayerDeath(const PlayerId &id)
 {
