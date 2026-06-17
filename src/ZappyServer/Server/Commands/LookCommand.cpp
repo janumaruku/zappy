@@ -100,7 +100,7 @@ static void extractResources(
         if (it == resNames.end())
             continue;
 
-        for (unsigned int c = 0; c < count; c++)
+        for (unsigned int c = 0; c < count; ++c)
             contents.emplace_back(it->second);
     }
 }
@@ -155,7 +155,7 @@ static std::string getResponseToString(
     return response.str();
 }
 
-bool LookCommand::execute(AISession& session, const std::vector<std::string>& v)
+bool LookCommand::execute(AISession& session, const std::vector<std::string>& /*v*/)
 {
     const std::vector<data::Position> positions = buildFOVPositions(
         session.getPlayer().getPosition(),
