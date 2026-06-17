@@ -22,7 +22,7 @@ class BasicWaitableTimer {
 public:
 using Duration = Clock::duration;
     BasicWaitableTimer() = delete;
-    BasicWaitableTimer(network::IOContext &ioContext, std::size_t id, std::function<void()> handler = {});
+    BasicWaitableTimer(network::IOContext &ioContext, std::function<void()> handler = {});
 
     BasicWaitableTimer(const BasicWaitableTimer &) = delete;
     BasicWaitableTimer(const BasicWaitableTimer &&other) noexcept;
@@ -36,7 +36,6 @@ using Duration = Clock::duration;
 
     ~BasicWaitableTimer() = default;
 private:
-    std::size_t _id;
     std::chrono::time_point<Clock> _expiry;
     network::IOContext &_ioContext;
     std::function<void()> _handler;

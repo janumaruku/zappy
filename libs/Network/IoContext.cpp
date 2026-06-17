@@ -167,18 +167,6 @@ void IOContext::triggerHandler(const int &itt)
     }
 }
 
-void IOContext::cancelTimer(const std::size_t &id)
-{
-    auto &values = container(_timerQueue);
-
-    const auto it = std::ranges::find_if(values,
-        [id](const TimerEntry &entry) {
-            return entry.id == id;
-        });
-    if (it != values.end())
-        it->cancellation = true;
-}
-
 void IOContext::drainExpiredTimers()
 {
     const auto now = static_cast<float>(

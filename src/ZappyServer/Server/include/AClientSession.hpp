@@ -22,7 +22,7 @@ public:
     ~AClientSession() override = default;
 
     void start() override;
-    void send(std::string &data) override;
+    void send(const std::string &data) override;
     std::string receive() override;
 
 protected:

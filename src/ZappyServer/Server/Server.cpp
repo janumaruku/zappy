@@ -32,6 +32,12 @@ void Server::run()
     _ioContext.run();
 }
 
+[[nodiscard]] const uint &Server::getFrequency() const
+{
+    return _frequency;
+}
+
+
 void Server::startAccept()
 {
     _acceptor.asyncAccept([this](const std::error_code &error,

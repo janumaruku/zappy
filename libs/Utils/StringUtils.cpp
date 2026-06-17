@@ -59,16 +59,39 @@ std::vector<std::string> StringUtils::splitQuoted(const std::string &str)
     return result;
 }
 
+std::size_t getResultSize(const std::string &str)
+{
+    std::size_t count = 0;
+    std::size_t strSize = str.size();
+    std::size_t i = 0;
+
+    for (; i < strSize; i++) {
+        if (!std::isalpha(str[i]))
+            continue;
+        count++;
+        for (; i != strSize && std::isalpha(str[i + 1]); i++);
+    }
+    return count;
+}
 
 std::vector<std::string> StringUtils::split(const std::string &str) noexcept
 {
     std::vector<std::string> result;
-    std::stringstream stream{str};
-    std::string word;
-
-    while (stream >> word)
-        result.push_back(word);
-
+    if (str == "\n") {
+        result.emplace_back("\n");
+        return result;
+    }
+    std::size_t resultSize = getResultSize(str);
+    std::size_t strSize = str.size();
+    std::string buf;
+    std::size_t j = 0;
+    for (std::size_t i = 0; i != resultSize; i++) {
+        for (; j < strSize && !std::isalpha(str[j]); j++);
+        while (j < strSize && std::isalpha(str[j]))
+            buf.push_back(str[j++]);
+        result.push_back(buf);
+        buf.clear();
+    }
     return result;
 }
 

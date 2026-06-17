@@ -8,6 +8,7 @@
 #pragma once
 
 #include <chrono>
+#include <cstdint>
 #include <functional>
 #include <poll.h>
 #include <queue>
@@ -23,8 +24,7 @@ template <typename Clock>
 class BasicWaitableTimer;
 
 struct TimerEntry {
-    std::size_t id;
-    float timePoint;
+    uint64_t timePoint;
     std::function<void()> handler;
     bool cancellation;
 };
@@ -126,7 +126,8 @@ public:
     template <typename Clock>
     void registerTimer(BasicWaitableTimer<Clock> &timer);
 
-    void cancelTimer(const std::size_t &id);
+    template <typename Clock>
+    void cancelTimer(const std::chrono::time_point<Clock> &expiry);
 
     private:
     std::vector<pollfd> _pollFds;                                        ///< List of file descriptors watched by @c poll(2).
