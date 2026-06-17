@@ -17,13 +17,15 @@
 #include <vector>
 #include "StringUtils.hpp"
 #include "ZappyConstants.hpp"
+#include "ConnectedSocket.hpp"
+#include "Timer.hpp"
 #include "AISession.hpp"
 #include "AIProtocolHandler.hpp"
 
 namespace zappy::server {
 AISession::AISession(const std::shared_ptr<network::ConnectedSocket> &socket,
     Server &server, Player &player): AClientSession{socket}, _server{server}, _player{player},
-    _command_timer(server.getIoContext(), 1), _starvation_timer(server.getIoContext(), 1)
+    _command_timer(socket->getIOContext()), _starvation_timer(socket->getIOContext())
 {
 }
 

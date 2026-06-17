@@ -32,16 +32,6 @@ void Server::run()
     _ioContext.run();
 }
 
-[[nodiscard]] network::IOContext &Server::getIoContext()
-{
-    return _ioContext;
-}
-
-[[nodiscard]] const network::IOContext &Server::getIoContext() const
-{
-    return _ioContext;
-}
-
 [[nodiscard]] const uint &Server::getFrequency() const
 {
     return _frequency;

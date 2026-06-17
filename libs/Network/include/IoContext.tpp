@@ -7,6 +7,8 @@
 
 #pragma once
 
+#include <cstdint>
+#include "ContainerUtils.hpp"
 #include "IoContext.hpp"
 
 namespace network {
@@ -14,7 +16,7 @@ template <typename Clock>
 void IOContext::registerTimer(BasicWaitableTimer<Clock> &timer)
 {
     struct TimerEntry entry {
-        .timePoint = static_cast<float>(timer.expiry().time_since_epoch().count()),
+        .timePoint = static_cast<uint64_t>(timer.expiry().time_since_epoch().count()),
         .handler = timer.handler(),
         .cancellation = false
     };   
@@ -28,7 +30,7 @@ void IOContext::cancelTimer(const std::chrono::time_point<Clock> &expiry)
 
     const auto it = std::ranges::find_if(values,
         [&expiry](const TimerEntry &entry) {
-            return entry.timePoint == expiry;
+            return entry.timePoint == static_cast<uint64_t>(expiry.time_since_epoch().count());
         });
     if (it != values.end())
         it->cancellation = true;
