@@ -36,7 +36,7 @@ public:
 
     uint getTimeUnit() const;
 
-    void onPlayerNew(const GUIPlayer &player);
+    void onPlayerNew(GUIPlayer player);
 
     //void onPlayerPosition(Position pos, Orientation orientation);
 

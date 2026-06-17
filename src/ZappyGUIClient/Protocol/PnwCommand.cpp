@@ -10,6 +10,7 @@
 #include <exception>
 #include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 #include "GUIPlayer.hpp"
 #include "Position.hpp"
@@ -28,7 +29,7 @@ bool PnwCommand::execute(WorldState&s, const std::vector<std::string>&cmd)
             static_cast<data::Orientation>(std::stoi(cmd[3])),
             static_cast<uint8_t>(std::stoi(cmd[4]))};
     
-        s.onPlayerNew(player);
+        s.onPlayerNew(std::move(player));
     } catch(const std::exception &e) {
         return false;
     }
