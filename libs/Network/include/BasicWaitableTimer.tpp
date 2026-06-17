@@ -14,12 +14,10 @@ namespace network {
 
 template <typename Clock>
 BasicWaitableTimer<Clock>::BasicWaitableTimer(const BasicWaitableTimer &&other) noexcept :
-_id(other._id), _ioContext(other._ioContext), _handler(other._handler) {}
+ _ioContext(other._ioContext), _handler(other._handler) {}
 
 template <typename Clock>
-BasicWaitableTimer<Clock>::BasicWaitableTimer(network::IOContext &ioContext,
-    std::size_t id, std::function<void()> handler) :
-    _id(id),
+BasicWaitableTimer<Clock>::BasicWaitableTimer(network::IOContext &ioContext, std::function<void()> handler) :
     _ioContext(ioContext),
     _handler(std::move(handler)) {}
 
@@ -34,7 +32,7 @@ void BasicWaitableTimer<Clock>::asyncWait(const Clock::duration &duration, const
 template <typename Clock>
 void BasicWaitableTimer<Clock>::cancel() noexcept
 {
-    _ioContext.cancelTimer(_id);
+    _ioContext.cancelTimer(_expiry);
 }
 
 template <typename Clock>
@@ -48,12 +46,6 @@ template <typename Clock>
 std::chrono::time_point<Clock> BasicWaitableTimer<Clock>::expiry() const noexcept
 {
     return _expiry;
-}
-
-template <typename Clock>
-const std::size_t &BasicWaitableTimer<Clock>::id() const noexcept
-{
-    return _id;
 }
 
 template <typename Clock>
