@@ -19,7 +19,7 @@ class ICommand {
 public:
     virtual ~ICommand() = 0;
 
-    virtual bool execute(AISession& s, const std::vector<std::string>& v) = 0;
+    virtual bool execute(Args... args) = 0;
 
     virtual bool operator()(AISession& s, const std::vector<std::string>& v) = 0;
 };
