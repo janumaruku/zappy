@@ -9,13 +9,20 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include "Position.hpp"
 #include "ProtocolHandler.hpp"
 #include "PpoCommand.hpp"
 
 namespace zappy::gui {
 
-bool PpoCommand::execute(WorldState&, const std::vector<std::string>&)
+bool PpoCommand::execute(WorldState &w, const std::vector<std::string>&cmd)
 {
+    const auto &id = cmd[0];
+    data::Position pos(std::stoi(cmd[1]), std::stoi(cmd[2]));
+    auto orientation = std::stoi(cmd[3]);
+
+    w.onPlayerPosition(id, static_cast<data::Position>(pos),
+    static_cast<data::Orientation>(orientation));
     return true;
 }
 
