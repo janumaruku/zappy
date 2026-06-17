@@ -9,6 +9,7 @@
 
 #include <iostream>
 
+#include "Position.hpp"
 #include "constants.hpp"
 
 namespace zappy::gui {
@@ -34,9 +35,21 @@ data::Position GUIPlayer::getPosition() const
     return _position;
 }
 
+void GUIPlayer::setPosition(const data::Position &to)
+{
+    _position = to;
+}
+
 data::Orientation GUIPlayer::getOrientation() const
 {
     return _orientation;
+
+}
+
+void GUIPlayer::setOrientation(const data::Orientation &to)
+{
+    _orientation = to;
+}
 }
 
 uint8_t &GUIPlayer::getLevel()

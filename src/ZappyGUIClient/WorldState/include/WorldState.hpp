@@ -38,7 +38,7 @@ public:
 
     void onPlayerNew(GUIPlayer player);
 
-    //void onPlayerPosition(Position pos, Orientation orientation);
+    void onPlayerPosition(const std::string &id, const data::Position &pos, const data::Orientation &orientation);
 
     void onPlayerDeath(const PlayerId &id);
 
