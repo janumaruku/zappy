@@ -1,4 +1,8 @@
-add_library(renderer Renderer.cpp)
+add_library(renderer Renderer.cpp
+        ResourceManager.cpp
+        include/ResourceManager.hpp
+        Grid.cpp
+        Grid.hpp)
 
 target_include_directories(renderer PUBLIC include)
 
