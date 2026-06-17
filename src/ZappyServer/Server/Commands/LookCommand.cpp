@@ -12,7 +12,9 @@
 #include <vector>
 #include "AIProtocolHandler.hpp"
 #include "AISession.hpp"
+#include "Position.hpp"
 #include "Server.hpp"
+#include "Tile.hpp"
 #include "LookCommand.hpp"
 
 namespace zappy::server {
@@ -81,21 +83,61 @@ static std::vector<data::Position> buildFOVPositions(const data::Position &playe
     return positions;
 }
 
-bool LookCommand::execute(AISession& session, const std::vector<std::string>& v)
+static void extractResources(
+    const data::Tile &tile,
+    std::vector<std::string> &contents)
 {
-    const auto positions = buildFOVPositions(
-        session.getPlayer().getPosition(),
-        session.getPlayer().getOrientation(),
-        session.getPlayer().getLevel(),
-        session.getServer().getMap().getWidth(),
-        session.getServer().getMap().getHeight());
+    const auto &resNames = resourceNames();
+    const auto &resources = tile.getResources();
 
+    for (const auto &kv : resources) {
+        const auto &resource = kv.first;
+        const auto count = kv.second;
+        if (count == 0)
+            continue;
+
+        auto it = resNames.find(resource); // 20 lines
+        if (it == resNames.end())
+            continue;
+
+        for (unsigned int c = 0; c < count; c++)
+            contents.emplace_back(it->second);
+    }
+}
+
+static void setContentsInResponse(
+    std::ostringstream &response,
+    const std::vector<std::string> &contents
+)
+{
+    for (size_t i = 0; i < contents.size(); ++i) {
+        if (i != 0)
+            response << " ";
+        response << contents[i];
+    }
+}
+
+static void checkPlayerPresenceOnTile(
+    const AISession &session,
+    const data::Position &pos,
+    std::vector<std::string> &contents)
+{
+    if (pos.getX() == session.getPlayer().getPosition().getX()
+        && pos.getY() == session.getPlayer().getPosition().getY()) {
+        contents.emplace_back("player");
+    }
+}
+
+static std::string getResponseToString(
+    AISession& session,
+    const std::vector<data::Position> &positions)
+{
     std::ostringstream response;
+
     response << "[";
 
-    const auto &resNames = resourceNames();
-
     bool firstTile = true;
+
     for (const auto &pos : positions) {
         if (!firstTile)
             response << ", ";
@@ -104,37 +146,26 @@ bool LookCommand::execute(AISession& session, const std::vector<std::string>& v)
         const data::Tile &tile = session.getServer().getMap().getTile(pos);
 
         std::vector<std::string> contents;
-
-        if (pos.getX() == session.getPlayer().getPosition().getX()
-            && pos.getY() == session.getPlayer().getPosition().getY()) {
-            contents.emplace_back("player");
-        }
-
-        const auto &resources = tile.getResources();
-        for (const auto &kv : resources) {
-            const auto &resource = kv.first;
-            const auto count = kv.second;
-            if (count == 0)
-                continue;
-
-            auto it = resNames.find(resource);
-            if (it == resNames.end())
-                continue;
-
-            for (unsigned int c = 0; c < count; ++c)
-                contents.emplace_back(it->second);
-        }
-
-        for (size_t i = 0; i < contents.size(); ++i) {
-            if (i != 0)
-                response << " ";
-            response << contents[i];
-        }
+        checkPlayerPresenceOnTile(session, pos, contents);
+        extractResources(tile, contents);
+        setContentsInResponse(response, contents);
     }
 
     response << "]\n";
+    return response.str();
+}
 
-    session.scheduleResponse(7, response.str());
+bool LookCommand::execute(AISession& session, const std::vector<std::string>& v)
+{
+    const std::vector<data::Position> positions = buildFOVPositions(
+        session.getPlayer().getPosition(),
+        session.getPlayer().getOrientation(),
+        session.getPlayer().getLevel(),
+        session.getServer().getMap().getWidth(),
+        session.getServer().getMap().getHeight());
+
+    std::string response = getResponseToString(session, positions);
+    session.scheduleResponse(7, response);
     return true;
 }
 
