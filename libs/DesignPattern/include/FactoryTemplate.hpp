@@ -65,9 +65,9 @@ public:
         throw std::runtime_error(sstream.str());
     }
 
-    const CreatorMap &getCreatorsMap() const
+    [[nodiscard]] bool hasKey(const KeyType &key) const noexcept
     {
-        return _creators;
+        return _creators.contains(key);
     }
 
 private:
