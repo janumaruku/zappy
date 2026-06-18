@@ -8,29 +8,33 @@
 #ifndef RENDERER_HPP
 #define RENDERER_HPP
 #include <map>
+#include <memory>
 #include <string>
 
 #include "raylib.h"
+#include "ResourceManager.hpp"
 #include "WorldState.hpp"
+#include "Grid.hpp"
 
 namespace zappy::gui {
 
 class Renderer {
-    const int TILE_SIZE = 50;
 
 public:
-    Renderer();
+    Renderer(const int &width, const int &height);
 
     ~Renderer();
-
-    void loadTextures();
 
     void render(const WorldState &world) const;
 
     bool isWindowOpen();
 
 private:
-    static void renderMap(const GUIMap &map);
+    void renderMap(const GUIMap &map) const;
+
+    static std::string resourceToString(const data::Resource &resource);
+
+//    void renderResources(const Res);
 
     static void renderPlayers(const std::map<data::PlayerId, GUIPlayer>
         &players);
@@ -39,16 +43,12 @@ private:
 
     static void updateAnimation(const GUIPlayer &player);
 
-    Vector2 tileToPixel(data::Position pos) const;
+    [[nodiscard]] Vector2 tileToPixel(data::Position pos) const;
 
-    Image createImageResource(Color color) const;
-
-    void loadImages();
-
-    std::unordered_map<std::string, Image> _images;
-    std::map<std::string, Texture2D> _textures;
     // std::map<data::PlayerId, Animation> _animations;
+    Grid _grid;
     Camera2D _camera;
+    std::unique_ptr<ResourceManager> _resourceManager;
 };
 } // namespace zappy::gui
 #endif // RENDERER_HPP

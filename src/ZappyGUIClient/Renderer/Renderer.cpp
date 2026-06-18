@@ -5,64 +5,36 @@
 ** Renderer
 */
 
+#include <iostream>
+
 #include "Renderer.hpp"
+#include "ResourceManager.hpp"
 
 namespace zappy::gui {
-Renderer::Renderer(): _camera({.offset = Vector2{.x = 0.0F, .y = 0.0F},
-                               .target = Vector2{.x = 400.0F, .y = 300.0F},
-                               .rotation = 0.0F,
-                               .zoom = 1.0F})
+Renderer::Renderer(const int &width, const int &height): _grid(width, height),
+    _camera({
+        .offset = Vector2{.x = 0.0F, .y = 0.0F},
+        .target = Vector2{.x = 0.0F, .y = 0.0F},
+        .rotation = 0.0F,
+        .zoom = 1.0F})
 {
     InitWindow(800, 600, "Zappy - Renderer");
     SetTargetFPS(60);
+    _resourceManager = std::make_unique<ResourceManager>();
 }
 
 Renderer::~Renderer()
 {
-    for (auto &it: _textures) {
-        UnloadTexture(it.second);
-    }
     CloseWindow();
-}
-
-Image Renderer::createImageResource(const Color color) const
-{
-    Image imageResource = GenImageColor(TILE_SIZE, TILE_SIZE, BLANK);
-    ImageDrawCircle(&imageResource, 25, 25, 15, color);
-    return imageResource;
-}
-
-void Renderer::loadImages()
-{
-    std::unordered_map<std::string, Image> images;
-
-    _images.insert({"tile", GenImageColor(TILE_SIZE, TILE_SIZE, GRAY)});
-
-    _images.insert({"food", createImageResource(RED)});
-    _images.insert({"linemate", createImageResource(LIME)});
-    _images.insert({"deraumere", createImageResource(BLUE)});
-    _images.insert({"sibur", createImageResource(YELLOW)});
-    _images.insert({"mendiane", createImageResource(VIOLET)});
-    _images.insert({"phiras", createImageResource(ORANGE)});
-    _images.insert({"thystame", createImageResource(BROWN)});
-}
-
-void Renderer::loadTextures()
-{
-    loadImages();
-    for (const auto &it: _images) {
-        _textures.insert({it.first, LoadTextureFromImage(it.second)});
-    }
 }
 
 void Renderer::render(const WorldState &world) const
 {
-    (void)world;
     BeginDrawing();
-    ClearBackground(RAYWHITE);
+    ClearBackground(BLACK);
 
-    //DrawTexture(_textures.at("food"), 50, 50, WHITE);
     BeginMode2D(_camera);
+    renderMap(world.getMap());
     EndMode2D();
     EndDrawing();
 }
@@ -72,9 +44,30 @@ bool Renderer::isWindowOpen() // NOLINT
     return !WindowShouldClose();
 }
 
-void Renderer::renderMap(const GUIMap &map)
+void Renderer::renderMap(const GUIMap &map) const
 {
-    (void)map;
+    _grid.render();
+    const auto width = map.getWidth();
+    const auto len = map.getWidth() * map.getHeight();
+
+    auto y = 0;
+    for (auto x = 0; x < len; ++x) {
+        if (x == width - 1)
+            ++y;
+        auto tile = map.getTile({x % width, y}).getResources();
+
+        for (auto const &[name, count]: tile) {
+            auto resourceTexture = _resourceManager->getTexture(
+                resourceToString(name));
+            DrawTexture(resourceTexture, (x % width) * TILE_SIZE, y * TILE_SIZE,
+                WHITE);
+        }
+    }
+}
+
+std::string Renderer::resourceToString(const data::Resource &resource)
+{
+    return RESOURCE_DATA[static_cast<int>(resource)].name;
 }
 
 void Renderer::renderPlayers(const std::map<data::PlayerId, GUIPlayer> &players)
@@ -97,4 +90,5 @@ Vector2 Renderer::tileToPixel(const data::Position pos) const
     return {.x = static_cast<float>(pos.getX() * TILE_SIZE),
             .y = static_cast<float>(pos.getY() * TILE_SIZE)};
 }
+
 } // namespace zappy::gui
