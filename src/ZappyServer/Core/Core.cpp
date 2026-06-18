@@ -1,0 +1,68 @@
+/*
+** EPITECH PROJECT, 2026
+** zappy
+** File description:
+** Core.cpp
+*/
+
+#include "Core.hpp"
+
+#include "CommandBuilder.hpp"
+#include "CommandContext.hpp"
+#include "Server.hpp"
+
+Core::Core(char **argv)
+{
+    for (auto i = 0; argv[i] != nullptr; i++)
+        _argv.emplace_back(argv[i]);
+}
+
+void Core::run()
+{
+    buildServerCommands();
+
+    _serverCommands.run(std::move(_argv));
+}
+
+void Core::buildServerCommands()
+{
+    _serverCommands =
+        shell::command::CommandBuilder().name("./zappy_server")
+        .description("Runs the server with the specified arguments.")
+        .option([](shell::command::OptionBuilder &builder) {
+            builder.name("port").alias("p").required()
+                .description("port number.");
+        })
+        .option([](shell::command::OptionBuilder &builder) {
+            builder.name("width").alias("x").required()
+                .description("width of the world");
+        })
+        .option([](shell::command::OptionBuilder &builder) {
+            builder.name("height").alias("y").required()
+                .description("height of the world");
+        })
+        .xOption([](shell::command::XOptionBuilder &builder) {
+            builder.name("name").alias("n").min(2).required()
+                .description("name of the teams.");
+        })
+        .option([](shell::command::OptionBuilder &builder) {
+            builder.name("clientsNb").alias("c").required()
+                .description("number of initial client per team.");
+        })
+        .option([](shell::command::OptionBuilder &builder) {
+            builder.name("frequency").alias("f").required()
+                .description("reciprocal of time unit for execution of actions.");
+        })
+        .action([this](shell::command::CommandContext &ctx) {
+            _port = std::stoi(ctx.option("port"));
+            _width = std::stoi(ctx.option("width"));
+            _height = std::stoi(ctx.option("height"));
+            _teams = ctx.xOption("name");
+            _clientPerTeam = static_cast<uint>(std::stoi(ctx.option("clientsNb")));
+            _frequency = static_cast<uint>(std::stoi(ctx.option("frequency")));
+
+            zappy::server::Server server(_port, _width, _height, _teams,
+                _clientPerTeam, _frequency);
+            server.run();
+        }).build();
+}
