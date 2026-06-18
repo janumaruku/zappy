@@ -107,7 +107,7 @@ void Renderer::updateCamera()
         _camera.target = mouseWorldPos;
         float scale = 0.2f * wheel;
         _camera.zoom =
-            std::clamp(std::expf(logf(_camera.zoom) + scale), 0.125f, 64.0f);
+            std::clamp(std::expf(logf(_camera.zoom) + scale), 0.2f, 3.0f);
     }
 }
 
