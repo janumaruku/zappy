@@ -53,8 +53,7 @@ void Core::buildGUICommands()
         })
         .action([this](const shell::command::CommandContext &ctx) {
             _tcpClient = std::make_unique<TCPClient>(_ioc,
-                std::stoi(ctx.option("port")), ctx.option("machine"),
-                _worldState);
+                std::stoi(ctx.option("port")), ctx.option("machine"));
         })
         .build();
 }
