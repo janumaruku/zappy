@@ -5,9 +5,11 @@
 ** Renderer
 */
 
-#include <iostream>
-
 #include "Renderer.hpp"
+
+#include <algorithm>
+#include <cmath>
+
 #include "ResourceManager.hpp"
 
 namespace zappy::gui {
@@ -35,8 +37,9 @@ Renderer::~Renderer()
     CloseWindow();
 }
 
-void Renderer::render(const WorldState &world) const
+void Renderer::render(const WorldState &world)
 {
+    updateCamera();
     BeginDrawing();
     ClearBackground(BLACK);
 
@@ -55,7 +58,7 @@ void Renderer::renderMap(const GUIMap &map) const
 {
     _grid.render();
     const auto width = map.getWidth();
-    const auto len = map.getWidth() * map.getHeight();
+    const auto len   = map.getWidth() * map.getHeight();
 
     auto y = 0;
     for (auto x = 0; x < len; ++x) {
@@ -67,19 +70,14 @@ void Renderer::renderMap(const GUIMap &map) const
     }
 }
 
-std::string Renderer::resourceToString(const data::Resource &resource)
-{
-    return RESOURCE_DATA[static_cast<int>(resource)].name;
-}
-
-void Renderer::renderResourcesFromTile(
-    std::unordered_map<data::Resource, int> tile,
+void Renderer::renderResourcesFromTile(std::unordered_map<data::Resource, int>
+                                           tile,
     const data::Position position) const
 {
 
     for (auto const &[name, count]: tile) {
-        auto resourceTexture = _resourceManager->getTexture(
-            resourceToString(name));
+        auto resourceTexture =
+            _resourceManager->getTexture(resourceToString(name));
         if (count > 0)
             DrawTexture(resourceTexture, position.getX() * TILE_SIZE,
                 position.getY() * TILE_SIZE, WHITE);
@@ -100,11 +98,28 @@ void Renderer::updateAnimation(const GUIPlayer &player)
 {
     (void)player;
 }
+void Renderer::updateCamera()
+{
+    float wheel = GetMouseWheelMove();
+    if (wheel != 0) {
+        Vector2 mouseWorldPos = GetScreenToWorld2D(GetMousePosition(), _camera);
+        _camera.offset = GetMousePosition();
+        _camera.target = mouseWorldPos;
+        float scale = 0.2f * wheel;
+        _camera.zoom =
+            std::clamp(std::expf(logf(_camera.zoom) + scale), 0.125f, 64.0f);
+    }
+}
 
 Vector2 Renderer::tileToPixel(const data::Position pos) const
 {
     return {.x = static_cast<float>(pos.getX() * TILE_SIZE),
-            .y = static_cast<float>(pos.getY() * TILE_SIZE)};
+        .y     = static_cast<float>(pos.getY() * TILE_SIZE)};
+}
+
+std::string Renderer::resourceToString(const data::Resource &resource)
+{
+    return RESOURCE_DATA[static_cast<int>(resource)].name;
 }
 
 } // namespace zappy::gui
