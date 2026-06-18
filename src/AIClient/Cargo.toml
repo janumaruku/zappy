@@ -4,7 +4,6 @@ members = [
     , "network"
     , "useful"
     , "behavior_tree"
-    , "ai_data"
     , "ai_tcp_client"
     , "zappy_ai"
 ]

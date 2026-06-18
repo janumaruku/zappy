@@ -3,13 +3,6 @@
 version = 4
 
 [[package]]
-name = "ai_data"
-version = "0.1.0"
-dependencies = [
- "behavior_tree",
-]
-
-[[package]]
 name = "ai_tcp_client"
 version = "0.1.0"
 dependencies = [
@@ -74,5 +67,8 @@ dependencies = [
 name = "zappy_ai"
 version = "0.1.0"
 dependencies = [
+ "ai_tcp_client",
+ "behavior_tree",
+ "network",
  "shell",
 ]
