@@ -73,6 +73,16 @@ const Player &AISession::getPlayer() const noexcept
     return _player;
 }
 
+Player &AISession::getPlayer() noexcept
+{
+    return _player;
+}
+
+Server &AISession::getServer() noexcept
+{
+    return _server;
+}
+
 const Server &AISession::getServer() const noexcept
 {
     return _server;
