@@ -24,23 +24,13 @@ namespace zappy::server {
 
 static void computeToroidalDelta(int &dx, int &dy, int mapWidth, int mapHeight)
 {
-    if (mapWidth > 0) {
-        if (std::abs(dx) > mapWidth / 2) {
-            if (dx > 0)
-                dx -= mapWidth;
-            else
-                dx += mapWidth;
-        }
-    }
+    auto fn = [] (int &delta, int &dimension) {
+        if (std::abs(delta) > dimension / 2)
+            delta += dimension * (-1 * (delta > 0));
+    };
 
-    if (mapHeight > 0) {
-        if (std::abs(dy) > mapHeight / 2) {
-            if (dy > 0)
-                dy -= mapHeight;
-            else
-                dy += mapHeight;
-        }
-    }
+    fn(dx, mapWidth);
+    fn(dy, mapHeight);
 }
 
 static int computeGlobalSector(int dx, int dy)
