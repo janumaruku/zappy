@@ -4,7 +4,7 @@ use shell::command::{CommandBuilder, CommandDefinition};
 use std::cell::RefCell;
 use std::rc::Rc;
 use behavior_tree::behavior_tree::{BehaviorTree, BlackBoard};
-use crate::ai_data::random_walk;
+use crate::ai_data::{build_tree, random_walk};
 
 mod ai_data;
 
@@ -83,7 +83,7 @@ fn main() {
 
     let tcp_client = handshake(*port.borrow(), &**hostname.borrow(), &**team.borrow());
 
-    let mut behavior_tree = BehaviorTree::new(random_walk(tcp_client.unwrap().clone()));
+    let mut behavior_tree = build_tree(tcp_client.unwrap().clone());
     let mut bb = BlackBoard::new();
 
     loop {
