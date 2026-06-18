@@ -41,7 +41,7 @@ fn build_command(
             *hostname.borrow_mut() = context.option("hostname").unwrap().to_string();
             println!("Port:\t\t{}", port.borrow());
             println!("Team:\t\t{}", team.borrow());
-            println!("Hostname:\t\t{}", hostname.borrow());
+            println!("Hostname:\t{}", hostname.borrow());
         })
         .build()
 }
@@ -51,14 +51,22 @@ fn handshake(port: i32, host: &str, team: &str) -> Result<Rc<RefCell<AiTcpClient
 
     match tcp_client {
         Ok(client) => {
-            client.borrow_mut().connect(Endpoint::new(port as u16, host));
+            client
+                .borrow_mut()
+                .connect(Endpoint::new(port as u16, host))
+                .expect("Player can not connect to remote endpoint");
 
-            let welcome = client.borrow().receive();
-            if welcome != "WELCOME" {
-
+            client.borrow_mut().receive();
+            client.borrow().send(team.to_string());
+            let num: i32 = client.borrow_mut().receive().parse().unwrap();
+            if num <= 0 {
+                client.borrow_mut().close();
+                Err("No slot available. Player can not connect".to_string())
+            } else {
+                Ok(client)
             }
         }
-        Err(err) => {}
+        Err(err) => Err(err.to_string()),
     }
 }
 
@@ -71,5 +79,5 @@ fn main() {
     let tokens: Vec<String> = std::env::args().collect();
     command.unwrap().run(&tokens);
 
-    let tcp_client = AiTcpClient::new(IoContext::new());
+    let tcp_client = handshake(*port.borrow(), &**hostname.borrow(), &**team.borrow());
 }
