@@ -22,6 +22,22 @@
 
 namespace zappy::server {
 
+// constexpr int NORTH = 1;
+// constexpr int EAST = 2;
+// constexpr int SOUTH = 3;
+// constexpr int WEST = 4;
+
+enum Sector : std::uint8_t {
+    NORTH = 1,
+    N_WEST,
+    WEST,
+    S_WEST,
+    SOUTH,
+    S_EAST,
+    EAST,
+    N_EAST,
+};
+
 static void computeToroidalDelta(int &dx, int &dy, int mapWidth, int mapHeight)
 {
     auto fn = [] (int &delta, int &dimension) {
@@ -48,30 +64,30 @@ static int computeGlobalSector(int dx, int dy)
         return (dx < 0) ? 3 : 7;
 
     if (dx > 0 && dy < 0)
-        return 8;
+        return Sector::N_EAST;
     if (dx < 0 && dy < 0)
-        return 2;
+        return Sector::N_WEST;
     if (dx < 0 && dy > 0)
-        return 4;
+        return Sector::S_WEST;
     if (dx > 0 && dy > 0)
-        return 6;
+        return Sector::S_EAST;
 
     if (absy >= absx)
-        return (dy < 0) ? 1 : 5;
-    return (dx < 0) ? 3 : 7;
+        return (dy < 0) ? Sector::NORTH : Sector::SOUTH;
+    return (dx < 0) ? Sector::WEST : Sector::EAST;
 }
 
 static int frontGlobalSectorForOrientation(data::Orientation o)
 {
     switch (o) {
     case data::Orientation::UP:
-        return 1;
+        return Sector::NORTH;
     case data::Orientation::RIGHT:
-        return 7;
+        return Sector::EAST;
     case data::Orientation::DOWN:
-        return 5;
+        return Sector::SOUTH;
     case data::Orientation::LEFT:
-        return 3;
+        return Sector::WEST;
     default:
         return 1;
     }
@@ -97,7 +113,7 @@ static int computeDirectionK(
     int zeroBased = (globalSector - 1 - offset) % 8;
 
     if (zeroBased < 0)
-        zeroBased += 8;
+        zeroBased += Sector::N_EAST;
     int k = zeroBased + 1;
     return k;
 }
