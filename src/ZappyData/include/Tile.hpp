@@ -32,7 +32,7 @@ enum class Resource : std::int8_t {
 
 class Tile {
 public:
-    Tile() = delete;
+    Tile() = default;
 
     explicit Tile(Position position);
 
