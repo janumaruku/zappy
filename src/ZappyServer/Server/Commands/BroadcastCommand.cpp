@@ -41,13 +41,11 @@ static int computeGlobalSector(int dx, int dy)
     if (absx == 0 && absy == 0)
         return 0;
 
-    if (absy >= 2 * absx) {
+    if (absy >= 2 * absx)
         return (dy < 0) ? 1 : 5;
-    }
 
-    if (absx >= 2 * absy) {
+    if (absx >= 2 * absy)
         return (dx < 0) ? 3 : 7;
-    }
 
     if (dx > 0 && dy < 0)
         return 8;
