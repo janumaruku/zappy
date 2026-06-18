@@ -16,7 +16,7 @@
 
 namespace zappy::server {
 
-bool InventoryCommand::execute(AISession& session, const std::vector<std::string>& /*v*/)
+bool InventoryCommand::execute(AISession& session, const std::vector<std::string>&)
 {
     const Player &player = session.getPlayer();
 
