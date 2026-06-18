@@ -14,7 +14,7 @@ namespace zappy::gui {
 TCPClient::TCPClient(network::IOContext &ioc, const int port,
     const std::string &hostname): _ioc(ioc), _socket(_ioc)
 {
-    _readBuffer.resize(4);
+    _readBuffer.resize(3);
     auto config = network::BASIC_CONFIG;
     config.context = "TCP-CLIENT";
     _logger.config(config);
