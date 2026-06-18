@@ -37,7 +37,7 @@ private:
     void renderResourcesFromTile(std::unordered_map<data::Resource, int> tile,
         data::Position position) const;
 
-    static void renderPlayers(const std::map<data::PlayerId, GUIPlayer>
+    static void renderPlayers(const std::unordered_map<data::PlayerId, GUIPlayer>
             &players);
 
     static void renderEggs(const std::map<unsigned int, data::Egg> &eggs);

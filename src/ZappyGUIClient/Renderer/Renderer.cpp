@@ -46,6 +46,7 @@ void Renderer::render(const WorldState &world)
 
     BeginMode2D(_camera);
     renderMap(world.getMap());
+    renderPlayers(world.getPlayers());
     EndMode2D();
     EndDrawing();
 }
@@ -86,7 +87,7 @@ void Renderer::renderResourcesFromTile(std::unordered_map<data::Resource, int>
     }
 }
 
-void Renderer::renderPlayers(const std::map<data::PlayerId, GUIPlayer> &players)
+void Renderer::renderPlayers(const std::unordered_map<data::PlayerId, GUIPlayer> &players)
 {
     (void)players;
 }
