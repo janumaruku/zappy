@@ -13,12 +13,18 @@
 namespace zappy::gui {
 Renderer::Renderer(const int &width, const int &height): _grid(width, height),
     _camera({
-        .offset = Vector2{.x = 0.0F, .y = 0.0F},
-        .target = Vector2{.x = 0.0F, .y = 0.0F},
-        .rotation = 0.0F,
-        .zoom = 1.0F})
+        .offset = Vector2{
+            WINDOW_WIDTH / 2,
+            WINDOW_HEIGHT / 2
+        },
+        .target = Vector2{
+            static_cast<float>((width * TILE_SIZE) / 2),
+            static_cast<float>((height * TILE_SIZE) / 2)
+        },
+        .rotation   = 0.0F,
+        .zoom       = 1.0F})
 {
-    InitWindow(800, 600, "Zappy - Renderer");
+    InitWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Zappy - Renderer");
     SetTargetFPS(60);
     _resourceManager = std::make_unique<ResourceManager>();
 }
