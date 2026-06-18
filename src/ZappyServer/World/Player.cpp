@@ -62,6 +62,15 @@ void Player::takeResource(const data::Resource &resource)
     _inventory[resource]++;
 }
 
+bool Player::removeResource(const data::Resource &resource)
+{
+    auto it = _inventory.find(resource);
+    if (it == _inventory.end() || it->second == 0)
+        return false;
+    --(it->second);
+    return true;
+}
+
 PlayerId Player::getId() const noexcept
 {
     return _id;
