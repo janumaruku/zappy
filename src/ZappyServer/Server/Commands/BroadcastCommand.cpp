@@ -23,6 +23,7 @@
 namespace zappy::server {
 
 constexpr uint TIME_LIMIT = 7;
+constexpr uint8_t TOTAL_DIRECTION = 8;
 
 enum Sector : std::uint8_t {
     NORTH = 1,
@@ -107,10 +108,10 @@ static int computeDirectionK(
     const int globalSector = computeGlobalSector(dx, dy);
     const int frontSector = frontGlobalSectorForOrientation(receiverOrient);
     int offset = frontSector - 1;
-    int zeroBased = (globalSector - 1 - offset) % 8;
+    int zeroBased = (globalSector - 1 - offset) % TOTAL_DIRECTION;
 
     if (zeroBased < 0)
-        zeroBased += Sector::N_EAST;
+        zeroBased += TOTAL_DIRECTION;
     int k = zeroBased + 1;
     return k;
 }
