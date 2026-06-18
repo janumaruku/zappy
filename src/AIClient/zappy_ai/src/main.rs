@@ -1,6 +1,10 @@
+use ai_tcp_client::AiTcpClient;
+use network::network::{Endpoint, IoContext, NetworkError};
 use shell::command::{CommandBuilder, CommandDefinition};
 use std::cell::RefCell;
 use std::rc::Rc;
+
+mod ai_data;
 
 fn build_command(
     port: Rc<RefCell<i32>>,
@@ -42,6 +46,22 @@ fn build_command(
         .build()
 }
 
+fn handshake(port: i32, host: &str, team: &str) -> Result<Rc<RefCell<AiTcpClient>>, String> {
+    let tcp_client = AiTcpClient::new(IoContext::new());
+
+    match tcp_client {
+        Ok(client) => {
+            client.borrow_mut().connect(Endpoint::new(port as u16, host));
+
+            let welcome = client.borrow().receive();
+            if welcome != "WELCOME" {
+
+            }
+        }
+        Err(err) => {}
+    }
+}
+
 fn main() {
     let port = Rc::new(RefCell::new(0));
     let team = Rc::new(RefCell::new(String::new()));
@@ -51,7 +71,5 @@ fn main() {
     let tokens: Vec<String> = std::env::args().collect();
     command.unwrap().run(&tokens);
 
-    // println!("Port:\t\t{}", port.borrow());
-    // println!("Team:\t\t{}", team.borrow());
-    // println!("Hostname:\t\t{}", hostname.borrow());
+    let tcp_client = AiTcpClient::new(IoContext::new());
 }

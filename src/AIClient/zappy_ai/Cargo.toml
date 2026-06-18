@@ -5,3 +5,6 @@ edition = "2024"
 
 [dependencies]
 shell = { path = "../shell" }
+network = { path = "../network" }
+ai_tcp_client = { path = "../ai_tcp_client" }
+behavior_tree = { path = "../behavior_tree" }
