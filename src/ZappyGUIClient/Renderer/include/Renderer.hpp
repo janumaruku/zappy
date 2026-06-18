@@ -11,6 +11,7 @@
 #include <memory>
 #include <string>
 
+#include "Grid.hpp"
 #include "raylib.h"
 #include "ResourceManager.hpp"
 #include "WorldState.hpp"
@@ -18,6 +19,8 @@
 
 namespace zappy::gui {
 
+constexpr int WINDOW_WIDTH  = 800;
+constexpr int WINDOW_HEIGHT = 600;
 class Renderer {
 
 public:
