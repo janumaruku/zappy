@@ -25,6 +25,9 @@ namespace zappy::server {
 static constexpr uint TIME_LIMIT = 300;
 
 struct ElevationReq {
+    ElevationReq(int players, std::array<int, 6> stones):
+        players(players), stones(stones)
+    {}
     int players;
     std::array<int, 6> stones;
 };
