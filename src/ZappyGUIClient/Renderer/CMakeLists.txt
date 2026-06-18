@@ -1,8 +1,6 @@
 add_library(renderer Renderer.cpp
         ResourceManager.cpp
-        include/ResourceManager.hpp
-        Grid.cpp
-        Grid.hpp)
+        Grid.cpp)
 
 target_include_directories(renderer PUBLIC include)
 
