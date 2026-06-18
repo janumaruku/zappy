@@ -22,10 +22,7 @@
 
 namespace zappy::server {
 
-// constexpr int NORTH = 1;
-// constexpr int EAST = 2;
-// constexpr int SOUTH = 3;
-// constexpr int WEST = 4;
+constexpr uint TIME_LIMIT = 7;
 
 enum Sector : std::uint8_t {
     NORTH = 1,
@@ -118,6 +115,18 @@ static int computeDirectionK(
     return k;
 }
 
+static std::string buildBroadcastText(const std::vector<std::string>& parts)
+{
+    std::ostringstream oss;
+
+    for (std::size_t i = 1; i < parts.size(); ++i) {
+        if (i > 1)
+            oss << " ";
+        oss << parts[i];
+    }
+    return oss.str();
+}
+
 bool BroadcastCommand::execute(
     AISession& session,
     const std::vector<std::string>& parts)
@@ -127,13 +136,7 @@ bool BroadcastCommand::execute(
     if (parts.size() <= 1) {
         text = "";
     } else {
-        std::ostringstream oss;
-        for (std::size_t i = 1; i < parts.size(); ++i) {
-            if (i > 1)
-                oss << " ";
-            oss << parts[i];
-        }
-        text = oss.str();
+        text = buildBroadcastText(parts);
     }
 
     std::string guiMsg = std::format("pbc #{} {}\n",
@@ -143,7 +146,7 @@ bool BroadcastCommand::execute(
     std::string aiPayload = std::format("{} {}\n", 0, text);
     const_cast<Server&>(session.getServer()).broadcastToAll(aiPayload);
 
-    session.scheduleResponse(7, "ok\n");
+    session.scheduleResponse(TIME_LIMIT, "ok\n");
     return true;
 }
 
