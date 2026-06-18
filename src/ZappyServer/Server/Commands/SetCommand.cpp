@@ -19,7 +19,7 @@
 
 namespace zappy::server {
 
-static constexpr uint TIME_LIMIT = 7;
+constexpr uint TIME_LIMIT = 7;
 
 static const std::unordered_map<std::string, data::Resource> &resName()
 {
