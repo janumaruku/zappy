@@ -57,18 +57,27 @@ void Renderer::renderMap(const GUIMap &map) const
             ++y;
         auto tile = map.getTile({x % width, y}).getResources();
 
-        for (auto const &[name, count]: tile) {
-            auto resourceTexture = _resourceManager->getTexture(
-                resourceToString(name));
-            DrawTexture(resourceTexture, (x % width) * TILE_SIZE, y * TILE_SIZE,
-                WHITE);
-        }
+        renderResourcesFromTile(tile, {(x % width), y});
     }
 }
 
 std::string Renderer::resourceToString(const data::Resource &resource)
 {
     return RESOURCE_DATA[static_cast<int>(resource)].name;
+}
+
+void Renderer::renderResourcesFromTile(
+    std::unordered_map<data::Resource, int> tile,
+    const data::Position position) const
+{
+
+    for (auto const &[name, count]: tile) {
+        auto resourceTexture = _resourceManager->getTexture(
+            resourceToString(name));
+        if (count > 0)
+            DrawTexture(resourceTexture, position.getX() * TILE_SIZE,
+                position.getY() * TILE_SIZE, WHITE);
+    }
 }
 
 void Renderer::renderPlayers(const std::map<data::PlayerId, GUIPlayer> &players)
