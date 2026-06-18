@@ -34,7 +34,8 @@ private:
 
     static std::string resourceToString(const data::Resource &resource);
 
-//    void renderResources(const Res);
+    void renderResourcesFromTile(std::unordered_map<data::Resource, int> tile,
+        data::Position position) const;
 
     static void renderPlayers(const std::map<data::PlayerId, GUIPlayer>
         &players);
