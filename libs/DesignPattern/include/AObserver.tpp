@@ -21,7 +21,7 @@ AObserver<EventType, KeyType>::AObserver(const std::initializer_list<std::pair<K
 }
 
 template<typename EventType, typename KeyType>
-AObserver<EventType, KeyType>::~AObserver<EventType, KeyType>()
+AObserver<EventType, KeyType>::~AObserver()
 {
     for (const auto &[key, subject] : _subjects)
         subject.removeObserver(key, this);
