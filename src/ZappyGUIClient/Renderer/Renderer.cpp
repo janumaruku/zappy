@@ -25,6 +25,7 @@ Renderer::Renderer(const int &width, const int &height): _grid(width, height),
 
 Renderer::~Renderer()
 {
+    _resourceManager.reset();
     CloseWindow();
 }
 
