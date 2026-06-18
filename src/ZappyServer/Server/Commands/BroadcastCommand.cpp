@@ -142,10 +142,18 @@ bool BroadcastCommand::execute(
 
     std::string guiMsg = std::format("pbc #{} {}\n",
         session.getPlayer().getId(), text);
-    const_cast<Server&>(session.getServer()).notifyGUI(guiMsg);
+    session.getServer().notifyGUI(guiMsg);
 
-    std::string aiPayload = std::format("{} {}\n", 0, text);
-    const_cast<Server&>(session.getServer()).broadcastToAll(aiPayload);
+    const auto emitterPos = session.getPlayer().getPosition();
+    const int mapW = session.getServer().getMap().getWidth();
+    const int mapH = session.getServer().getMap().getHeight();
+
+    session.getServer().forEachAISession([&](AISession &receiver) {
+        int k = computeDirectionK(emitterPos,
+            receiver.getPlayer().getPosition(),
+            receiver.getPlayer().getOrientation(), mapW, mapH);
+        receiver.send(std::format("message {}, {}\n", k, text));
+    });
 
     session.scheduleResponse(TIME_LIMIT, "ok\n");
     return true;
