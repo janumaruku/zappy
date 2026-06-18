@@ -55,10 +55,10 @@ static int computeGlobalSector(int dx, int dy)
         return 0;
 
     if (absy >= 2 * absx)
-        return (dy < 0) ? 1 : 5;
+        return (dy < 0) ? Sector::NORTH : Sector::SOUTH;
 
     if (absx >= 2 * absy)
-        return (dx < 0) ? 3 : 7;
+        return (dx < 0) ? Sector::WEST : Sector::EAST;
 
     if (dx > 0 && dy < 0)
         return Sector::N_EAST;
