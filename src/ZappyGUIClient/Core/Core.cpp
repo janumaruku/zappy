@@ -25,9 +25,11 @@ void Core::run()
     buildGUICommands();
 
     _guiCommands.run(std::move(_argv));
-    _renderer.loadTextures();
-    while (_renderer.isWindowOpen()) {
-        _renderer.render(_worldState);
+    const auto &map = _worldState.getMap();
+
+    Renderer renderer(map.getWidth(), map.getHeight());
+    while (renderer.isWindowOpen()) {
+        renderer.render(_worldState);
     }
 }
 
@@ -51,7 +53,8 @@ void Core::buildGUICommands()
         })
         .action([this](const shell::command::CommandContext &ctx) {
             _tcpClient = std::make_unique<TCPClient>(_ioc,
-                std::stoi(ctx.option("port")), ctx.option("machine"));
+                std::stoi(ctx.option("port")), ctx.option("machine"),
+                _worldState);
         })
         .build();
 }
