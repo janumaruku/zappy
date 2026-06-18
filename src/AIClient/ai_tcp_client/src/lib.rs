@@ -87,7 +87,8 @@ impl AiTcpClient {
 
     pub fn send(&self, msg: String) {
         if let Some(self_ref) = self.self_ref.upgrade() {
-            self.socket.borrow().write(msg.as_bytes(), |err, bytes| {
+            let transmission = &format!("{}\n", &msg);
+            self.socket.borrow().write(transmission.as_ref(), |err, bytes| {
                 if let Some(err) = err {
                     eprintln!("{err}");
                     return;
