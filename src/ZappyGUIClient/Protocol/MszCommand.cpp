@@ -17,8 +17,8 @@ namespace zappy::gui {
 
 bool MszCommand::execute(WorldState& s, const std::vector<std::string>&cmd)
 {
-    uint mapX = std::stoul(cmd[0]);
-    uint mapY = std::stoul(cmd[1]);
+    uint mapX = std::stoul(cmd[1]);
+    uint mapY = std::stoul(cmd[2]);
 
     s.onMapDimension(mapX, mapY);
     return true;

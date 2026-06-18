@@ -17,9 +17,9 @@ namespace zappy::gui {
 
 bool PpoCommand::execute(WorldState &w, const std::vector<std::string>&cmd)
 {
-    const auto &id = cmd[0];
-    data::Position pos(std::stoi(cmd[1]), std::stoi(cmd[2]));
-    auto orientation = std::stoi(cmd[3]);
+    const auto &id = cmd[1];
+    data::Position pos(std::stoi(cmd[2]), std::stoi(cmd[3]));
+    auto orientation = std::stoi(cmd[4]);
 
     w.onPlayerPosition(id, static_cast<data::Position>(pos),
     static_cast<data::Orientation>(orientation));
