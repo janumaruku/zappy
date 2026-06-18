@@ -10,6 +10,7 @@
 #include <algorithm>
 #include <cmath>
 
+#include "raymath.h"
 #include "ResourceManager.hpp"
 
 namespace zappy::gui {
@@ -76,11 +77,12 @@ void Renderer::renderResourcesFromTile(std::unordered_map<data::Resource, int>
 {
 
     for (auto const &[name, count]: tile) {
-        auto resourceTexture =
+        const auto resourceTexture =
             _resourceManager->getTexture(resourceToString(name));
-        if (count > 0)
+        if (count > 0) {
             DrawTexture(resourceTexture, position.getX() * TILE_SIZE,
                 position.getY() * TILE_SIZE, WHITE);
+        }
     }
 }
 
@@ -98,23 +100,38 @@ void Renderer::updateAnimation(const GUIPlayer &player)
 {
     (void)player;
 }
+
 void Renderer::updateCamera()
 {
-    float wheel = GetMouseWheelMove();
+    const float wheel = GetMouseWheelMove();
     if (wheel != 0) {
-        Vector2 mouseWorldPos = GetScreenToWorld2D(GetMousePosition(), _camera);
-        _camera.offset = GetMousePosition();
-        _camera.target = mouseWorldPos;
-        float scale = 0.2f * wheel;
-        _camera.zoom =
-            std::clamp(std::expf(logf(_camera.zoom) + scale), 0.2f, 3.0f);
+        updateZoom(wheel);
+    }
+    if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
+        updateCameraMovement();
     }
 }
 
-Vector2 Renderer::tileToPixel(const data::Position pos) const
+void Renderer::updateZoom(const float &wheel)
 {
-    return {.x = static_cast<float>(pos.getX() * TILE_SIZE),
-        .y     = static_cast<float>(pos.getY() * TILE_SIZE)};
+    _camera.offset = GetMousePosition();
+    _camera.target = GetScreenToWorld2D(GetMousePosition(), _camera);
+    const float scale = 0.2f * wheel;
+    _camera.zoom = Clamp(std::expf(logf(_camera.zoom) + scale), 0.2f, 3.0f);
+}
+
+void Renderer::updateCameraMovement()
+{
+    const Vector2 delta = Vector2Scale(GetMouseDelta(), -1.0f / _camera.zoom);
+    _camera.target = Vector2Add(_camera.target, delta);
+}
+
+Vector2 Renderer::tileToPixel(const data::Position pos)
+{
+    return {
+        .x = static_cast<float>(pos.getX() * TILE_SIZE),
+        .y = static_cast<float>(pos.getY() * TILE_SIZE)
+    };
 }
 
 std::string Renderer::resourceToString(const data::Resource &resource)

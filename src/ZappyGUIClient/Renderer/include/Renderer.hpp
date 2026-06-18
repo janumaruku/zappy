@@ -45,8 +45,10 @@ private:
     static void updateAnimation(const GUIPlayer &player);
 
     void updateCamera();
+    void updateZoom(const float &wheel);
+    void updateCameraMovement();
 
-    [[nodiscard]] Vector2 tileToPixel(data::Position pos) const;
+    [[nodiscard]] static Vector2 tileToPixel(data::Position pos);
 
     static std::string resourceToString(const data::Resource &resource);
     // std::map<data::PlayerId, Animation> _animations;
