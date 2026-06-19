@@ -1,4 +1,6 @@
-add_library(gui_protocol STATIC ProtocolHandler.cpp)
+add_library(gui_protocol STATIC ProtocolHandler.cpp
+        PnwCommand.cpp
+        PpoCommand.cpp)
 
 target_include_directories(gui_protocol PUBLIC include)
 
