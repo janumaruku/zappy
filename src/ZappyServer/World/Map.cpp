@@ -55,6 +55,37 @@ const Player &Map::getPlayer(const PlayerId &id) const
     return _players.at(id);
 }
 
+Player &Map::getPlayer(const PlayerId &id)
+{
+    if (!_players.contains(id))
+        throw std::out_of_range("No data found for key " + id);
+
+    return _players.at(id);
+}
+
+const std::unordered_map<PlayerId, Player> &Map::getPlayers() const noexcept
+{
+    return _players;
+}
+
+bool Map::hasPlayer(const PlayerId &id) const noexcept
+{
+    return _players.contains(id);
+}
+
+Player &Map::spawnPlayer(const PlayerId &id, const TeamId &team)
+{
+    const data::Position position{
+        utils::randomNumber(0, _width - 1),
+        utils::randomNumber(0, _height - 1)
+    };
+
+    auto [it, inserted] = _players.emplace(id, Player{id, team, position, 1});
+    if (!inserted)
+        throw std::runtime_error("Player already exists: " + id);
+    return it->second;
+}
+
 void Map::generate()
 {
     static const uint food = static_cast<uint>(_width * _height * 0.5);
