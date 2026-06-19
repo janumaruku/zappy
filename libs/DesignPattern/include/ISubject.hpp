@@ -14,7 +14,7 @@ namespace designPattern {
 template<typename EventType, typename KeyType>
 class ISubject {
 public:
-    virtual ~ISubject() = 0;
+    virtual ~ISubject() = default;
 
     virtual void addObserver(KeyType observerType, IObserver<EventType>* observer) = 0;
 

@@ -52,7 +52,7 @@ void GUIPlayer::setOrientation(const data::Orientation &to)
     _orientation = to;
 }
 
-uint8_t &GUIPlayer::getLevel()
+uint8_t GUIPlayer::getLevel() const
 {
     return _level;
 }

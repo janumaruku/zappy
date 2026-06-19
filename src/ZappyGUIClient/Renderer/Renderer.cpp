@@ -14,7 +14,9 @@
 #include "ResourceManager.hpp"
 
 namespace zappy::gui {
-Renderer::Renderer(const int &width, const int &height): _grid(width, height),
+Renderer::Renderer(const int &width, const int &height,
+    const SubjectList &list):
+    AObserver{list}, _grid(width, height),
     _camera({
         .offset = Vector2{
             WINDOW_WIDTH / 2,
@@ -24,8 +26,8 @@ Renderer::Renderer(const int &width, const int &height): _grid(width, height),
             static_cast<float>((width * TILE_SIZE) / 2),
             static_cast<float>((height * TILE_SIZE) / 2)
         },
-        .rotation   = 0.0F,
-        .zoom       = 1.0F})
+        .rotation = 0.0F,
+        .zoom = 1.0F})
 {
     InitWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Zappy - Renderer");
     SetTargetFPS(60);
@@ -56,11 +58,17 @@ bool Renderer::isWindowOpen() // NOLINT
     return !WindowShouldClose();
 }
 
+void Renderer::onNotify(const ZappyEvent &event)
+{
+    (void)event;
+    std::visit(OnEvent{*this}, event);
+}
+
 void Renderer::renderMap(const GUIMap &map) const
 {
     _grid.render();
     const auto width = map.getWidth();
-    const auto len   = map.getWidth() * map.getHeight();
+    const auto len = map.getWidth() * map.getHeight();
 
     auto y = 0;
     for (auto x = 0; x < len; ++x) {
@@ -73,7 +81,7 @@ void Renderer::renderMap(const GUIMap &map) const
 }
 
 void Renderer::renderResourcesFromTile(std::unordered_map<data::Resource, int>
-                                           tile,
+    tile,
     const data::Position position) const
 {
 
@@ -87,7 +95,8 @@ void Renderer::renderResourcesFromTile(std::unordered_map<data::Resource, int>
     }
 }
 
-void Renderer::renderPlayers(const std::unordered_map<data::PlayerId, GUIPlayer> &players)
+void Renderer::renderPlayers(
+    const std::unordered_map<data::PlayerId, GUIPlayer> &players)
 {
     (void)players;
 }

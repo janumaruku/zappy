@@ -11,13 +11,19 @@
 #include <unordered_map>
 #include <sys/types.h>
 
+#include "ASubject.hpp"
 #include "Egg.hpp"
 #include "GUIMap.hpp"
 #include "GUIPlayer.hpp"
 #include "Team.hpp"
+#include "ZappyEvents.hpp"
 
 namespace zappy::gui {
-class WorldState {
+enum class ZappyEventType: std::uint8_t {
+    GUI_EVENT,
+};
+
+class WorldState: designPattern::ASubject<ZappyEvent, ZappyEventType> {
     using PlayerId = std::string;
 
 public:
@@ -50,14 +56,14 @@ public:
 
     //void onEggLaid(int eggId, PlayerId playerId, Position pos);
 
-    void onEggDeath(int eggId);
+    void onEggDeath(const std::string& eggId);
 
     void onMapDimension(const int &width, const int &height);
 
 private:
     GUIMap _map;
     std::unordered_map<PlayerId, GUIPlayer> _players;
-    std::unordered_map<int, data::Egg> _eggs;
+    std::unordered_map<std::string, data::Egg> _eggs;
     std::unordered_map<std::string, Team> _teams;
     int _timeUnit = 1;
 };
