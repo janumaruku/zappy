@@ -5,18 +5,12 @@
 ** main
 */
 
-#include <algorithm>
-#include <initializer_list>
-#include <cctype>
-#include <ranges>
-#include <cstddef>
 #include <chrono>
 #include <string>
-#include <sys/types.h>
-#include <type_traits>
 #include <vector>
+#include <functional>
+
 #include "StringUtils.hpp"
-#include "ZappyConstants.hpp"
 #include "ConnectedSocket.hpp"
 #include "Timer.hpp"
 #include "AISession.hpp"
@@ -31,6 +25,40 @@ AISession::AISession(const std::shared_ptr<network::ConnectedSocket> &socket,
 }
 
 AISession::~AISession() = default;
+Player &AISession::getPlayer() noexcept
+{
+    return _player;
+}
+
+Server &AISession::getServer() noexcept
+{
+    return _server;
+}
+
+void AISession::freeze() noexcept
+{
+    _frozen = true;
+}
+
+void AISession::unfreeze() noexcept
+{
+    _frozen = false;
+}
+
+bool AISession::isFrozen() const noexcept
+{
+    return _frozen;
+}
+
+void AISession::scheduleTask(const uint &durationConstant,
+    const std::function<void()> &task)
+{
+    _command_timer.asyncWait(std::chrono::high_resolution_clock::duration(
+        durationConstant / _server.getFrequency()),
+    [task]() {
+        task();
+    });
+}
 
 void AISession::handleTransmission()
 {
@@ -79,6 +107,11 @@ const Player &AISession::getPlayer() const noexcept
 Player &AISession::getPlayer() noexcept
 {
     return _player;
+}
+
+Server &AISession::getServer() noexcept
+{
+    return _server;
 }
 
 const Server &AISession::getServer() const noexcept

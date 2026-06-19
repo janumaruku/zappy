@@ -100,7 +100,7 @@ static void extractResources(
         if (it == resNames.end())
             continue;
 
-        for (unsigned int c = 0; c < count; ++c)
+        for (auto c = 0; c < count; ++c)
             contents.emplace_back(it->second);
     }
 }

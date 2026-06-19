@@ -152,8 +152,18 @@ void Server::notifyGUI(const std::string &command,
 
 void Server::broadcastToAll(const std::string &data)
 {
-    for (auto &session : _aiSessions)
-        session->send(data);
+    for (auto &a : _aiSessions) {
+        if (a)
+            a->send(data);
+    }
+}
+
+void Server::forEachAISession(const std::function<void(AISession &)> &fn)
+{
+    for (auto &a : _aiSessions) {
+        if (a)
+            fn(*a);
+    }
 }
 
 }

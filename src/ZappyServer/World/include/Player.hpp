@@ -29,6 +29,7 @@ public:
     void forward(int width, int height);
     void right();
     void takeResource(const data::Resource &resource);
+    bool removeResource(const data::Resource &resource);
 
     [[nodiscard]] PlayerId getId() const noexcept;
     [[nodiscard]] TeamId getTeam() const noexcept;

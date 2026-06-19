@@ -77,4 +77,5 @@ docs/generated
 # misc
 compile_flags.txt
 .gitignore
+*.pdf
 src/ZappyAIClient/target/

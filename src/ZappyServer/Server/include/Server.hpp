@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 #include <unordered_map>
+#include <functional>
 
 #include "Acceptor.hpp"
 #include "ConnectedSocket.hpp"
@@ -35,6 +36,7 @@ public:
     void notifyGUI(const std::string &command,
         const std::vector<std::string> &args = {});
     void broadcastToAll(const std::string &data);
+    void forEachAISession(const std::function<void(AISession &)> &fn);
 
     [[nodiscard]] const uint &getFrequency() const;
     [[nodiscard]] const Map &getMap() const noexcept { return _map; }
