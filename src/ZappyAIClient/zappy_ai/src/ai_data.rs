@@ -1,5 +1,6 @@
 mod world_model;
 mod zappy_tree_nodes;
+mod server_message;
 
 use std::cell::RefCell;
 use std::rc::Rc;
