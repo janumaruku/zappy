@@ -10,6 +10,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <functional>
 
 #include "Acceptor.hpp"
 #include "ConnectedSocket.hpp"
@@ -32,6 +33,7 @@ public:
 
     void notifyGUI(const std::string &message);
     void broadcastToAll(const std::string &data);
+    void forEachAISession(const std::function<void(AISession &)> &fn);
 
     [[nodiscard]] const uint &getFrequency() const;
     [[nodiscard]] const Map &getMap() const noexcept { return _map; }

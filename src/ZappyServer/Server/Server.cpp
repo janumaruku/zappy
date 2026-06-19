@@ -98,12 +98,26 @@ void Server::onAccept(
 
 void Server::notifyGUI(const std::string &message)
 {
-    (void)message;
+    for (auto &g : _guiSessions) {
+        if (g)
+            g->send(message);
+    }
 }
 
 void Server::broadcastToAll(const std::string &data)
 {
-    (void)data;
+    for (auto &a : _aiSessions) {
+        if (a)
+            a->send(data);
+    }
+}
+
+void Server::forEachAISession(const std::function<void(AISession &)> &fn)
+{
+    for (auto &a : _aiSessions) {
+        if (a)
+            fn(*a);
+    }
 }
 
 }
