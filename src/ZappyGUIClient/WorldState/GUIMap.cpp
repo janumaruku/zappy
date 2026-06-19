@@ -13,6 +13,7 @@ namespace zappy::gui {
 GUIMap::GUIMap(const int &width, const int &height): _width(width),
     _height(height)
 {
+    _tiles.resize(_width * _height);
 }
 
 int GUIMap::getWidth() const
@@ -40,11 +41,13 @@ const data::Tile &GUIMap::getTile(data::Position pos) const
 void GUIMap::updateWidth(const int width)
 {
     _width = width;
+    _tiles.resize(_width * _height);
 }
 
 void GUIMap::updateHeight(const int height)
 {
     _height = height;
+    _tiles.resize(_width * _height);
 }
 
 void GUIMap::updateTile(const data::Position pos,
