@@ -9,6 +9,7 @@
 #define WORLDSTATE_HPP
 #include <string>
 #include <unordered_map>
+#include <variant>
 #include <sys/types.h>
 
 #include "Egg.hpp"
@@ -17,6 +18,21 @@
 #include "Team.hpp"
 
 namespace zappy::gui {
+enum class GUIEventType: std::uint8_t {
+    PLAYER_NEW,
+    PLAYER_MOVE,
+    PLAYER_DIED,
+    TILE_UPDATE,
+    EGG_LAID,
+    EGG_HATCHED,
+    EGG_DIED,
+    INCANTATION_START,
+    INCANTATION_END,
+    GAME_END
+};
+
+using GUIEvent = std::variant<int>;
+
 class WorldState {
     using PlayerId = std::string;
 
@@ -38,7 +54,8 @@ public:
 
     void onPlayerNew(GUIPlayer player);
 
-    void onPlayerPosition(const std::string &id, const data::Position &pos, const data::Orientation &orientation);
+    void onPlayerPosition(const std::string &id, const data::Position &pos,
+        const data::Orientation &orientation);
 
     void onPlayerDeath(const PlayerId &id);
 
@@ -51,7 +68,7 @@ public:
 
     void onEggDeath(uint eggId);
 
-    void onMapDimension(const uint& width, const uint &height);
+    void onMapDimension(const uint &width, const uint &height);
 
 private:
     GUIMap _map;
