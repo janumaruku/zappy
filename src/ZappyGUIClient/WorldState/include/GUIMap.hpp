@@ -17,24 +17,24 @@ class GUIMap {
 public:
     GUIMap() = default;
 
-    GUIMap(const uint &width, const uint &height);
+    GUIMap(const int &width, const int &height);
 
-    [[nodiscard]] uint getWidth() const;
+    [[nodiscard]] int getWidth() const;
 
-    [[nodiscard]] uint getHeight() const;
+    [[nodiscard]] int getHeight() const;
 
     [[nodiscard]] const data::Tile &getTile(data::Position pos) const;
 
-    void updateWidth(uint width);
+    void updateWidth(int width);
 
-    void updateHeight(uint height);
+    void updateHeight(int height);
 
     void updateTile(data::Position pos,
-        const std::unordered_map<data::Resource, uint> &resources);
+        const std::unordered_map<data::Resource, int> &resources);
 
 private:
-    uint _width = 0;
-    uint _height = 0;
+    int _width = 0;
+    int _height = 0;
     std::vector<data::Tile> _tiles;
 };
 }

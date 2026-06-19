@@ -48,8 +48,16 @@ public:
     [[nodiscard]] const Player &getPlayer() const noexcept;
     [[nodiscard]] Player &getPlayer() noexcept;
     [[nodiscard]] const Server &getServer() const noexcept;
+    [[nodiscard]] Server &getServer() noexcept;
 
     void scheduleResponse(const uint &durationConstant, const std::string &response);
+
+    void freeze() noexcept;
+    void unfreeze() noexcept;
+    [[nodiscard]] bool isFrozen() const noexcept;
+
+    void scheduleTask(const uint &durationConstant,
+        const std::function<void()> &task);
 
 private:
 
@@ -63,6 +71,8 @@ private:
     
     uint _pending_commands = 0;
     std::queue<std::vector<std::string>> _commandQueue;
+
+    bool _frozen = false;
 
     std::unique_ptr<AIProtocolHandler> _protocolHandler;
 
