@@ -12,6 +12,7 @@
 #include <variant>
 #include <sys/types.h>
 
+#include "ASubject.hpp"
 #include "Egg.hpp"
 #include "GUIMap.hpp"
 #include "GUIPlayer.hpp"
@@ -33,7 +34,7 @@ enum class GUIEventType: std::uint8_t {
 
 using GUIEvent = std::variant<int>;
 
-class WorldState {
+class WorldState: designPattern::ASubject<GUIEvent, GUIEventType> {
     using PlayerId = std::string;
 
 public:
