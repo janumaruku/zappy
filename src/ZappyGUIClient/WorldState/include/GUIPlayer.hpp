@@ -54,7 +54,7 @@ public:
     [[nodiscard]] data::Orientation getOrientation() const;
     void setOrientation(const data::Orientation &);
 
-    uint8_t &getLevel();
+    uint8_t getLevel() const;
 
     void enqueueAction(Action action);
 
