@@ -11,6 +11,7 @@
 #include <memory>
 #include <string>
 
+#include "AObserver.hpp"
 #include "Grid.hpp"
 #include "raylib.h"
 #include "ResourceManager.hpp"
@@ -18,27 +19,79 @@
 #include "Grid.hpp"
 
 namespace zappy::gui {
+using SubjectList = std::initializer_list<std::pair<ZappyEventType,
+    designPattern::ISubject<ZappyEvent, ZappyEventType> &>>;
 
-constexpr int WINDOW_WIDTH  = 800;
+constexpr int WINDOW_WIDTH = 800;
 constexpr int WINDOW_HEIGHT = 600;
-class Renderer {
-public:
-    Renderer(const int &width, const int &height);
 
-    ~Renderer();
+class Renderer: public designPattern::AObserver<ZappyEvent, ZappyEventType> {
+public:
+    Renderer(const int &width, const int &height, const SubjectList &list);
+
+    ~Renderer() override;
 
     void render(const WorldState &world);
 
     bool isWindowOpen();
 
+    void onNotify(const ZappyEvent &event) override;
+
 private:
+    struct OnEvent {
+        explicit OnEvent(Renderer &renderer_): renderer{renderer_} {}
+
+        void operator()(const PlayerNewEvent &/*event*/)
+        {
+        }
+
+        void operator()(const PlayerMovedEvent &/*event*/)
+        {
+        }
+
+        void operator()(const PlayerDiedEvent &/*event*/)
+        {
+        }
+
+        void operator()(const TileUpdateEvent &/*event*/)
+        {
+        }
+
+        void operator()(const EggLaidEvent &/*event*/)
+        {
+        }
+
+        void operator()(const EggHatchedEvent &/*event*/)
+        {
+        }
+
+        void operator()(const EggDiedEvent &/*event*/)
+        {
+        }
+
+        void operator()(const IncantationStartEvent &/*event*/)
+        {
+        }
+
+        void operator()(const IncantationEndEvent &/*event*/)
+        {
+        }
+
+        void operator()(const GameEndEvent &/*event*/)
+        {
+        }
+
+        Renderer &renderer;
+    };
+
     void renderMap(const GUIMap &map) const;
 
     void renderResourcesFromTile(std::unordered_map<data::Resource, int> tile,
         data::Position position) const;
 
-    static void renderPlayers(const std::unordered_map<data::PlayerId, GUIPlayer>
-            &players);
+    static void renderPlayers(
+        const std::unordered_map<data::PlayerId, GUIPlayer>
+        &players);
 
     static void renderEggs(const std::map<unsigned int, data::Egg> &eggs);
 

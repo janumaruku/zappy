@@ -12,7 +12,9 @@
 namespace designPattern {
 
 template<typename EventType, typename KeyType>
-AObserver<EventType, KeyType>::AObserver(const std::initializer_list<std::pair<KeyType, ISubject<EventType, KeyType>&>>& pairs)
+AObserver<EventType, KeyType>::AObserver(
+    const std::initializer_list<std::pair<KeyType, ISubject<EventType, KeyType>
+        &>> &pairs)
 {
     for (const auto &[key, subject] : pairs) {
         subject.addObserver(key, this);

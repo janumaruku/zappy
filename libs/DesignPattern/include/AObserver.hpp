@@ -15,8 +15,8 @@
 
 namespace designPattern {
 
-template<typename EventType, typename KeyType>
-class AObserver : IObserver<EventType>{
+template <typename EventType, typename KeyType>
+class AObserver: public IObserver<EventType> {
 public:
     ~AObserver() override;
 
@@ -24,12 +24,12 @@ public:
     AObserver(AObserver &&) = delete;
 
 
-    AObserver(const std::initializer_list<std::pair<KeyType, ISubject<EventType, KeyType>&>>&);
-
-    void onNotify(const EventType &event) override;
+    AObserver(
+        const std::initializer_list<std::pair<KeyType, ISubject<EventType,
+            KeyType> &>> &);
 
 protected:
-    std::vector<std::pair<KeyType, ISubject<EventType, KeyType>&>> _subjects;
+    std::vector<std::pair<KeyType, ISubject<EventType, KeyType> &>> _subjects;
 };
 
 }

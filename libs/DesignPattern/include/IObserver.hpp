@@ -12,7 +12,7 @@ namespace designPattern {
 template<typename EventType>
 class IObserver {
 public:
-    virtual ~IObserver() = 0;
+    virtual ~IObserver() = default;
 
     virtual void onNotify(const EventType &event) = 0;
 };
