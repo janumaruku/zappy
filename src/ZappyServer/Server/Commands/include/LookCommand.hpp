@@ -15,7 +15,7 @@ class LookCommand : public AIProtocolCommand {
 public:
     LookCommand() = default;
 
-    ~LookCommand() override;
+    ~LookCommand() override = default;
 
     bool operator()(AISession &, const std::vector<std::string> &) override;
 

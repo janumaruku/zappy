@@ -5,12 +5,20 @@
 ** main
 */
 
+#include <algorithm>
+#include <initializer_list>
+#include <cctype>
+#include <ranges>
+#include <cstddef>
 #include <chrono>
 #include <string>
+#include <sys/types.h>
+#include <type_traits>
 #include <vector>
 #include <functional>
 
 #include "StringUtils.hpp"
+#include "ZappyConstants.hpp"
 #include "ConnectedSocket.hpp"
 #include "Timer.hpp"
 #include "AISession.hpp"
@@ -19,9 +27,12 @@
 namespace zappy::server {
 AISession::AISession(const std::shared_ptr<network::ConnectedSocket> &socket,
     Server &server, Player &player): AClientSession{socket}, _server{server}, _player{player},
-    _command_timer(socket->getIOContext()), _starvation_timer(socket->getIOContext())
+    _command_timer(socket->getIOContext()), _starvation_timer(socket->getIOContext()),
+    _protocolHandler(std::make_unique<AIProtocolHandler>())
 {
 }
+
+AISession::~AISession() = default;
 
 Player &AISession::getPlayer() noexcept
 {
@@ -100,16 +111,6 @@ void AISession::scheduleResponse(const uint &durationConstant, const std::string
 const Player &AISession::getPlayer() const noexcept
 {
     return _player;
-}
-
-Player &AISession::getPlayer() noexcept
-{
-    return _player;
-}
-
-Server &AISession::getServer() noexcept
-{
-    return _server;
 }
 
 const Server &AISession::getServer() const noexcept

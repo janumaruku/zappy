@@ -5,19 +5,17 @@
 **
 */
 
-#ifndef ICOMMAND_HPP
-#define ICOMMAND_HPP
+#pragma once
 
 #include <memory>
 #include <vector>
-#include "AISession.hpp"
 
 namespace zappy::server {
 
 template <typename... Args>
 class ICommand {
 public:
-    virtual ~ICommand() = 0;
+    virtual ~ICommand() = default;
 
     virtual bool execute(Args... args) = 0;
 
@@ -26,4 +24,3 @@ public:
 
 
 }
-#endif // !ICOMMAND_HPP

@@ -21,7 +21,7 @@ bool MctCommand::execute(WorldState &s, const std::vector<std::string> &cmd)
 
     auto qts = [&cmd]() {
         std::vector<uint> res;
-        for (auto it = cmd.begin() + 2; it != cmd.end(); it++)
+        for (auto it = cmd.begin() + 1; it != cmd.end(); it++)
             res.push_back(static_cast<uint>(std::stoul(*it)));
         return res;
     }();

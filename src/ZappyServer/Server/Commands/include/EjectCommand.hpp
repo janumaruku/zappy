@@ -15,7 +15,7 @@ class EjectCommand : public AIProtocolCommand {
 public:
     EjectCommand() = default;
 
-    ~EjectCommand() override;
+    ~EjectCommand() override = default;
 
     bool operator()(AISession &, const std::vector<std::string> &) override;
 

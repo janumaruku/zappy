@@ -26,6 +26,10 @@ public:
     [[nodiscard]] int getHeight() const noexcept;
     [[nodiscard]] const data::Tile &getTile(const data::Position &pos) const;
     [[nodiscard]] const Player &getPlayer(const PlayerId &id) const;
+    [[nodiscard]] Player &getPlayer(const PlayerId &id);
+    [[nodiscard]] const std::unordered_map<PlayerId, Player> &getPlayers() const noexcept;
+    Player &spawnPlayer(const PlayerId &id, const TeamId &team);
+    [[nodiscard]] bool hasPlayer(const PlayerId &id) const noexcept;
     void generate();
     void generateResource(const data::Resource &resource, uint amount);
     [[nodiscard]] bool takeResource(const data::Resource &resource,

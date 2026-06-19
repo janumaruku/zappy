@@ -15,7 +15,7 @@ class RightCommand : public AIProtocolCommand {
 public:
     RightCommand() = default;
 
-    ~RightCommand() override;
+    ~RightCommand() override = default;
 
     bool operator()(AISession &, const std::vector<std::string> &) override;
 
