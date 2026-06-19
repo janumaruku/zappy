@@ -9,8 +9,6 @@
 #define TILE_HPP
 #include <cstddef>
 #include <cstdint>
-#include <list>
-#include <map>
 #include <string>
 #include <unordered_map>
 #include <sys/types.h>
@@ -22,7 +20,7 @@ using PlayerId = std::string;
 
 constexpr std::size_t EXISTING_RESSOURCES = 7;
 
-enum class Resource : std::uint8_t {
+enum class Resource : std::int8_t {
     FOOD = 0,
     LINEMATE,
     DERAUMERE,
@@ -34,18 +32,17 @@ enum class Resource : std::uint8_t {
 
 class Tile {
 public:
-    Tile() = delete;
+    Tile() = default;
 
     explicit Tile(Position position);
 
     [[nodiscard]] Position getPosition() const;
 
-    [[nodiscard]] const std::unordered_map<Resource, uint> &
-    getResources() const;
+    [[nodiscard]] const std::unordered_map<Resource, int> &getResources() const;
 
-    void setResources(const std::unordered_map<Resource, uint> &resources);
+    void setResources(const std::unordered_map<Resource, int> &resources);
 
-    void addResources(const std::unordered_map<Resource, uint> &resources);
+    void addResources(const std::unordered_map<Resource, int> &resources);
 
     bool hasResource(const Resource &resource) const;
 
@@ -55,7 +52,7 @@ public:
 
 private:
     Position _position;
-    std::unordered_map<Resource, uint> _resources;
+    std::unordered_map<Resource, int> _resources;
 };
 }
 

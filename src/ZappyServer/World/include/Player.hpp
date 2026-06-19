@@ -29,12 +29,14 @@ public:
     void forward(int width, int height);
     void right();
     void takeResource(const data::Resource &resource);
+    bool removeResource(const data::Resource &resource);
 
     [[nodiscard]] PlayerId getId() const noexcept;
     [[nodiscard]] TeamId getTeam() const noexcept;
     [[nodiscard]] data::Position getPosition() const noexcept;
     [[nodiscard]] std::uint8_t getLevel() const noexcept;
     [[nodiscard]] data::Orientation getOrientation() const noexcept;
+    [[nodiscard]] const std::unordered_map<data::Resource, std::uint8_t> &getInventory() const noexcept;
 
 private:
     PlayerId _id;

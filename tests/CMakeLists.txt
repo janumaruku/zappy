@@ -29,9 +29,6 @@ target_link_libraries(
 set_target_properties(unit_tests PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR})
 set_target_properties(unit_tests PROPERTIES EXCLUDE_FROM_ALL TRUE)
 
-#target_compile_options(unit_tests PRIVATE --coverage -O0 -g)
-#target_link_options(unit_tests PRIVATE --coverage)
-
 if (WITH_COVERAGE)
     message(STATUS "Coverage enabled")
 

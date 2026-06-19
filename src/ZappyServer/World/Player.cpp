@@ -62,6 +62,15 @@ void Player::takeResource(const data::Resource &resource)
     _inventory[resource]++;
 }
 
+bool Player::removeResource(const data::Resource &resource)
+{
+    auto it = _inventory.find(resource);
+    if (it == _inventory.end() || it->second == 0)
+        return false;
+    --(it->second);
+    return true;
+}
+
 PlayerId Player::getId() const noexcept
 {
     return _id;
@@ -71,17 +80,25 @@ TeamId Player::getTeam() const noexcept
 {
     return _team;
 }
+
 data::Position Player::getPosition() const noexcept
 {
     return _position;
 }
+
 std::uint8_t Player::getLevel() const noexcept
 {
     return _level;
+}
+
+const std::unordered_map<data::Resource, std::uint8_t> &Player::getInventory() const noexcept
+{
+    return _inventory;
 }
 
 data::Orientation Player::getOrientation() const noexcept
 {
     return _orientation;
 }
+
 }
