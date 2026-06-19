@@ -118,7 +118,7 @@ void Renderer::updateZoom(const float &wheel)
     _camera.offset = GetMousePosition();
     _camera.target = GetScreenToWorld2D(GetMousePosition(), _camera);
     const float scale = 0.2f * wheel;
-    _camera.zoom = Clamp(std::expf(logf(_camera.zoom) + scale), 0.2f, 3.0f);
+    _camera.zoom = Clamp(expf(logf(_camera.zoom) + scale), 0.2f, 3.0f);
 }
 
 void Renderer::updateCameraMovement()
