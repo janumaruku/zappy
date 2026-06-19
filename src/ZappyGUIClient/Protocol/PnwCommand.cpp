@@ -23,10 +23,14 @@ bool PnwCommand::execute(WorldState&s, const std::vector<std::string>&cmd)
 {
     try {
 
-        GUIPlayer player{cmd[0],
+        std::string id = cmd[0];
+        if (!id.empty() && id.front() == '#')
+            id.erase(id.begin());
+
+        GUIPlayer player{id,
             cmd[5],
             {std::stoi(cmd[1]), std::stoi(cmd[2])},
-            static_cast<data::Orientation>(std::stoi(cmd[3])),
+            static_cast<data::Orientation>(std::stoi(cmd[3]) - 1),
             static_cast<uint8_t>(std::stoi(cmd[4]))};
     
         s.onPlayerNew(std::move(player));
