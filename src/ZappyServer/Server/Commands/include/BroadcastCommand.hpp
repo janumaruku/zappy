@@ -15,7 +15,7 @@ class BroadcastCommand : public AIProtocolCommand {
 public:
     BroadcastCommand() = default;
 
-    ~BroadcastCommand() override;
+    ~BroadcastCommand() override = default;
 
     bool operator()(AISession &, const std::vector<std::string> &) override;
 
