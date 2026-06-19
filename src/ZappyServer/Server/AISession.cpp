@@ -25,9 +25,12 @@
 namespace zappy::server {
 AISession::AISession(const std::shared_ptr<network::ConnectedSocket> &socket,
     Server &server, Player &player): AClientSession{socket}, _server{server}, _player{player},
-    _command_timer(socket->getIOContext()), _starvation_timer(socket->getIOContext())
+    _command_timer(socket->getIOContext()), _starvation_timer(socket->getIOContext()),
+    _protocolHandler(std::make_unique<AIProtocolHandler>())
 {
 }
+
+AISession::~AISession() = default;
 
 void AISession::handleTransmission()
 {
@@ -69,6 +72,11 @@ void AISession::scheduleResponse(const uint &durationConstant, const std::string
 }
 
 const Player &AISession::getPlayer() const noexcept
+{
+    return _player;
+}
+
+Player &AISession::getPlayer() noexcept
 {
     return _player;
 }

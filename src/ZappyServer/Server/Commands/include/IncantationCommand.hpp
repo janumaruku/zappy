@@ -15,7 +15,7 @@ class IncantationCommand : public AIProtocolCommand {
 public:
     IncantationCommand() = default;
 
-    ~IncantationCommand() override;
+    ~IncantationCommand() override = default;
 
     bool operator()(AISession &, const std::vector<std::string> &) override;
 

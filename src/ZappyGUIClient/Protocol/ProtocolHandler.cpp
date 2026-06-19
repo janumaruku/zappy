@@ -39,7 +39,9 @@ void ProtocolHandler::handleLine(const std::string& line) noexcept
     auto cmd = utils::StringUtils::split(line);
     
     try {
-        auto toExec = _factory.create(cmd[0]);
+        auto name = cmd[0];
+        cmd.erase(cmd.begin());
+        auto toExec = _factory.create(name);
         toExec->execute(_worldState, cmd);
     } catch (const std::exception &e) {
         std::cerr << "Error: " << e.what() << std::endl;

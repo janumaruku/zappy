@@ -5,10 +5,11 @@ add_library(server STATIC
     AISession.cpp
     AIProtocolHandler.cpp
     GUISession.cpp
+    GUIProtocolHandler.cpp
     Server.cpp
 )
 target_include_directories(server PUBLIC
     include
     Commands/include
 )
-target_link_libraries(server PUBLIC network world utils warning_options)
+target_link_libraries(server PUBLIC commands network world utils warning_options)

@@ -15,7 +15,7 @@ class ForkCommand : public AIProtocolCommand {
 public:
     ForkCommand() = default;
 
-    ~ForkCommand() override;
+    ~ForkCommand() override = default;
 
     bool operator()(AISession &, const std::vector<std::string> &) override;
 

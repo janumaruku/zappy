@@ -43,6 +43,8 @@ const std::unordered_map<std::string, Team> &WorldState::getTeams()
 
 void WorldState::onPlayerNew(GUIPlayer player)
 {
+    if (_teams.contains(player.getTeam()))
+        _teams.at(player.getTeam()).addPlayer(player.getId());
     _players.emplace(player.getId(), player);
     std::clog << "New Player " << player.getId() << " has joined" << std::endl;
 }

@@ -15,7 +15,7 @@ class LeftCommand : public AIProtocolCommand {
 public:
     LeftCommand() = default;
 
-    ~LeftCommand() override;
+    ~LeftCommand() override = default;
 
     bool operator()(AISession &, const std::vector<std::string> &) override;
 
