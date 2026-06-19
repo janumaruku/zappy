@@ -7,11 +7,15 @@ add_library(commands STATIC
     ForwardCommand.cpp
     IncantationCommand.cpp
     InventoryCommand.cpp
+    MszCommand.cpp
     LeftCommand.cpp
     LookCommand.cpp
+    PnwCommand.cpp
+    PpoCommand.cpp
     RightCommand.cpp
     SetCommand.cpp
     TakeCommand.cpp
+    TnaCommand.cpp
 )
 
 target_include_directories(commands PUBLIC
