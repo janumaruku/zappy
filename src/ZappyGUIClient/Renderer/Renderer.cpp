@@ -66,7 +66,7 @@ void Renderer::renderMap(const GUIMap &map) const
     for (auto x = 0; x < len; ++x) {
         if (x == width - 1)
             ++y;
-        // auto tile = map.getTile({x % width, y}).getResources();
+        const auto tile = map.getTile({x % width, y}).getResources();
 
         renderResourcesFromTile(tile, {(x % width), y});
     }
