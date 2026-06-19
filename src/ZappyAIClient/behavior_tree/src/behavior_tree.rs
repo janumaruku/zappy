@@ -8,3 +8,4 @@ pub use behavior_tree_node::*;
 pub use sequence_node::*;
 pub use selector_node::*;
 pub use condition_node::*;
+pub use action_node::*;
