@@ -12,7 +12,8 @@
 namespace zappy::gui {
 WorldState::WorldState(const std::unordered_map<std::string, Team> &teams,
     const uint timeUnit, uint width, uint height): _map{width, height},
-    _teams(teams), _timeUnit(timeUnit)
+                                                   _teams(teams),
+                                                   _timeUnit(timeUnit)
 {
 }
 
@@ -45,9 +46,11 @@ void WorldState::onPlayerNew(GUIPlayer player)
 {
     _players.emplace(player.getId(), player);
     std::clog << "New Player " << player.getId() << " has joined" << std::endl;
+    notify(ZappyEventType::GUI_EVENT, 0);
 }
 
-void WorldState::onPlayerPosition(const std::string &id, const data::Position &pos, const data::Orientation &orientation)
+void WorldState::onPlayerPosition(const std::string &id,
+    const data::Position &pos, const data::Orientation &orientation)
 {
     auto &player = _players.at(id);
     player.setOrientation(orientation);

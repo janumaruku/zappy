@@ -9,7 +9,6 @@
 #define WORLDSTATE_HPP
 #include <string>
 #include <unordered_map>
-#include <variant>
 #include <sys/types.h>
 
 #include "ASubject.hpp"
@@ -17,24 +16,14 @@
 #include "GUIMap.hpp"
 #include "GUIPlayer.hpp"
 #include "Team.hpp"
+#include "ZappyEvents.hpp"
 
 namespace zappy::gui {
-enum class GUIEventType: std::uint8_t {
-    PLAYER_NEW,
-    PLAYER_MOVE,
-    PLAYER_DIED,
-    TILE_UPDATE,
-    EGG_LAID,
-    EGG_HATCHED,
-    EGG_DIED,
-    INCANTATION_START,
-    INCANTATION_END,
-    GAME_END
+enum class ZappyEventType: std::uint8_t {
+    GUI_EVENT,
 };
 
-using GUIEvent = std::variant<int>;
-
-class WorldState: designPattern::ASubject<GUIEvent, GUIEventType> {
+class WorldState: designPattern::ASubject<ZappyEvent, ZappyEventType> {
     using PlayerId = std::string;
 
 public:
