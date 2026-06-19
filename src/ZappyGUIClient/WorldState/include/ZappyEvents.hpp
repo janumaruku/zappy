@@ -41,7 +41,7 @@ struct PlayerDiedEvent {
 
 struct TileUpdateEvent {
     data::Position position;
-    std::unordered_map<data::Resource, uint> resources;
+    std::unordered_map<data::Resource, int> resources;
 };
 
 struct EggLaidEvent {

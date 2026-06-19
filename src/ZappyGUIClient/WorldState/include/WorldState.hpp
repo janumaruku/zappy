@@ -30,7 +30,7 @@ public:
     WorldState() = default;
 
     WorldState(const std::unordered_map<std::string, Team> &teams,
-        uint timeUnit, uint width, uint height);
+        int timeUnit, int width, int height);
 
     [[nodiscard]] const GUIMap &getMap() const noexcept;
 
@@ -40,7 +40,7 @@ public:
 
     const std::unordered_map<std::string, Team> &getTeams();
 
-    uint getTimeUnit() const;
+    int getTimeUnit() const;
 
     void onPlayerNew(GUIPlayer player);
 
@@ -50,22 +50,22 @@ public:
     void onPlayerDeath(const PlayerId &id);
 
     void onTileContent(data::Position pos,
-        const std::unordered_map<data::Resource, uint> &resources);
+        const std::unordered_map<data::Resource, int> &resources);
 
-    void onTimeUnit(uint t);
+    void onTimeUnit(int t);
 
-    //void onEggLaid(uint eggId, PlayerId playerId, Position pos);
+    //void onEggLaid(int eggId, PlayerId playerId, Position pos);
 
     void onEggDeath(const std::string& eggId);
 
-    void onMapDimension(const uint &width, const uint &height);
+    void onMapDimension(const int &width, const int &height);
 
 private:
     GUIMap _map;
     std::unordered_map<PlayerId, GUIPlayer> _players;
     std::unordered_map<std::string, data::Egg> _eggs;
     std::unordered_map<std::string, Team> _teams;
-    uint _timeUnit = 1;
+    int _timeUnit = 1;
 };
 }
 

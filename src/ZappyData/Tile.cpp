@@ -7,9 +7,6 @@
 
 #include "include/Tile.hpp"
 
-#include <iostream>
-#include <ostream>
-
 namespace zappy::data {
 Tile::Tile(const Position position): _position(position)
 {
@@ -23,17 +20,17 @@ Position Tile::getPosition() const
     return _position;
 }
 
-const std::unordered_map<Resource, uint> &Tile::getResources() const
+const std::unordered_map<Resource, int> &Tile::getResources() const
 {
     return _resources;
 }
 
-void Tile::setResources(const std::unordered_map<Resource, uint> &resources)
+void Tile::setResources(const std::unordered_map<Resource, int> &resources)
 {
     _resources = resources;
 }
 
-void Tile::addResources(const std::unordered_map<Resource, uint> &resources)
+void Tile::addResources(const std::unordered_map<Resource, int> &resources)
 {
     for (const auto &[resource, count]: resources)
         _resources.at(resource) += count;
