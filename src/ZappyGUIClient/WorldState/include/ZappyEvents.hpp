@@ -13,10 +13,13 @@
 #include <vector>
 
 #include "Egg.hpp"
+#include "GUIPlayer.hpp"
 #include "Tile.hpp"
 
 namespace zappy::gui {
 struct PlayerNewEvent {
+    explicit PlayerNewEvent(const GUIPlayer &player);
+
     data::PlayerId id;
     data::Position position;
     data::Orientation orientation;
@@ -25,6 +28,8 @@ struct PlayerNewEvent {
 };
 
 struct PlayerMovedEvent {
+    explicit PlayerMovedEvent(const GUIPlayer &player);
+
     data::PlayerId id;
     data::Position position;
     data::Orientation orientation;

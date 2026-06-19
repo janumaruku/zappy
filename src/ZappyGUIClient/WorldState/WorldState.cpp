@@ -46,7 +46,8 @@ void WorldState::onPlayerNew(GUIPlayer player)
 {
     _players.emplace(player.getId(), player);
     std::clog << "New Player " << player.getId() << " has joined" << std::endl;
-    notify(ZappyEventType::GUI_EVENT, 0);
+
+    notify(ZappyEventType::GUI_EVENT, PlayerNewEvent{player});
 }
 
 void WorldState::onPlayerPosition(const std::string &id,
@@ -55,6 +56,8 @@ void WorldState::onPlayerPosition(const std::string &id,
     auto &player = _players.at(id);
     player.setOrientation(orientation);
     player.setPosition(pos);
+
+    notify(ZappyEventType::GUI_EVENT, PlayerMovedEvent{player});
 }
 
 void WorldState::onPlayerDeath(const PlayerId &id)
@@ -67,12 +70,19 @@ void WorldState::onPlayerDeath(const PlayerId &id)
     const auto player = _players.at(id);
     _teams.at(player.getTeam()).removePlayer(id);
     _players.erase(id);
+
+    notify(ZappyEventType::GUI_EVENT, PlayerDiedEvent{id});
 }
 
 void WorldState::onTileContent(const data::Position pos,
     const std::unordered_map<data::Resource, uint> &resources)
 {
     _map.updateTile(pos, resources);
+
+    notify(ZappyEventType::GUI_EVENT, TileUpdateEvent{
+        .position = pos,
+        .resources = resources
+    });
 }
 
 /*void WorldState::onTimeUnit(uint t)
@@ -89,13 +99,15 @@ uint WorldState::getTimeUnit() const
 
 }*/
 
-void WorldState::onEggDeath(const uint eggId)
+void WorldState::onEggDeath(const std::string& eggId)
 {
     if (!_eggs.contains(eggId)) {
         std::cerr << eggId << " is not found onEggDeath" << std::endl;
         return;
     }
     _eggs.erase(eggId);
+
+    notify(ZappyEventType::GUI_EVENT, EggDiedEvent{eggId});
 }
 
 void WorldState::onMapDimension(const uint &width, const uint &height)

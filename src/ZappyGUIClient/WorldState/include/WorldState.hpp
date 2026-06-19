@@ -56,14 +56,14 @@ public:
 
     //void onEggLaid(uint eggId, PlayerId playerId, Position pos);
 
-    void onEggDeath(uint eggId);
+    void onEggDeath(const std::string& eggId);
 
     void onMapDimension(const uint &width, const uint &height);
 
 private:
     GUIMap _map;
     std::unordered_map<PlayerId, GUIPlayer> _players;
-    std::unordered_map<uint, data::Egg> _eggs;
+    std::unordered_map<std::string, data::Egg> _eggs;
     std::unordered_map<std::string, Team> _teams;
     uint _timeUnit = 1;
 };
