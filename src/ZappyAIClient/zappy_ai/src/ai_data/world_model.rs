@@ -1,7 +1,8 @@
 use behavior_tree::behavior_tree::BlackBoard;
 use std::collections::HashMap;
+use crate::ai_data::ServerMessage;
 
-#[derive(Eq, Hash, PartialEq)]
+#[derive(Eq, Hash, PartialEq, Clone)]
 pub enum Resource {
     Food,
     Linemate,
@@ -13,6 +14,7 @@ pub enum Resource {
     Unknown(String),
 }
 
+#[derive(Clone)]
 pub enum Orientation {
     Up,
     Right,
@@ -74,7 +76,7 @@ impl WorldModel {
         }
     }
 
-    pub fn update(&mut self, response: &str, blackboard: &mut BlackBoard) {
-        blackboard.set("last_response", String::from(response));
+    pub fn update(&mut self, response: &ServerMessage, blackboard: &mut BlackBoard) {
+        blackboard.set("last_response", response.clone());
     }
 }

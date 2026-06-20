@@ -1,6 +1,7 @@
 use crate::ai_data::{Orientation, Resource};
 use std::collections::HashMap;
 
+#[derive(Clone)]
 pub enum ServerMessage {
     Ok,
     Ko,
