@@ -66,7 +66,7 @@ private:
 
     [[nodiscard]] static Image createImageResource(data::Position offset,
         int radius,Color color);
-    static Image createImagePlayer(const int &degree);
+    static Image createImageFromFile(const std::string &filePath);
 
 };
 }
