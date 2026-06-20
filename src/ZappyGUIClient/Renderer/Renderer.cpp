@@ -19,12 +19,12 @@ Renderer::Renderer(const int &width, const int &height,
     AObserver{list}, _grid(width, height),
     _camera({
         .offset = Vector2{
-            WINDOW_WIDTH / 2,
-            WINDOW_HEIGHT / 2
+            .x=WINDOW_WIDTH / 2,
+            .y=WINDOW_HEIGHT / 2
         },
         .target = Vector2{
-            static_cast<float>((width * TILE_SIZE) / 2),
-            static_cast<float>((height * TILE_SIZE) / 2)
+            .x=static_cast<float>(width * TILE_SIZE) / 2,
+            .y=static_cast<float>(height * TILE_SIZE) / 2
         },
         .rotation = 0.0F,
         .zoom = 1.0F})
@@ -47,17 +47,7 @@ void Renderer::render(const WorldState &world)
     ClearBackground(BLACK);
 
     BeginMode2D(_camera);
-    renderMap(world.getMap());/*
-    std::unordered_map<std::string, GUIPlayer> testPlayer;
-    testPlayer.insert({"testup",
-        {"testplayer", "blue", {1, 1}, data::Orientation::UP, 0}});
-    testPlayer.insert({"testdown",
-        {"testplayer", "blue", {2, 1}, data::Orientation::DOWN, 0}});
-    testPlayer.insert({"testright",
-        {"testplayer", "blue", {3, 1}, data::Orientation::RIGHT, 0}});
-    testPlayer.insert({"testleft",
-        {"testplayer", "blue", {4, 1}, data::Orientation::LEFT, 0}});
-    renderPlayers(testPlayer);*/
+    renderMap(world.getMap());
 
     renderPlayers(world.getPlayers(), world.getTeams());
     EndMode2D();
@@ -79,7 +69,7 @@ void Renderer::renderMap(const GUIMap &map) const
 {
     _grid.render();
     const auto width = map.getWidth();
-    const auto len = map.getWidth() * map.getHeight();
+    const auto len   = map.getWidth() * map.getHeight();
 
     auto y = 0;
     for (auto x = 0; x < len; ++x) {
@@ -91,9 +81,8 @@ void Renderer::renderMap(const GUIMap &map) const
     }
 }
 
-void Renderer::renderResourcesFromTile(std::unordered_map<data::Resource, int>
-    tile,
-    const data::Position position) const
+void Renderer::renderResourcesFromTile(const std::unordered_map<data::Resource, int>&
+    tile, const data::Position position) const
 {
 
     for (auto const &[name, count]: tile) {
@@ -106,10 +95,8 @@ void Renderer::renderResourcesFromTile(std::unordered_map<data::Resource, int>
     }
 }
 
-void Renderer::renderPlayers(
-    const std::unordered_map<data::PlayerId, GUIPlayer> &players)
 void Renderer::renderPlayers(const std::unordered_map<data::PlayerId, GUIPlayer>
-        &players, const std::unordered_map<std::string, Team>& teams) const
+    &players, const std::unordered_map<std::string, Team> &teams) const
 {
     for (const auto &it: players) {
         const auto resourceTexture =
@@ -121,7 +108,7 @@ void Renderer::renderPlayers(const std::unordered_map<data::PlayerId, GUIPlayer>
                 ((TILE_SIZE - resourceTexture.width) / 2),
             (position.getY() * TILE_SIZE) +
                 ((TILE_SIZE - resourceTexture.height) / 2),
-                teams.at(it.second.getTeam()).getColor());
+            teams.at(it.second.getTeam()).getColor());
     }
 }
 
@@ -148,16 +135,16 @@ void Renderer::updateCamera()
 
 void Renderer::updateZoom(const float &wheel)
 {
-    _camera.offset = GetMousePosition();
-    _camera.target = GetScreenToWorld2D(GetMousePosition(), _camera);
-    const float scale = 0.2f * wheel;
-    _camera.zoom = Clamp(expf(logf(_camera.zoom) + scale), 0.2f, 3.0f);
+    _camera.offset    = GetMousePosition();
+    _camera.target    = GetScreenToWorld2D(GetMousePosition(), _camera);
+    const float scale = 0.2F * wheel;
+    _camera.zoom      = Clamp(expf(logf(_camera.zoom) + scale), 0.2F, 3.0F);
 }
 
 void Renderer::updateCameraMovement()
 {
-    const Vector2 delta = Vector2Scale(GetMouseDelta(), -1.0f / _camera.zoom);
-    _camera.target = Vector2Add(_camera.target, delta);
+    const Vector2 delta = Vector2Scale(GetMouseDelta(), -1.0F / _camera.zoom);
+    _camera.target      = Vector2Add(_camera.target, delta);
 }
 
 Vector2 Renderer::tileToPixel(const data::Position pos)

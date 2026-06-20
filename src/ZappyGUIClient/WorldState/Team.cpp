@@ -11,7 +11,7 @@
 
 namespace zappy::gui {
 
-Team::Team(const std::string &name, Color color): _name(name)
+Team::Team(const std::string &name, const Color &color): _name(name)
 , _color(color)
 {
 
