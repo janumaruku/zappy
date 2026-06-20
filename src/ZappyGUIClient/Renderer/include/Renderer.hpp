@@ -89,9 +89,8 @@ private:
     void renderResourcesFromTile(std::unordered_map<data::Resource, int> tile,
         data::Position position) const;
 
-    static void renderPlayers(
-        const std::unordered_map<data::PlayerId, GUIPlayer>
-        &players);
+    void renderPlayers(const std::unordered_map<data::PlayerId, GUIPlayer>
+            &players) const;
 
     static void renderEggs(const std::map<unsigned int, data::Egg> &eggs);
 
@@ -104,6 +103,9 @@ private:
     [[nodiscard]] static Vector2 tileToPixel(data::Position pos);
 
     static std::string resourceToString(const data::Resource &resource);
+    static std::string playerOrientationToString(
+        const data::Orientation &orientation);
+
     // std::map<data::PlayerId, Animation> _animations;
     Grid _grid;
     Camera2D _camera;

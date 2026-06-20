@@ -97,8 +97,21 @@ void Renderer::renderResourcesFromTile(std::unordered_map<data::Resource, int>
 
 void Renderer::renderPlayers(
     const std::unordered_map<data::PlayerId, GUIPlayer> &players)
+void Renderer::renderPlayers(const std::unordered_map<data::PlayerId, GUIPlayer>
+        &players) const
 {
-    (void)players;
+    for (const auto &it: players) {
+        const auto resourceTexture =
+            _resourceManager->getTexture(playerOrientationToString(it.second
+                    .getOrientation()));
+        const auto position = it.second.getPosition();
+        DrawTexture(resourceTexture,
+            (position.getX() * TILE_SIZE) +
+                ((TILE_SIZE - resourceTexture.width) / 2),
+            (position.getY() * TILE_SIZE) +
+                ((TILE_SIZE - resourceTexture.height) / 2),
+                WHITE);
+    }
 }
 
 void Renderer::renderEggs(const std::map<unsigned int, data::Egg> &eggs)
@@ -147,6 +160,11 @@ Vector2 Renderer::tileToPixel(const data::Position pos)
 std::string Renderer::resourceToString(const data::Resource &resource)
 {
     return RESOURCE_DATA[static_cast<int>(resource)].name;
+}
+std::string Renderer::playerOrientationToString(const data::Orientation
+        &orientation)
+{
+    return PLAYER_DIRECTION_DATA[static_cast<int>(orientation)].first;
 }
 
 } // namespace zappy::gui
