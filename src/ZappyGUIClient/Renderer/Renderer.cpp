@@ -47,8 +47,19 @@ void Renderer::render(const WorldState &world)
     ClearBackground(BLACK);
 
     BeginMode2D(_camera);
-    renderMap(world.getMap());
-    renderPlayers(world.getPlayers());
+    renderMap(world.getMap());/*
+    std::unordered_map<std::string, GUIPlayer> testPlayer;
+    testPlayer.insert({"testup",
+        {"testplayer", "blue", {1, 1}, data::Orientation::UP, 0}});
+    testPlayer.insert({"testdown",
+        {"testplayer", "blue", {2, 1}, data::Orientation::DOWN, 0}});
+    testPlayer.insert({"testright",
+        {"testplayer", "blue", {3, 1}, data::Orientation::RIGHT, 0}});
+    testPlayer.insert({"testleft",
+        {"testplayer", "blue", {4, 1}, data::Orientation::LEFT, 0}});
+    renderPlayers(testPlayer);*/
+
+    renderPlayers(world.getPlayers(), world.getTeams());
     EndMode2D();
     EndDrawing();
 }
