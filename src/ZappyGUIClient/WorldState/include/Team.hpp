@@ -8,6 +8,7 @@
 #ifndef TEAM_HPP_
 #define TEAM_HPP_
 
+#include <raylib.h>
 #include <string>
 #include <vector>
 
@@ -16,11 +17,11 @@ class Team {
 public:
     using PlayerId = std::string;
 
-    explicit Team(const std::string &name/*, Color color*/);
+    explicit Team(const std::string &name, Color color);
 
     std::string getName();
 
-    /*Color getColor();*/
+    [[nodiscard]] Color getColor() const;
 
     void addPlayer(const PlayerId &id);
 
@@ -29,7 +30,7 @@ public:
 private:
     std::string _name;
     std::vector<PlayerId> _players;
-    /*Color _color;*/
+    Color _color;
 };
 }
 
