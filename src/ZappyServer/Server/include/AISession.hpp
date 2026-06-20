@@ -47,6 +47,7 @@ public:
 
     [[nodiscard]] const Player &getPlayer() const noexcept;
     [[nodiscard]] const Server &getServer() const noexcept;
+    [[nodiscard]] Server &getServer() noexcept;
 
     void scheduleResponse(const uint &durationConstant, const std::string &response);
 
