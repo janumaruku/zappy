@@ -37,6 +37,7 @@ const GUIPlayer &WorldState::getPlayerById(const PlayerId &id) const
 }
 
 const std::unordered_map<std::string, Team> &WorldState::getTeams()
+    const noexcept
 {
     return _teams;
 }

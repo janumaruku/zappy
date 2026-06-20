@@ -90,7 +90,7 @@ private:
         data::Position position) const;
 
     void renderPlayers(const std::unordered_map<data::PlayerId, GUIPlayer>
-            &players) const;
+            &players, const std::unordered_map<std::string, Team>& teams) const;
 
     static void renderEggs(const std::map<unsigned int, data::Egg> &eggs);
 

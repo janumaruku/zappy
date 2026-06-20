@@ -98,7 +98,7 @@ void Renderer::renderResourcesFromTile(std::unordered_map<data::Resource, int>
 void Renderer::renderPlayers(
     const std::unordered_map<data::PlayerId, GUIPlayer> &players)
 void Renderer::renderPlayers(const std::unordered_map<data::PlayerId, GUIPlayer>
-        &players) const
+        &players, const std::unordered_map<std::string, Team>& teams) const
 {
     for (const auto &it: players) {
         const auto resourceTexture =
@@ -110,7 +110,7 @@ void Renderer::renderPlayers(const std::unordered_map<data::PlayerId, GUIPlayer>
                 ((TILE_SIZE - resourceTexture.width) / 2),
             (position.getY() * TILE_SIZE) +
                 ((TILE_SIZE - resourceTexture.height) / 2),
-                WHITE);
+                teams.at(it.second.getTeam()).getColor());
     }
 }
 
