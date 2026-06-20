@@ -1,10 +1,10 @@
+use crate::ai_data::{ServerMessage, build_tree, classify, random_walk, WorldModel};
 use ai_tcp_client::AiTcpClient;
+use behavior_tree::behavior_tree::{BehaviorTree, BlackBoard};
 use network::network::{Endpoint, IoContext, NetworkError};
 use shell::command::{CommandBuilder, CommandDefinition};
 use std::cell::RefCell;
 use std::rc::Rc;
-use behavior_tree::behavior_tree::{BehaviorTree, BlackBoard};
-use crate::ai_data::{build_tree, random_walk};
 
 mod ai_data;
 
@@ -81,12 +81,43 @@ fn main() {
     let tokens: Vec<String> = std::env::args().collect();
     command.unwrap().run(&tokens);
 
-    let tcp_client = handshake(*port.borrow(), &**hostname.borrow(), &**team.borrow());
+    let tcp_client: Rc<RefCell<AiTcpClient>>;
+    {
+        match handshake(*port.borrow(), &**hostname.borrow(), &**team.borrow()) {
+            Ok(result) => tcp_client = result,
+            Err(err) => {
+                println!("{}", err);
+                return;
+            }
+        }
+    }
 
-    let mut behavior_tree = build_tree(tcp_client.unwrap().clone());
+    let mut behavior_tree = build_tree(tcp_client.clone());
+    let mut world = WorldModel::new();
     let mut bb = BlackBoard::new();
+    behavior_tree.tick(&mut bb);
 
     loop {
+        let transmission = tcp_client.borrow_mut().receive();
+        if transmission.is_empty() {
+            break;
+        }
+
+        let response = classify(&transmission);
+        match response {
+            ServerMessage::Dead => break,
+            ServerMessage::Broadcast(orientation, message) => {
+                bb.set("broadcast_k", orientation);
+                bb.set("broadcast_text", message);
+                bb.set("broadcast_timestamp", std::time::Instant::now());
+            }
+            ServerMessage::Eject(orientation) => {}
+            _ => {
+                bb.set("last_response", response.clone());
+                world.update(&response, &mut bb);
+                behavior_tree.tick(&mut bb);
+            }
+        }
         behavior_tree.tick(&mut bb);
     }
 }
