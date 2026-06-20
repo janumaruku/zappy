@@ -60,7 +60,7 @@ private:
     Player &_player;
     SteadyTimer _command_timer;
     SteadyTimer _starvation_timer;
-    
+
     uint _pending_commands = 0;
     std::queue<std::vector<std::string>> _commandQueue;
 
