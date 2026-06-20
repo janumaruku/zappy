@@ -22,10 +22,12 @@ public:
     [[nodiscard]] std::string getId() const;
 
     PlayerId getPlayerId();
+    [[nodiscard]] const PlayerId getPlayerId() const;
 
     [[nodiscard]] Position getPosition() const;
 
     std::string getTeam();
+    [[nodiscard]] const std::string getTeam() const;
 
     [[nodiscard]] uint getLevel() const;
 
