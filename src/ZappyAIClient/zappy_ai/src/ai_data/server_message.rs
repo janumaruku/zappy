@@ -1,5 +1,6 @@
 use crate::ai_data::{Orientation, Resource};
 use std::collections::HashMap;
+use std::num::ParseIntError;
 
 #[derive(Clone)]
 pub enum ServerMessage {
@@ -37,7 +38,10 @@ pub fn classify(line: &str) -> ServerMessage {
 }
 
 fn parse_level_up(tokens: &Vec<&str>) -> ServerMessage {
-    ServerMessage::LevelUp(tokens[2].parse::<u8>().unwrap())
+    match tokens[2].parse::<u8>() {
+        Ok(level) => ServerMessage::LevelUp(level),
+        Err(_) => ServerMessage::Unknown(format!("Current level: {}", tokens[2])),
+    }
 }
 
 fn parse_broadcast(line: &str) -> ServerMessage {
