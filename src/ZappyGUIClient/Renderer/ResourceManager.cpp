@@ -8,6 +8,8 @@
 #include "ResourceManager.hpp"
 
 #include <format>
+#include <iostream>
+#include <ostream>
 #include <stdexcept>
 
 namespace zappy::gui {
@@ -47,11 +49,14 @@ void ResourceManager::loadImages()
     };
     for (const auto &it: RESOURCE_DATA) {
         data::Position position = {(it.pos.getX() * CELL_SIZE) + GRID_SIZE,
-                                   (it.pos.getY() * CELL_SIZE) + GRID_SIZE};
+            (it.pos.getY() * CELL_SIZE) + GRID_SIZE};
         insertImage(it.name, position, RESOURCE_RADIUS, it.color);
     }
     insertImage("egg", {CELL_SIZE, CELL_SIZE}, RESOURCE_RADIUS, BLACK);
     _images.insert({"tile", GenImageColor(TILE_SIZE, TILE_SIZE, GRAY)});
+    for (const auto &it: PLAYER_DIRECTION_DATA) {
+        _images.insert({it.first, createImagePlayer(it.second)});
+    }
 }
 
 Image ResourceManager::createImageResource(const data::Position offset,
@@ -62,4 +67,14 @@ Image ResourceManager::createImageResource(const data::Position offset,
         offset.getY() + radius, radius, color);
     return imageResource;
 }
+
+Image ResourceManager::createImagePlayer(const int &degree)
+{
+    Image imagePlayer = LoadImage(PLAYER_SPRITE_PATH.c_str());
+    if (!IsImageValid(imagePlayer)) {
+        throw std::invalid_argument("Path to player sprite not found");
+    }
+    ImageRotate(&imagePlayer, degree);
+    return imagePlayer;
 }
+} // namespace zappy::gui
