@@ -70,10 +70,10 @@ Image ResourceManager::createImageResource(const data::Position offset,
 
 Image ResourceManager::createImageFromFile(const std::string &filePath)
 {
-    Image imagePlayer = LoadImage(filePath.c_str());
-    if (!IsImageValid(imagePlayer)) {
-        throw std::invalid_argument("Path to player sprite not found");
+    const Image image = LoadImage(filePath.c_str());
+    if (!IsImageValid(image)) {
+        throw std::invalid_argument("Path to load image not found");
     }
-    return imagePlayer;
+    return image;
 }
 } // namespace zappy::gui
