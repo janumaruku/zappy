@@ -106,8 +106,6 @@ void Renderer::renderResourcesFromTile(std::unordered_map<data::Resource, int>
     }
 }
 
-void Renderer::renderPlayers(
-    const std::unordered_map<data::PlayerId, GUIPlayer> &players)
 void Renderer::renderPlayers(const std::unordered_map<data::PlayerId, GUIPlayer>
         &players, const std::unordered_map<std::string, Team>& teams) const
 {
