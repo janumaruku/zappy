@@ -1,5 +1,6 @@
 use network::network::{ConnectedSocket, Endpoint, IoContext, NetworkError};
 use std::cell::RefCell;
+use std::ops::Deref;
 use std::rc::{Rc, Weak};
 
 pub struct AiTcpClient {
@@ -105,12 +106,24 @@ impl AiTcpClient {
         }
     }
 
-    pub fn receive(&mut self) -> String {
+    pub fn receive(&mut self) -> Option<String> {
         let Some(self_ref) = self.self_ref.upgrade() else {
-            return String::default();
+            return None;
         };
 
+        if let Some(idx) = self.transmission_temp.find('\n') {
+            let line = self.transmission_temp[..idx].to_string();
+            self.transmission_temp = self.transmission_temp[idx + 1..].to_string();
+            println!("Received: {line}");
+            return Some(line);
+        }
+        if !self.transmission_temp.is_empty() {
+            self.transmission.push_str(&std::mem::take(&mut self.transmission_temp));
+        }
+
         let mut done = false;
+        let result = Rc::new(RefCell::new(None::<String>));
+        let ref_result = result.clone();
 
         while !done {
             let mut bytes_received = 0usize;
@@ -132,14 +145,24 @@ impl AiTcpClient {
                 });
             }
 
-            if !done {
-                done = self.is_transmission_ready(bytes_received);
+            if done {
+                break;
+            }
+
+            if self.is_transmission_ready(bytes_received) {
+                *ref_result.borrow_mut() = Some(self.transmission.clone());
+                self.transmission.clear();
+                done = true;
             }
         }
 
-        let result = std::mem::take(&mut self.transmission);
-        println!("Received: {result}");
-        result
+        match result.borrow().clone() {
+            None => None,
+            Some(msg) => {
+                println!("Received: {msg}");
+                Some(msg)
+            }
+        }
     }
 
     fn is_transmission_ready(&mut self, bytes: usize) -> bool {
