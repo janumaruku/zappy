@@ -17,11 +17,17 @@ namespace zappy::gui {
 class HUD {
 public:
     HUD() = default;
-    void draw(const WorldState &world);
+    static void draw(const WorldState &world);
 
 private:
     std::optional<data::PlayerId> _selectedPlayerId;
     bool _dropdownOpen = false;
+
+    static void drawTeamsPanel(
+        const std::unordered_map<data::PlayerId,GUIPlayer> &players,
+        const std::pair<const std::string, Team> &team, size_t count);
+
+
 };
 } // namespace zappy::gui
 

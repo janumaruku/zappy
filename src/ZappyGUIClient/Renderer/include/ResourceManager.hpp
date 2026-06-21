@@ -7,7 +7,6 @@
 
 #ifndef RESOURCEMANAGER_HPP
 #define RESOURCEMANAGER_HPP
-#include <map>
 #include <raylib.h>
 #include <string>
 #include <unordered_map>

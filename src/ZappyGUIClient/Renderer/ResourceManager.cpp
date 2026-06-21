@@ -50,8 +50,10 @@ void ResourceManager::loadImages()
             (it.pos.getY() * CELL_SIZE) + GRID_SIZE};
         insertImage(it.name, position, RESOURCE_RADIUS, it.color);
     }
+
     insertImage("egg", {CELL_SIZE, CELL_SIZE}, RESOURCE_RADIUS, BLACK);
     _images.insert({"tile", GenImageColor(TILE_SIZE, TILE_SIZE, GRAY)});
+
     for (const auto &it: PLAYER_DIRECTION_DATA) {
         Image imagePlayer = createImageFromFile(PLAYER_SPRITE_PATH);
         ImageRotate(&imagePlayer, it.second);
