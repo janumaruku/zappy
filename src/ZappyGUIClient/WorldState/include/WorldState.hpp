@@ -63,7 +63,7 @@ public:
     void onMapDimension(const int &width, const int &height);
 
     void onIncantationStart(const data::Position &pos, const uint &level, const std::vector<PlayerId> &playerIds);
-    void onIncantationEnd(const data::Position &pos, int result);
+    void onIncantationEnd(const data::Position &pos, bool result);
 
 private:
     GUIMap _map;

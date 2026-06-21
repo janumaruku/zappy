@@ -10,6 +10,9 @@
 #include <algorithm>
 #include <iostream>
 #include <string>
+#include <vector>
+#include "Position.hpp"
+#include "ZappyEvents.hpp"
 
 namespace zappy::gui {
 WorldState::WorldState(const std::unordered_map<std::string, Team> &teams,
@@ -128,4 +131,18 @@ void WorldState::onMapDimension(const int &width, const int &height)
     _map.updateWidth(width);
     _map.updateHeight(height);
 }
+
+
+void WorldState::onIncantationStart(const data::Position &pos, const uint &level, const std::vector<PlayerId> &playerIds)
+{
+    IncantationStartEvent i(pos, level, playerIds);
+    notify(ZappyEventType::GUI_EVENT, i);
+}
+
+void WorldState::onIncantationEnd(const data::Position &pos, bool result)
+{
+    IncantationEndEvent e(pos, result);
+    notify(ZappyEventType::GUI_EVENT, e);
+}
+
 }
