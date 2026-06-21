@@ -8,41 +8,47 @@
 #include "include/Hud.hpp"
 
 #include <format>
+#include <iostream>
 
 namespace zappy::gui {
 
-void HUD::draw(const WorldState &world)
+void HUD::draw(const WorldState &world,
+    const std::unique_ptr<HUDManager> &hudManager)
 {
-    const auto& teams = world.getTeams();
-    const auto& players = world.getPlayers();
-
     size_t count = 0;
-    for (const auto &it : teams) {
-        drawTeamsPanel(players, it, count);
-    }
 
+    for (const auto &it: world.getTeams()) {
+        drawTeamsPanel(world.getPlayers(), it, count, hudManager);
+        ++count;
+    }
 }
 
-void HUD::drawTeamsPanel(
-    const std::unordered_map<data::PlayerId, GUIPlayer>&players,
-    const std::pair<const std::string, Team> &team, size_t count)
+void HUD::drawTeamsPanel(const std::unordered_map<data::PlayerId, GUIPlayer>
+                             &players,
+    const std::pair<const std::string, Team> &team, const size_t &count,
+    const std::unique_ptr<HUDManager> &hudManager)
 {
     const auto teamPlayersNames = team.second.getPlayers();
+    size_t maxPlayerCount = getMaxPlayersFromNames(players, teamPlayersNames);
 
-    const Image teamBackImage = GenImageColor(100, 50, team.second.getColor());
+    const std::string playerCountText =
+        std::format("{} / {}", maxPlayerCount, teamPlayersNames.size());
 
-    size_t maxPlayerCount = 0;
-    for (const auto &name : teamPlayersNames) {
-        if (players.at(name).getLevel() == 8) {
-            ++maxPlayerCount;
-        }
-    }
-    DrawTexture(LoadTextureFromImage(teamBackImage), 1 * count, 1 * count, WHITE);
-    DrawText(team.first.c_str(), 1 * count + 10, 1 * count + 10, 5, WHITE);
-
-    const std::string playerCountText = std::format("{} / {}",maxPlayerCount, teamPlayersNames.size());
-    DrawText(playerCountText.c_str(), 1 + count + 10, 1 * count + 20, 5, WHITE);
-    ++count;
+    DrawTexture(hudManager->getTexture("backgroundTeam"), 0,
+        BACKGROUND_TEAM_HEIGHT * count, team.second.getColor());
+    DrawText(team.first.c_str(), 0, BACKGROUND_TEAM_HEIGHT * count, 5, WHITE);
+    DrawText(playerCountText.c_str(), 0, (BACKGROUND_TEAM_HEIGHT * count) + 10,
+        5, WHITE);
 }
-} // gui
-// zappy
+
+size_t HUD::getMaxPlayersFromNames(const std::unordered_map<data::PlayerId,
+                                       GUIPlayer> &players,
+    const std::vector<data::PlayerId> &playerNames)
+{
+    size_t count = 0;
+    for (const auto &name: playerNames)
+        if (players.at(name).getLevel() == 8)
+            ++count;
+    return count;
+}
+} // namespace zappy::gui

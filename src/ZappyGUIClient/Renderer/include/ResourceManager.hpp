@@ -9,9 +9,9 @@
 #define RESOURCEMANAGER_HPP
 #include <raylib.h>
 #include <string>
-#include <unordered_map>
 #include <vector>
 
+#include "ARenderManager.hpp"
 #include "Position.hpp"
 
 namespace zappy::gui {
@@ -47,26 +47,16 @@ const std::vector<std::pair<std::string, int16_t>> PLAYER_DIRECTION_DATA {
     {"player_west", 180},
 };
 
-class ResourceManager {
+class ResourceManager : public designPattern::ARenderManager {
 public:
     ResourceManager();
+    ~ResourceManager() override = default;
 
-    ~ResourceManager();
-
-    void loadTextures();
-
-    const Texture2D &getTexture(const std::string &name) const;
-
-private:
-    std::unordered_map<std::string, Image> _images;
-    std::unordered_map<std::string, Texture2D> _textures;
-
-    void loadImages();
+protected:
+    void loadImages() override;
 
     [[nodiscard]] static Image createImageResource(data::Position offset,
         int radius,Color color);
-    static Image createImageFromFile(const std::string &filePath);
-
 };
 }
 
