@@ -10,6 +10,7 @@
 #include <algorithm>
 #include <cmath>
 
+#include "Hud.hpp"
 #include "raymath.h"
 #include "ResourceManager.hpp"
 
@@ -51,6 +52,7 @@ void Renderer::render(const WorldState &world)
 
     renderPlayers(world.getPlayers(), world.getTeams());
     EndMode2D();
+    _hud.draw(world);
     EndDrawing();
 }
 

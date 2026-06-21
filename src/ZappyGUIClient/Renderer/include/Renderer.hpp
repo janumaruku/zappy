@@ -13,6 +13,7 @@
 
 #include "AObserver.hpp"
 #include "Grid.hpp"
+#include "Hud.hpp"
 #include "raylib.h"
 #include "ResourceManager.hpp"
 #include "WorldState.hpp"
@@ -109,6 +110,7 @@ private:
     Grid _grid;
     Camera2D _camera;
     std::unique_ptr<ResourceManager> _resourceManager;
+    HUD _hud;
 };
 } // namespace zappy::gui
 #endif // RENDERER_HPP
