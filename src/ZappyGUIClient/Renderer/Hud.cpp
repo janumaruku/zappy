@@ -10,6 +10,8 @@
 #include <format>
 #include <iostream>
 
+#include "Renderer.hpp"
+
 namespace zappy::gui {
 
 void HUD::draw(const WorldState &world,
@@ -21,6 +23,7 @@ void HUD::draw(const WorldState &world,
         drawTeamsPanel(world.getPlayers(), it, static_cast<int>(count), hudManager);
         ++count;
     }
+    drawTime(world.getTimeUnit());
 }
 
 void HUD::drawTeamsPanel(const std::unordered_map<data::PlayerId, GUIPlayer>
@@ -36,9 +39,15 @@ void HUD::drawTeamsPanel(const std::unordered_map<data::PlayerId, GUIPlayer>
 
     DrawTexture(hudManager->getTexture("backgroundTeam"), 0,
         BACKGROUND_TEAM_HEIGHT * count, team.second.getColor());
-    DrawText(team.first.c_str(), 0, BACKGROUND_TEAM_HEIGHT * count, 5, WHITE);
+    DrawText(team.first.c_str(), 0, BACKGROUND_TEAM_HEIGHT * count, TEXT_FONT_SIZE, WHITE);
     DrawText(playerCountText.c_str(), 0, (BACKGROUND_TEAM_HEIGHT * count) + 10,
-        5, WHITE);
+        TEXT_FONT_SIZE, WHITE);
+}
+
+void HUD::drawTime(const int &timeUnit)
+{
+    const std::string timeText = std::format("Speed : {}", timeUnit);
+    DrawText(timeText.c_str(), WINDOW_WIDTH - (TEXT_FONT_SIZE * timeText.size()), 0, TEXT_FONT_SIZE, WHITE);
 }
 
 size_t HUD::getMaxPlayersFromNames(const std::unordered_map<data::PlayerId,
