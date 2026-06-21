@@ -116,6 +116,8 @@ impl WorldModel {
             ServerMessage::Inventory(inventory) => self.update_inventory(inventory, blackboard),
             ServerMessage::Look(tiles) => self.update_look(tiles, blackboard),
             ServerMessage::LevelUp(level) => self.update_level_up(*level, blackboard),
+            ServerMessage::Ok => blackboard.set("last_response", ServerMessage::Ok),
+            ServerMessage::Ko => blackboard.set("last_response", ServerMessage::Ko),
             _ => return,
         }
         blackboard.set("last_response", response.clone());
