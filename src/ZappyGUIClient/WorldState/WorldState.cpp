@@ -12,6 +12,7 @@
 #include <optional>
 #include <string>
 #include <vector>
+#include "GUIPlayer.hpp"
 #include "Position.hpp"
 #include "ZappyEvents.hpp"
 
@@ -58,14 +59,55 @@ void WorldState::onPlayerNew(GUIPlayer player)
     notify(ZappyEventType::GUI_EVENT, PlayerNewEvent{player});
 }
 
+static bool hasMovedClockwise(const data::Orientation &old, const data::Orientation &other)
+{
+    if (old == data::Orientation::UP && other == data::Orientation::RIGHT)
+        return true;
+    if (old == data::Orientation::RIGHT && other == data::Orientation::DOWN)
+        return true;
+    if (old == data::Orientation::DOWN && other == data::Orientation::LEFT)
+        return true;
+    if (old == data::Orientation::LEFT && other == data::Orientation::UP)
+        return true;
+    return false;
+}
+
+static bool hasMovedCounterClockwise(const data::Orientation &old, const data::Orientation &other)
+{
+    if (old == data::Orientation::UP && other == data::Orientation::LEFT)
+        return true;
+    if (old == data::Orientation::LEFT && other == data::Orientation::DOWN)
+        return true;
+    if (old == data::Orientation::DOWN && other == data::Orientation::RIGHT)
+        return true;
+    if (old == data::Orientation::RIGHT && other == data::Orientation::UP)
+        return true;
+    return false;
+}
+
 void WorldState::onPlayerPosition(const std::string &id,
     const data::Position &pos, const data::Orientation &orientation)
 {
     auto &player = _players.at(id);
+    const auto &oldPos = player.getPosition();
+    const auto &oldOrient = player.getOrientation();
+    ActionType a;
+
+    if (oldPos != pos)
+        a = ActionType::FORWARD;
+    if (hasMovedClockwise(oldOrient, orientation))
+        a = ActionType::RIGHT;
+    if (hasMovedCounterClockwise(oldOrient, orientation))
+        a = ActionType::LEFT;
+
     player.setOrientation(orientation);
     player.setPosition(pos);
 
+    Action action{.type=a, .duration=7.0F / static_cast<float>(_timeUnit)};
+
     notify(ZappyEventType::GUI_EVENT, PlayerMovedEvent{player});
+    player.enqueueAction(action);
+
 }
 
 void WorldState::onPlayerDeath(const PlayerId &id)
