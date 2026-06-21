@@ -33,11 +33,13 @@ Renderer::Renderer(const int &width, const int &height,
     InitWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Zappy - Renderer");
     SetTargetFPS(60);
     _resourceManager = std::make_unique<ResourceManager>();
+    _hudManager = std::make_unique<HUDManager>();
 }
 
 Renderer::~Renderer()
 {
     _resourceManager.reset();
+    _hudManager.reset();
     CloseWindow();
 }
 
@@ -52,7 +54,7 @@ void Renderer::render(const WorldState &world)
 
     renderPlayers(world.getPlayers(), world.getTeams());
     EndMode2D();
-    _hud.draw(world);
+    _hud.draw(world, _hudManager);
     EndDrawing();
 }
 

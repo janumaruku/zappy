@@ -2,7 +2,7 @@ add_library(renderer Renderer.cpp
         ResourceManager.cpp
         Grid.cpp
         Hud.cpp
-        include/Hud.hpp)
+        HudManager.cpp)
 
 target_include_directories(renderer PUBLIC include)
 

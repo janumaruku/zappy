@@ -14,6 +14,7 @@
 #include "AObserver.hpp"
 #include "Grid.hpp"
 #include "Hud.hpp"
+#include "HudManager.hpp"
 #include "raylib.h"
 #include "ResourceManager.hpp"
 #include "WorldState.hpp"
@@ -109,8 +110,9 @@ private:
     // std::map<data::PlayerId, Animation> _animations;
     Grid _grid;
     Camera2D _camera;
-    std::unique_ptr<ResourceManager> _resourceManager;
     HUD _hud;
+    std::unique_ptr<HUDManager> _hudManager;
+    std::unique_ptr<ResourceManager> _resourceManager;
 };
 } // namespace zappy::gui
 #endif // RENDERER_HPP
