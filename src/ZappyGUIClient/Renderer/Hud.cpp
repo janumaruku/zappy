@@ -18,14 +18,14 @@ void HUD::draw(const WorldState &world,
     size_t count = 0;
 
     for (const auto &it: world.getTeams()) {
-        drawTeamsPanel(world.getPlayers(), it, count, hudManager);
+        drawTeamsPanel(world.getPlayers(), it, static_cast<int>(count), hudManager);
         ++count;
     }
 }
 
 void HUD::drawTeamsPanel(const std::unordered_map<data::PlayerId, GUIPlayer>
                              &players,
-    const std::pair<const std::string, Team> &team, const size_t &count,
+    const std::pair<const std::string, Team> &team, const int &count,
     const std::unique_ptr<HUDManager> &hudManager)
 {
     const auto teamPlayersNames = team.second.getPlayers();

@@ -12,8 +12,8 @@
 
 namespace zappy::gui {
 
-constexpr float BACKGROUND_TEAM_WIDTH  = 80;
-constexpr float BACKGROUND_TEAM_HEIGHT = 30;
+constexpr int BACKGROUND_TEAM_WIDTH  = 80;
+constexpr int BACKGROUND_TEAM_HEIGHT = 30;
 
 class HUDManager: public designPattern::ARenderManager {
 public:

@@ -28,12 +28,12 @@ private:
 
     static void drawTeamsPanel(const std::unordered_map<data::PlayerId,
                                    GUIPlayer> &players,
-        const std::pair<const std::string, Team> &team, const size_t &count,
+        const std::pair<const std::string, Team> &team, const int &count,
         const std::unique_ptr<HUDManager> &hudManager);
 
     static size_t getMaxPlayersFromNames(
         const std::unordered_map<data::PlayerId,GUIPlayer> &players,
-        const std::vector<data::PlayerId> &PlayerNames);
+        const std::vector<data::PlayerId> &playerNames);
 };
 } // namespace zappy::gui
 
