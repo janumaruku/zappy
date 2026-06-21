@@ -38,7 +38,7 @@ public:
 
     const GUIPlayer &getPlayerById(const PlayerId &id) const;
 
-    const std::unordered_map<std::string, Team> &getTeams();
+    const std::unordered_map<std::string, Team> &getTeams() const noexcept;
 
     int getTimeUnit() const;
 

@@ -16,14 +16,13 @@
 #include "raylib.h"
 #include "ResourceManager.hpp"
 #include "WorldState.hpp"
-#include "Grid.hpp"
 
 namespace zappy::gui {
 using SubjectList = std::initializer_list<std::pair<ZappyEventType,
     designPattern::ISubject<ZappyEvent, ZappyEventType> &>>;
 
-constexpr int WINDOW_WIDTH = 800;
-constexpr int WINDOW_HEIGHT = 600;
+constexpr float WINDOW_WIDTH = 800;
+constexpr float WINDOW_HEIGHT = 600;
 
 class Renderer: public designPattern::AObserver<ZappyEvent, ZappyEventType> {
 public:
@@ -86,12 +85,11 @@ private:
 
     void renderMap(const GUIMap &map) const;
 
-    void renderResourcesFromTile(std::unordered_map<data::Resource, int> tile,
+    void renderResourcesFromTile(const std::unordered_map<data::Resource, int>& tile,
         data::Position position) const;
 
-    static void renderPlayers(
-        const std::unordered_map<data::PlayerId, GUIPlayer>
-        &players);
+    void renderPlayers(const std::unordered_map<data::PlayerId, GUIPlayer>
+            &players, const std::unordered_map<std::string, Team>& teams) const;
 
     static void renderEggs(const std::map<unsigned int, data::Egg> &eggs);
 
@@ -104,6 +102,9 @@ private:
     [[nodiscard]] static Vector2 tileToPixel(data::Position pos);
 
     static std::string resourceToString(const data::Resource &resource);
+    static std::string playerOrientationToString(
+        const data::Orientation &orientation);
+
     // std::map<data::PlayerId, Animation> _animations;
     Grid _grid;
     Camera2D _camera;

@@ -7,6 +7,7 @@
 
 #ifndef RESOURCEMANAGER_HPP
 #define RESOURCEMANAGER_HPP
+#include <map>
 #include <raylib.h>
 #include <string>
 #include <unordered_map>
@@ -19,7 +20,10 @@ namespace zappy::gui {
 constexpr int TILE_SIZE = 50;
 constexpr int CELL_SIZE = TILE_SIZE / 3;
 constexpr int RESOURCE_RADIUS = TILE_SIZE / 6;
+constexpr int PLAYER_RADIUS = TILE_SIZE / 4;
 constexpr int GRID_SIZE = 3;
+
+const std::string PLAYER_SPRITE_PATH = "src/resources/testSprite.png";
 
 struct ResourcesData {
     std::string name;
@@ -35,6 +39,13 @@ const std::vector<ResourcesData> RESOURCE_DATA = {
     {.name = "mendiane", .pos = {2, 1}, .color = VIOLET},
     {.name = "phiras", .pos = {0, 2}, .color = ORANGE},
     {.name = "thystame", .pos = {1, 2}, .color = BROWN},
+};
+
+const std::vector<std::pair<std::string, int16_t>> PLAYER_DIRECTION_DATA {
+    {"player_north", -90},
+    {"player_east", 0},
+    {"player_south", 90},
+    {"player_west", 180},
 };
 
 class ResourceManager {
@@ -54,8 +65,8 @@ private:
     void loadImages();
 
     [[nodiscard]] static Image createImageResource(data::Position offset,
-        int radius,
-        Color color);
+        int radius,Color color);
+    static Image createImageFromFile(const std::string &filePath);
 
 };
 }

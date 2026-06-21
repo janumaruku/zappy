@@ -8,7 +8,6 @@
 #ifndef GUIMAP_HPP
 #define GUIMAP_HPP
 #include <vector>
-#include <sys/types.h>
 
 #include "Tile.hpp"
 
