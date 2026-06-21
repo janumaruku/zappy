@@ -1,4 +1,4 @@
-use crate::ai_data::{Orientation, Resource};
+use crate::ai_data::{Orientation, Resource, TileObject};
 use std::collections::HashMap;
 use std::num::ParseIntError;
 
@@ -6,7 +6,7 @@ use std::num::ParseIntError;
 pub enum ServerMessage {
     Ok,
     Ko,
-    Look(Vec<Vec<Resource>>),
+    Look(Vec<Vec<TileObject>>),
     Inventory(HashMap<Resource, u32>),
     LevelUp(u8),
     Dead,
@@ -102,7 +102,7 @@ fn parse_bracket_response(line: &str) -> ServerMessage {
             .map(|token| {
                 token
                     .split_whitespace()
-                    .map(|obj| Resource::from(obj))
+                    .map(|obj| TileObject::from(obj))
                     .collect::<Vec<_>>()
             })
             .collect::<Vec<_>>(),
