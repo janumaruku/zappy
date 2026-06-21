@@ -115,6 +115,7 @@ impl WorldModel {
         match response {
             ServerMessage::Inventory(inventory) => self.update_inventory(inventory, blackboard),
             ServerMessage::Look(tiles) => self.update_look(tiles, blackboard),
+            ServerMessage::LevelUp(level) => self.update_level_up(*level, blackboard),
             _ => return,
         }
         blackboard.set("last_response", response.clone());
@@ -183,6 +184,12 @@ impl WorldModel {
                     .position(|tile| tile.contains(&TileObject::Resource(res.clone()))),
             )
         }
+    }
+
+    fn update_level_up(&mut self, level: u8, blackboard: &mut BlackBoard) {
+        self.level = level;
+
+        blackboard.set("level", level);
     }
 }
 
