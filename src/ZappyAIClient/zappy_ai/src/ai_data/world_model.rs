@@ -1,6 +1,6 @@
+use crate::ai_data::ServerMessage;
 use behavior_tree::behavior_tree::BlackBoard;
 use std::collections::HashMap;
-use crate::ai_data::ServerMessage;
 
 #[derive(Eq, Hash, PartialEq, Clone)]
 pub enum Resource {
@@ -27,7 +27,7 @@ pub struct WorldModel {
     level: u8,
     food: u32,
     inventory: HashMap<Resource, u32>,
-    map_with: u32,
+    map_width: u32,
     map_height: u32,
 }
 
@@ -35,12 +35,12 @@ impl Resource {
     pub fn from(str: &str) -> Self {
         match str {
             "food" => Resource::Food,
-            "linemate" => Resource::Food,
-            "deraumere" => Resource::Food,
-            "sibur" => Resource::Food,
-            "mendiane" => Resource::Food,
-            "phiras" => Resource::Food,
-            "thystame" => Resource::Food,
+            "linemate" => Resource::Linemate,
+            "deraumere" => Resource::Deraumere,
+            "sibur" => Resource::Sibur,
+            "mendiane" => Resource::Mendiane,
+            "phiras" => Resource::Phiras,
+            "thystame" => Resource::Thystame,
             s => Resource::Unknown(s.to_string()),
         }
     }
@@ -71,12 +71,49 @@ impl WorldModel {
                 (Resource::Phiras, 0),
                 (Resource::Thystame, 0),
             ]),
-            map_with: 0,
+            map_width: 0,
             map_height: 0,
         }
     }
 
     pub fn update(&mut self, response: &ServerMessage, blackboard: &mut BlackBoard) {
+        match response {
+            ServerMessage::Inventory(inventory) => self.update_inventory(inventory, blackboard),
+            _ => return,
+        }
         blackboard.set("last_response", response.clone());
+    }
+
+    fn update_inventory(
+        &mut self,
+        inventory: &HashMap<Resource, u32>,
+        blackboard: &mut BlackBoard,
+    ) {
+        self.food = *inventory.get(&Resource::Food).unwrap_or(&0);
+
+        self.inventory = inventory
+            .iter()
+            .filter(|(res, _)| **res != Resource::Food)
+            .map(|(res, count)| (res.clone(), *count))
+            .collect();
+
+        blackboard.set("food", self.food);
+        for (res, count) in &self.inventory {
+            if let Some(key) = resource_blackboard_key(res) {
+                blackboard.set(key, *count);
+            }
+        }
+    }
+}
+
+pub fn resource_blackboard_key(resource: &Resource) -> Option<&'static str> {
+    match resource {
+        Resource::Linemate => Some("linemate"),
+        Resource::Deraumere => Some("deraumere"),
+        Resource::Sibur => Some("sibur"),
+        Resource::Mendiane => Some("mendiane"),
+        Resource::Phiras => Some("phiras"),
+        Resource::Thystame => Some("thystame"),
+        _ => None,
     }
 }
