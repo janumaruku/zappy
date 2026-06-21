@@ -15,6 +15,7 @@
 #include "PieCommand.hpp"
 #include "PnwCommand.hpp"
 #include "PpoCommand.hpp"
+#include "SegCommand.hpp"
 #include "StringUtils.hpp"
 #include "ProtocolHandler.hpp"
 #include "BctCommand.hpp"
@@ -42,6 +43,7 @@ void ProtocolHandler::registerCommands() noexcept
     _factory.registerCreator<PieCommand>("pie");
     _factory.registerCreator<PnwCommand>("pnw");
     _factory.registerCreator<PpoCommand>("ppo");
+    _factory.registerCreator<SegCommand>("seg");
 }
 
 void ProtocolHandler::handleLine(const std::string& line) noexcept

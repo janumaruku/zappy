@@ -19,7 +19,7 @@ public:
 
     explicit Team(const std::string &name, const Color &color);
 
-    std::string getName();
+    std::string getName() const;
 
     [[nodiscard]] Color getColor() const;
 

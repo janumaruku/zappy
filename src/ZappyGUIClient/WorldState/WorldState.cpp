@@ -9,6 +9,7 @@
 
 #include <algorithm>
 #include <iostream>
+#include <optional>
 #include <string>
 #include <vector>
 #include "Position.hpp"
@@ -132,7 +133,6 @@ void WorldState::onMapDimension(const int &width, const int &height)
     _map.updateHeight(height);
 }
 
-
 void WorldState::onIncantationStart(const data::Position &pos, const uint &level, const std::vector<PlayerId> &playerIds)
 {
     IncantationStartEvent i(pos, level, playerIds);
@@ -143,6 +143,18 @@ void WorldState::onIncantationEnd(const data::Position &pos, bool result)
 {
     IncantationEndEvent e(pos, result);
     notify(ZappyEventType::GUI_EVENT, e);
+}
+
+void WorldState::onGameEnd(const Team &winningTeam)
+{
+    _winner = winningTeam.getName();
+    GameEndEvent evt(winningTeam.getName());
+    notify(ZappyEventType::GUI_EVENT, evt);
+}
+
+const std::optional<std::string> &WorldState::getWinner() const
+{
+    return _winner;
 }
 
 }
