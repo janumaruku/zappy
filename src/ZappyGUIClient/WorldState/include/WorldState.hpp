@@ -54,11 +54,12 @@ public:
 
     void onTimeUnit(int t);
 
-    //void onEggLaid(int eggId, PlayerId playerId, Position pos);
-
+    //void onEggLaid(int eggId, PlayerId playerId, data::Position pos);
     void onEggDeath(const std::string& eggId);
+    void onEggHatched(const uint &id);
 
     void onMapDimension(const int &width, const int &height);
+
 
 private:
     GUIMap _map;

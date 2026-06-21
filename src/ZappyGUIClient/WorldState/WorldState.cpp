@@ -7,7 +7,9 @@
 
 #include "WorldState.hpp"
 
+#include <algorithm>
 #include <iostream>
+#include <string>
 
 namespace zappy::gui {
 WorldState::WorldState(const std::unordered_map<std::string, Team> &teams,
@@ -100,6 +102,15 @@ int WorldState::getTimeUnit() const
 /*void WorldState::onEggLaid(int eggId, PlayerId playerId, Position pos){
 
 }*/
+
+void WorldState::onEggHatched(const uint &id)
+{
+    auto idStr = std::to_string(id);
+    const auto it = _eggs.find(idStr);
+
+    if (it != _eggs.end())
+        _eggs.erase(it);
+}
 
 void WorldState::onEggDeath(const std::string& eggId)
 {
