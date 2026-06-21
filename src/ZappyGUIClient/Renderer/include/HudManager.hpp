@@ -14,6 +14,7 @@ namespace zappy::gui {
 
 constexpr int BACKGROUND_TEAM_WIDTH  = 80;
 constexpr int BACKGROUND_TEAM_HEIGHT = 30;
+constexpr int TEXT_FONT_SIZE = 5;
 
 class HUDManager: public designPattern::ARenderManager {
 public:
