@@ -60,7 +60,12 @@ fn handshake(port: i32, host: &str, team: &str) -> Result<Rc<RefCell<AiTcpClient
 
             client.borrow_mut().receive();
             client.borrow().send(team.to_string());
-            let num: i32 = client.borrow_mut().receive().parse().unwrap();
+            let num: i32;
+            if let Some(result) = client.borrow_mut().receive() {
+                num = result.parse().unwrap();
+            } else {
+                return Err(String::from("Failed to receive"));
+            }
             if num <= 0 {
                 client.borrow_mut().close();
                 Err("No slot available. Player can not connect".to_string())
@@ -92,15 +97,17 @@ fn main() {
         }
     }
 
-    let mut behavior_tree = build_tree(tcp_client.clone());
+    let mut tree = build_tree(tcp_client.clone());
     let mut world = WorldModel::new();
     let mut bb = BlackBoard::new();
-    behavior_tree.tick(&mut bb);
+    tree.tick(&mut bb);
 
     loop {
-        let transmission = tcp_client.borrow_mut().receive();
-        if transmission.is_empty() {
-            break;
+        let transmission: String;
+        if let Some(result) = tcp_client.borrow_mut().receive() {
+            transmission = result;
+        } else {
+            continue;
         }
 
         let response = classify(&transmission);
@@ -115,9 +122,9 @@ fn main() {
             _ => {
                 bb.set("last_response", response.clone());
                 world.update(&response, &mut bb);
-                behavior_tree.tick(&mut bb);
+                tree.tick(&mut bb);
             }
         }
-        behavior_tree.tick(&mut bb);
+        tree.tick(&mut bb);
     }
 }
