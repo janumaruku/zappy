@@ -14,6 +14,13 @@ pub enum Resource {
     Unknown(String),
 }
 
+#[derive(Eq, Hash, PartialEq, Clone)]
+pub enum TileObject {
+    Resource(Resource),
+    Player,
+    Unknown(String),
+}
+
 #[derive(Clone)]
 pub enum Orientation {
     Up,
