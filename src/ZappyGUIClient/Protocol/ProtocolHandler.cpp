@@ -9,6 +9,8 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include "EboCommand.hpp"
+#include "EdiCommand.hpp"
 #include "PnwCommand.hpp"
 #include "PpoCommand.hpp"
 #include "StringUtils.hpp"
@@ -16,6 +18,7 @@
 #include "BctCommand.hpp"
 #include "MctCommand.hpp"
 #include "MszCommand.hpp"
+#include "EnwCommand.hpp"
 #include "WorldState.hpp"
 
 namespace zappy::gui {
@@ -32,6 +35,9 @@ void ProtocolHandler::registerCommands() noexcept
     _factory.registerCreator<MszCommand>("msz");
     _factory.registerCreator<PnwCommand>("pnw");
     _factory.registerCreator<PpoCommand>("ppo");
+    _factory.registerCreator<EnwCommand>("enw");
+    _factory.registerCreator<EboCommand>("ebo");
+    _factory.registerCreator<EdiCommand>("edi");
 }
 
 void ProtocolHandler::handleLine(const std::string& line) noexcept
