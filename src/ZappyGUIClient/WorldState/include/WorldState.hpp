@@ -10,11 +10,13 @@
 #include <string>
 #include <unordered_map>
 #include <sys/types.h>
+#include <vector>
 
 #include "ASubject.hpp"
 #include "Egg.hpp"
 #include "GUIMap.hpp"
 #include "GUIPlayer.hpp"
+#include "Position.hpp"
 #include "Team.hpp"
 #include "ZappyEvents.hpp"
 
@@ -54,12 +56,14 @@ public:
 
     void onTimeUnit(int t);
 
-    //void onEggLaid(int eggId, PlayerId playerId, data::Position pos);
+    void onEggLaid(int eggId, PlayerId playerId, data::Position pos);
     void onEggDeath(const std::string& eggId);
     void onEggHatched(const uint &id);
 
     void onMapDimension(const int &width, const int &height);
 
+    void onIncantationStart(const data::Position &pos, const uint &level, const std::vector<PlayerId> &playerIds);
+    void onIncantationEnd(const data::Position &pos, int result);
 
 private:
     GUIMap _map;

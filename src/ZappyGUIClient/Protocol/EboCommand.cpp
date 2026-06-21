@@ -8,6 +8,7 @@
 
 #include <cstdint>
 #include <exception>
+#include <iostream>
 #include <memory>
 #include <string>
 #include <utility>
@@ -21,7 +22,14 @@ namespace zappy::gui {
 
 bool EboCommand::execute(WorldState& s, const std::vector<std::string> &cmd)
 {
-    s.onEggHatched(cmd[0]);
+    uint id;
+    try {
+        id = std::stoi(cmd[0]);
+    } catch (const std::exception &e) {
+        std::cerr << "EboCommand::" << __func__ << "Error Parsing position";
+        return false;
+    }
+    s.onEggHatched(id);
     return true;
 }
 
