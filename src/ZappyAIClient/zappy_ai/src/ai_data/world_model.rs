@@ -224,7 +224,7 @@ pub fn find_row_and_col(tile_index: usize) -> (usize, i32) {
     loop {
         let tt = prev_tt + 2usize * level + 1;
         if (tile_index <= tt) {
-            let center = 2 * level + 1;
+            let center = prev_tt + level + 1;
             return (level, tile_index as i32 - center as i32);
         }
 
