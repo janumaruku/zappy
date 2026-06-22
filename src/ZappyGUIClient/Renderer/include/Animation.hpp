@@ -26,7 +26,7 @@ public:
     Animation() = delete;
     ~Animation() = default;
 
-    Animation(/*Action action, */Vector2 pos, Texture2D &sheet);
+    Animation(Action action, Vector2 pos, Texture2D &sheet);
 
     void update();
 
@@ -37,7 +37,7 @@ public:
     
     [[nodiscard]] bool isFinished() const;
 
-    static std::unique_ptr<Animation> create(/*Action a, */Vector2 pos, Texture2D &sheet);
+    static std::unique_ptr<Animation> create(Action a, Vector2 pos, Texture2D &sheet);
 private:
     Texture2D &_spriteSheet;
     FrameInfo _frameInfo;
@@ -48,7 +48,7 @@ private:
     Vector2 _endPos;
     float _duration;
     
-    //Action _action;
+    Action _action;
 
     uint _frameCount;
 };

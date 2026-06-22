@@ -13,22 +13,25 @@
 
 namespace zappy::gui {
 
-Animation::Animation(Vector2 pos, Texture2D &sheet):
+Animation::Animation(Action action, Vector2 pos, Texture2D &sheet):
 _spriteSheet(sheet),
 _frameInfo{.width = sheet.height,
             .height       = sheet.height,
             .count        = sheet.width / sheet.height,
             .currentFrame = 0,
             .duration     = 0.1F},
-
 _animStart(std::chrono::high_resolution_clock::now()),
-_frameStart(std::chrono::high_resolution_clock::now()), _startPos(pos),
-_currentPos(pos), _endPos(pos),
-_duration((static_cast<float>(sheet.width) /
+
+_frameStart(std::chrono::high_resolution_clock::now()),
+_startPos(pos), _currentPos(pos),
+_endPos(pos), _duration((static_cast<float>(sheet.width) /
               static_cast<float>(sheet.height)) *
     0.1F),
+_action(action),
 _frameCount(sheet.width / sheet.height)
-{}
+{
+    (void)_action;
+}
 
 
 void Animation::update()
@@ -85,9 +88,9 @@ bool Animation::isFinished() const
     static_cast<float>(_animStart.time_since_epoch().count())) >= _duration;
 }
 
-std::unique_ptr<Animation> Animation::create(/*Action a, */Vector2 pos, Texture2D &sheet)
+std::unique_ptr<Animation> Animation::create(Action a, Vector2 pos, Texture2D &sheet)
 {
-    return std::make_unique<Animation>(/*a, */pos, sheet);
+    return std::make_unique<Animation>(a, pos, sheet);
 }
 
 }
