@@ -129,6 +129,7 @@ impl WorldModel {
         blackboard: &mut BlackBoard,
     ) {
         self.food = *inventory.get(&Resource::Food).unwrap_or(&0);
+        blackboard.set("last_response", ServerMessage::Inventory(inventory.clone()));
 
         self.inventory = inventory
             .iter()
@@ -146,6 +147,7 @@ impl WorldModel {
 
     fn update_look(&mut self, tiles: &Vec<Vec<TileObject>>, blackboard: &mut BlackBoard) {
         self.visible_tiles = tiles.clone();
+        blackboard.set("last_response", ServerMessage::Look(tiles.clone()));
 
         for res in &STONES {
             blackboard.set(
@@ -190,6 +192,7 @@ impl WorldModel {
 
     fn update_level_up(&mut self, level: u8, blackboard: &mut BlackBoard) {
         self.level = level;
+        blackboard.set("last_response", ServerMessage::LevelUp(level));
 
         blackboard.set("level", level);
     }
