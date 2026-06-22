@@ -19,11 +19,17 @@ namespace zappy::gui {
 class HUD {
 public:
     HUD() = default;
-    void update(const std::unique_ptr<HUDManager> &hudManager);
+    void update(const WorldState &world, const std::unique_ptr<HUDManager> &hudManager);
+
     void draw(const WorldState &world,
         const std::unique_ptr<HUDManager> &hudManager) const;
+
     bool isDropdownOpen() const;
+
     void onDropdownButton(const std::unique_ptr<HUDManager> &hudManager);
+
+    void onDropdownPlayerSelected(const std::unique_ptr<HUDManager> &hudManager,
+        const std::unordered_map<data::PlayerId, GUIPlayer> &players);
 
 private:
     std::optional<data::PlayerId> _selectedPlayerId;
@@ -38,6 +44,7 @@ private:
 
     void drawPlayerSelectorDropdownButton(const std::unique_ptr<HUDManager>
             &hudManager) const;
+
     static void drawPlayerSelectorDropdown(const WorldState &worldState,
         const std::unique_ptr<HUDManager> &hudManager);
 
