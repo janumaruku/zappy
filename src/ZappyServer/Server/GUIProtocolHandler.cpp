@@ -6,6 +6,7 @@
 */
 
 #include "GUIProtocolHandler.hpp"
+#include "AISession.hpp"
 #include "GUISession.hpp"
 
 #include <exception>
@@ -39,7 +40,7 @@ bool GUIProtocolHandler::handleLine(const std::string &command, GUISession &sess
         auto toExec = _factory.create(command);
         return toExec->execute(session, args);
     } catch (const std::exception &) {
-        session.send("ko\n");
+        session.send(COMMAND_NOT_FOUND);
         return false;
     }
 }
