@@ -20,11 +20,18 @@ public:
     ~ARenderManager() override;
 
     void loadTextures() override;
+
     const Texture2D &getTexture(const std::string &name) const override;
+
+    const Rectangle &getRectangle(const std::string &name) const override;
+
+    void createRectangle(std::string name, const Vector2 &position,
+        const int &width, const int &height) override;
 
 protected:
     std::unordered_map<std::string, Image> _images;
     std::unordered_map<std::string, Texture2D> _textures;
+    std::unordered_map<std::string, Rectangle> _rectangles;
 
     Image createImageFromFile(const std::string &filePath) override;
 };
