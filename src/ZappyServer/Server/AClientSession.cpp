@@ -21,7 +21,7 @@ AClientSession::AClientSession(
     this->_readBuffer.resize(READ_BUFFER_SIZE);
     this->_asyncReadBuffer.resize(READ_BUFFER_SIZE);
     auto config = network::BASIC_CONFIG;
-    config.context = "AI-SESSION";
+    config.context = "ACLIENT-SESSION";
     _logger.config(config);
 }
 
