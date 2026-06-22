@@ -54,6 +54,7 @@ public:
 
 protected:
     void loadImages() override;
+    void loadRectangles() override;
 
     [[nodiscard]] static Image createImageResource(data::Position offset,
         int radius,Color color);

@@ -11,13 +11,21 @@
 namespace designPattern {
 class IRenderManager {
 public:
-    virtual ~IRenderManager()   = default;
+    virtual ~IRenderManager() = default;
+
     virtual void loadTextures() = 0;
-    [[nodiscard]] virtual const Texture2D &getTexture(const std::string &name)
-        const = 0;
+
+    virtual const Texture2D &getTexture(const std::string &name) const = 0;
+
+    virtual const Rectangle &getRectangle(const std::string &name) const = 0;
+
+    virtual void createRectangle(std::string name, const Vector2 &position,
+        const int &width, const int &height) = 0;
 
 protected:
-    virtual void loadImages()                                      = 0;
+    virtual void loadImages()     = 0;
+    virtual void loadRectangles() = 0;
+
     virtual Image createImageFromFile(const std::string &filePath) = 0;
 };
 } // namespace designPattern
