@@ -31,11 +31,11 @@ bool EjectCommand::execute(AISession& s, const std::vector<std::string>& /*v*/)
         }
     });
 
-    auto eggs& = s.getServer().getMap().getEggsOnTile(pos);
+    // auto eggs& = s.getServer().getMap().getEggsOnTile(pos);
 
-    for (auto& egg : eggs) {
-        s.getServer().getMap().removeEgg(egg);
-    }
+    // for (auto& egg : eggs) {
+    //     s.getServer().getMap().removeEgg(egg);
+    // }
 
     for (auto& otherSession : playersToPush) {
         actionTaken = true;
