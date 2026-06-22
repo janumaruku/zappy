@@ -8,6 +8,7 @@
 #include "EjectCommand.hpp"
 #include "Map.hpp"
 #include "Player.hpp"
+#include "Position.hpp"
 #include "Server.hpp"
 #include <algorithm>
 #include <format>
@@ -21,14 +22,20 @@ bool EjectCommand::execute(AISession& s, const std::vector<std::string>& /*v*/)
     auto pos = player.getPosition();
     auto orientation = player.getOrientation();
     bool actionTaken = false;
-    std::vector<std::unique_ptr<AISession>> playersToPush;
+    std::vector<AISession *> playersToPush;
 
     s.getServer().forEachAISession([&](AISession& other) {
         if (&other != &s && other.getPlayer().getPosition().getX() == pos.getX() &&
             other.getPlayer().getPosition().getY() == pos.getY()) {
-            playersToPush.emplace_back(&other);
+            playersToPush.push_back(&other);
         }
     });
+
+    auto eggs& = s.getServer().getMap().getEggsOnTile(pos);
+
+    for (auto& egg : eggs) {
+        s.getServer().getMap().removeEgg(egg);
+    }
 
     for (auto& otherSession : playersToPush) {
         actionTaken = true;
