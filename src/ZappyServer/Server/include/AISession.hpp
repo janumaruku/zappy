@@ -16,6 +16,7 @@
 #include <vector>
 #include "AClientSession.hpp"
 #include "ConnectedSocket.hpp"
+#include "Logger.hpp"
 #include "Timer.hpp"
 #include "Player.hpp"
 #include "Server.hpp"
@@ -75,7 +76,6 @@ private:
     bool _frozen = false;
 
     std::unique_ptr<AIProtocolHandler> _protocolHandler;
-
 };
 
 }
