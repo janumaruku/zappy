@@ -14,12 +14,16 @@
 
 namespace zappy::gui {
 
-void HUD::update(const std::unique_ptr<HUDManager> &hudManager)
+void HUD::update(const WorldState &world,
+    const std::unique_ptr<HUDManager> &hudManager)
 {
     if (!_dropdownOpen) {
         onDropdownButton(hudManager);
+    } else {
+        onDropdownPlayerSelected(hudManager, world.getPlayers());
     }
 }
+
 void HUD::draw(const WorldState &world,
     const std::unique_ptr<HUDManager> &hudManager) const
 {
@@ -30,8 +34,12 @@ void HUD::draw(const WorldState &world,
             hudManager);
         ++count;
     }
+
     drawTime(world.getTimeUnit());
     drawPlayerSelectorDropdownButton(hudManager);
+    if (_dropdownOpen) {
+        drawPlayerSelectorDropdown(world, hudManager);
+    }
 }
 
 bool HUD::isDropdownOpen() const
@@ -48,8 +56,22 @@ void HUD::onDropdownButton(const std::unique_ptr<HUDManager> &hudManager)
     if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) &&
         CheckCollisionPointRec(mousePosition, dropdownButton)) {
         _dropdownOpen = true;
-        // drawPlayerSelectorDropdownButton(hudManager);
-        std::cout << "dropdown button pressed" << std::endl;
+    }
+}
+void HUD::onDropdownPlayerSelected(const std::unique_ptr<HUDManager>
+                                       &hudManager,
+    const std::unordered_map<data::PlayerId, GUIPlayer> &players)
+{
+    const Vector2 &mousePosition = GetMousePosition();
+
+    for (const auto &it: players) {
+        const Rectangle rectangle = hudManager->getRectangle(it.first);
+
+        if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) &&
+            CheckCollisionPointRec(mousePosition, rectangle)) {
+            _selectedPlayerId = it.first;
+            _dropdownOpen     = false;
+        }
     }
 }
 
@@ -88,6 +110,7 @@ void HUD::drawPlayerSelectorDropdownButton(const std::unique_ptr<HUDManager>
     const data::Position textPos = {
         BACKGROUND_DROPDOWN_BUTTON_X + TEXT_FONT_SIZE,
         (BACKGROUND_DROPDOWN_BUTTON_HEIGHT - TEXT_FONT_SIZE) / 2};
+
     const Rectangle &selectDropdownButton =
         hudManager->getRectangle(SELECT_DROPDOWN_BUTTON_NAME);
     DrawTexture(hudManager->getTexture(SELECT_DROPDOWN_BUTTON_NAME),
@@ -105,16 +128,27 @@ void HUD::drawPlayerSelectorDropdownButton(const std::unique_ptr<HUDManager>
 void HUD::drawPlayerSelectorDropdown(const WorldState &worldState,
     const std::unique_ptr<HUDManager> &hudManager)
 {
-    size_t count = 0;
-    for (auto &it: worldState.getPlayers()) {
 
-        DrawTexture(hudManager->getTexture(BACKGROUND_TEAM_NAME),
-            BACKGROUND_TEAM_WIDTH, BACKGROUND_DROPDOWN_BUTTON_HEIGHT * count,
-            WHITE);
-        DrawText(it.first.c_str(), BACKGROUND_TEAM_WIDTH,
-            (BACKGROUND_DROPDOWN_BUTTON_HEIGHT * count) -
-                (BACKGROUND_DROPDOWN_BUTTON_HEIGHT / 2),
-            TEXT_FONT_SIZE, BLACK);
+    int count = 0;
+
+    for (auto &it: worldState.getPlayers()) {
+        data::Position playerRecPosition = {BACKGROUND_PLAYER_DROPDOWN_X,
+            BACKGROUND_PLAYER_DROPDOWN_Y +
+                (BACKGROUND_PLAYER_DROPDOWN_HEIGHT * count)};
+
+        hudManager->createRectangle(it.first,
+            {static_cast<float>(playerRecPosition.getX()),
+                static_cast<float>(playerRecPosition.getY())},
+            BACKGROUND_PLAYER_DROPDOWN_WIDTH,
+            BACKGROUND_PLAYER_DROPDOWN_HEIGHT);
+
+        DrawTexture(hudManager->getTexture(BACKGROUND_PLAYER_DROPDOWN_NAME),
+            playerRecPosition.getX(), playerRecPosition.getY(),
+            worldState.getTeams().at(it.second.getTeam()).getColor());
+
+        DrawText(it.first.c_str(), playerRecPosition.getX(),
+            playerRecPosition.getY(), TEXT_FONT_SIZE, BLACK);
+
         ++count;
     }
 }

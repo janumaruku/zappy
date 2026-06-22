@@ -23,7 +23,10 @@ void HUDManager::loadImages()
     _images.insert({SELECT_DROPDOWN_BUTTON_NAME,
         GenImageColor(BACKGROUND_DROPDOWN_BUTTON_WIDTH,
             BACKGROUND_DROPDOWN_BUTTON_HEIGHT, WHITE)});
+    _images.insert({BACKGROUND_PLAYER_DROPDOWN_NAME,
+    GenImageColor(BACKGROUND_PLAYER_DROPDOWN_WIDTH, BACKGROUND_PLAYER_DROPDOWN_HEIGHT, WHITE)});
 }
+
 void HUDManager::loadRectangles()
 {
     createRectangle(SELECT_DROPDOWN_BUTTON_NAME,
