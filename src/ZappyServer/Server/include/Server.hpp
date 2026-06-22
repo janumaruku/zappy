@@ -61,6 +61,8 @@ private:
     void onAccept(
         const std::shared_ptr<network::ConnectedSocket> &socket
         );
+    void onPlayerMoved(const Player &player);
+
     void handleAiHandshake(const std::shared_ptr<network::ConnectedSocket> &socket,
         const std::string &teamName);
     void handleGuiHandshake(const std::shared_ptr<network::ConnectedSocket> &socket);

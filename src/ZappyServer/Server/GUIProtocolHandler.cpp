@@ -39,7 +39,7 @@ bool GUIProtocolHandler::handleLine(const std::string &command, GUISession &sess
         auto toExec = _factory.create(command);
         return toExec->execute(session, args);
     } catch (const std::exception &) {
-        session.send("suc\n");
+        session.send("ko\n");
         return false;
     }
 }

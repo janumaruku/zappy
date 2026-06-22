@@ -8,11 +8,13 @@
 #include "Server.hpp"
 
 #include <algorithm>
+#include <format>
 #include <iostream>
 
 #include "AISession.hpp"
 #include "Buffer.hpp"
 #include "GUISession.hpp"
+#include "Player.hpp"
 
 namespace zappy::server {
 
@@ -164,6 +166,13 @@ void Server::forEachAISession(const std::function<void(AISession &)> &fn)
         if (a)
             fn(*a);
     }
+}
+
+void Server::onPlayerMoved(const Player &player)
+{
+    const auto command = std::format("ppo #{} {} {} {}\n",
+        player.getId(), player.getPosition().getX(), player.getPosition().getY(), static_cast<uint>(player.getOrientation()));
+    notifyGUI(command);
 }
 
 }
