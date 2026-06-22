@@ -19,8 +19,11 @@ namespace zappy::gui {
 class HUD {
 public:
     HUD() = default;
+    void update(const std::unique_ptr<HUDManager> &hudManager);
     void draw(const WorldState &world,
         const std::unique_ptr<HUDManager> &hudManager) const;
+    bool isDropdownOpen() const;
+    void onDropdownButton(const std::unique_ptr<HUDManager> &hudManager);
 
 private:
     std::optional<data::PlayerId> _selectedPlayerId;
@@ -33,12 +36,13 @@ private:
 
     static void drawTime(const int &timeUnit);
 
-    void drawPlayerSelectorDropdownButton(const std::unique_ptr<HUDManager> &hudManager) const;
-    static void drawPlayerSelectorDropdown(const WorldState &worldState, const std::unique_ptr<HUDManager>
-        &hudManager);
+    void drawPlayerSelectorDropdownButton(const std::unique_ptr<HUDManager>
+            &hudManager) const;
+    static void drawPlayerSelectorDropdown(const WorldState &worldState,
+        const std::unique_ptr<HUDManager> &hudManager);
 
     static size_t getMaxPlayersFromNames(
-        const std::unordered_map<data::PlayerId,GUIPlayer> &players,
+        const std::unordered_map<data::PlayerId, GUIPlayer> &players,
         const std::vector<data::PlayerId> &playerNames);
 };
 } // namespace zappy::gui

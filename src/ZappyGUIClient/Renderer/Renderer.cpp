@@ -46,6 +46,7 @@ Renderer::~Renderer()
 void Renderer::render(const WorldState &world)
 {
     updateCamera();
+    updateHud();
     BeginDrawing();
     ClearBackground(BLACK);
 
@@ -149,6 +150,11 @@ void Renderer::updateCameraMovement()
 {
     const Vector2 delta = Vector2Scale(GetMouseDelta(), -1.0F / _camera.zoom);
     _camera.target      = Vector2Add(_camera.target, delta);
+}
+
+void Renderer::updateHud()
+{
+    _hud.update(_hudManager);
 }
 
 Vector2 Renderer::tileToPixel(const data::Position pos)

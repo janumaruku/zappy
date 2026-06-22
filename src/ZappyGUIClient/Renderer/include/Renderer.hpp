@@ -100,6 +100,7 @@ private:
     void updateCamera();
     void updateZoom(const float &wheel);
     void updateCameraMovement();
+    void updateHud();
 
     [[nodiscard]] static Vector2 tileToPixel(data::Position pos);
 
