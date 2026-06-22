@@ -64,7 +64,7 @@ void HUD::drawTeamsPanel(const std::unordered_map<data::PlayerId, GUIPlayer>
     const std::string playerCountText =
         std::format("{} / {}", maxPlayerCount, teamPlayersNames.size());
 
-    DrawTexture(hudManager->getTexture("bkgTeam"), 0,
+    DrawTexture(hudManager->getTexture(BACKGROUND_TEAM_NAME), 0,
         BACKGROUND_TEAM_HEIGHT * count, team.second.getColor());
     DrawText(team.first.c_str(), 0, BACKGROUND_TEAM_HEIGHT * count,
         TEXT_FONT_SIZE, WHITE);
@@ -107,7 +107,8 @@ void HUD::drawPlayerSelectorDropdown(const WorldState &worldState,
 {
     size_t count = 0;
     for (auto &it: worldState.getPlayers()) {
-        DrawTexture(hudManager->getTexture("bkgPlayerDropdown"),
+
+        DrawTexture(hudManager->getTexture(BACKGROUND_TEAM_NAME),
             BACKGROUND_TEAM_WIDTH, BACKGROUND_DROPDOWN_BUTTON_HEIGHT * count,
             WHITE);
         DrawText(it.first.c_str(), BACKGROUND_TEAM_WIDTH,
