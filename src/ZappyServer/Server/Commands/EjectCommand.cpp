@@ -5,13 +5,13 @@
 ** EjectCommand.cpp
 */
 
-
-
 #include "EjectCommand.hpp"
 #include "Map.hpp"
 #include "Player.hpp"
 #include "Server.hpp"
 #include <algorithm>
+#include <format>
+#include <memory>
 
 namespace zappy::server {
 
@@ -21,21 +21,22 @@ bool EjectCommand::execute(AISession& s, const std::vector<std::string>& /*v*/)
     auto pos = player.getPosition();
     auto orientation = player.getOrientation();
     bool actionTaken = false;
-    std::vector<AISession*> playersToPush;
+    std::vector<std::unique_ptr<AISession>> playersToPush;
 
     s.getServer().forEachAISession([&](AISession& other) {
         if (&other != &s && other.getPlayer().getPosition().getX() == pos.getX() &&
             other.getPlayer().getPosition().getY() == pos.getY()) {
-            playersToPush.push_back(&other);
+            playersToPush.emplace_back(&other);
         }
     });
 
-    for (auto* otherSession : playersToPush) {
+    for (auto& otherSession : playersToPush) {
         actionTaken = true;
         auto& otherPlayer = otherSession->getPlayer();
         (void)orientation;
 
-        s.getServer().notifyGUI("pex", {otherPlayer.getId()});
+        std::string fmt = std::format("pex {}\n", otherPlayer.getId());
+        s.getServer().notifyGUI(fmt);
         otherSession->send("eject: 1\n");
     }
 
