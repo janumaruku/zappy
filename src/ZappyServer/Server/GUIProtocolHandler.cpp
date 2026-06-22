@@ -12,6 +12,7 @@
 
 #include "MszCommand.hpp"
 #include "PnwCommand.hpp"
+#include "PlvCommand.hpp"
 #include "PpoCommand.hpp"
 #include "TnaCommand.hpp"
 
@@ -28,6 +29,7 @@ void GUIProtocolHandler::registerCreators() noexcept
 {
     _factory.registerCreator<MszCommand>("msz");
     _factory.registerCreator<PnwCommand>("pnw");
+    _factory.registerCreator<PlvCommand>("plv");
     _factory.registerCreator<PpoCommand>("ppo");
     _factory.registerCreator<TnaCommand>("tna");
 }
