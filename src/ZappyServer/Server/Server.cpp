@@ -146,21 +146,21 @@ void Server::handleAiHandshake(const std::shared_ptr<network::ConnectedSocket> &
     _aiSessions.push_back(std::make_unique<AISession>(socket, *this, player));
     _aiSessions.back()->start();
 
-    std::vector<std::string> args{player.getId(),
+
+    auto command = std::format("pnw #{} {} {} {} {} {}\n", player.getId(),
         std::to_string(player.getPosition().getX()),
         std::to_string(player.getPosition().getY()),
         std::to_string(static_cast<uint>(player.getOrientation())),
         std::to_string(player.getLevel()),
         player.getTeam()
-        };
-    notifyGUI("pnw", args);
+    );
+    notifyGUI(command);
 }
 
-void Server::notifyGUI(const std::string &command,
-    const std::vector<std::string> &args)
+void Server::notifyGUI(const std::string &command)
 {
     for (auto &session : _guiSessions)
-        _guiProtocolHandler.handleLine(command, *session, args);
+        session->send(command);
 }
 
 void Server::broadcastToAll(const std::string &data)

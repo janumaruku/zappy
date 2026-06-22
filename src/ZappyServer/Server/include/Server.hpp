@@ -33,8 +33,7 @@ public:
 
     void run();
 
-    void notifyGUI(const std::string &command,
-        const std::vector<std::string> &args = {});
+    void notifyGUI(const std::string &command);
     void broadcastToAll(const std::string &data);
     void forEachAISession(const std::function<void(AISession &)> &fn);
 
