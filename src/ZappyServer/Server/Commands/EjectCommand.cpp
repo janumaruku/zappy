@@ -7,18 +7,39 @@
 
 
 
-#include <memory>
-#include <string>
-#include <vector>
-#include "AIProtocolHandler.hpp"
-#include "AISession.hpp"
 #include "EjectCommand.hpp"
+#include "Map.hpp"
+#include "Player.hpp"
+#include "Server.hpp"
+#include <algorithm>
 
 namespace zappy::server {
 
-bool EjectCommand::execute(AISession& s, const std::vector<std::string>& v)
+bool EjectCommand::execute(AISession& s, const std::vector<std::string>& /*v*/)
 {
-    s.send(v[0]);
+    auto& player = s.getPlayer();
+    auto pos = player.getPosition();
+    auto orientation = player.getOrientation();
+    bool actionTaken = false;
+    std::vector<AISession*> playersToPush;
+
+    s.getServer().forEachAISession([&](AISession& other) {
+        if (&other != &s && other.getPlayer().getPosition().getX() == pos.getX() &&
+            other.getPlayer().getPosition().getY() == pos.getY()) {
+            playersToPush.push_back(&other);
+        }
+    });
+
+    for (auto* otherSession : playersToPush) {
+        actionTaken = true;
+        auto& otherPlayer = otherSession->getPlayer();
+        (void)orientation;
+
+        s.getServer().notifyGUI("pex", {otherPlayer.getId()});
+        otherSession->send("eject: 1\n");
+    }
+
+    s.scheduleResponse(7, actionTaken ? "ok\n" : "ko\n");
     return true;
 }
 
@@ -29,7 +50,7 @@ bool EjectCommand::operator()(AISession& s, const std::vector<std::string>& v)
 
 std::unique_ptr<AIProtocolCommand> EjectCommand::create()
 {
-    return std::make_unique<EjectCommand>(EjectCommand());
+    return std::make_unique<EjectCommand>();
 }
 
 }
