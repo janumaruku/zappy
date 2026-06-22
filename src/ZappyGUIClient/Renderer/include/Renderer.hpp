@@ -46,7 +46,7 @@ private:
 
 
     struct OnEvent {
-        explicit OnEvent(Renderer &renderer_): renderer{renderer_} {}
+        explicit OnEvent(Renderer &renderer): renderer{renderer} {}
 
         void operator()(const PlayerNewEvent &/*event*/)
         {
@@ -118,7 +118,7 @@ private:
     Camera2D _camera;
     std::unique_ptr<ResourceManager> _resourceManager;
 
-    AnimationFactory _animationFactory;
+    //AnimationFactory _animationFactory;
 };
 } // namespace zappy::gui
 #endif // RENDERER_HPP
