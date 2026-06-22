@@ -10,6 +10,9 @@
 #include <algorithm>
 #include <format>
 #include <iostream>
+#include <memory>
+#include <string>
+#include <vector>
 
 #include "AISession.hpp"
 #include "Buffer.hpp"
@@ -142,7 +145,15 @@ void Server::handleAiHandshake(const std::shared_ptr<network::ConnectedSocket> &
 
     _aiSessions.push_back(std::make_unique<AISession>(socket, *this, player));
     _aiSessions.back()->start();
-    notifyGUI("pnw", {player.getId()});
+
+    std::vector<std::string> args{player.getId(),
+        std::to_string(player.getPosition().getX()),
+        std::to_string(player.getPosition().getY()),
+        std::to_string(static_cast<uint>(player.getOrientation())),
+        std::to_string(player.getLevel()),
+        player.getTeam()
+        };
+    notifyGUI("pnw", args);
 }
 
 void Server::notifyGUI(const std::string &command,
