@@ -21,7 +21,7 @@ std::string Egg::getId() const
     return _id;
 }
 
-PlayerId Egg::getPlayerId()
+PlayerId Egg::getPlayerId() const
 {
     return _playerId;
 }
@@ -31,7 +31,7 @@ Position Egg::getPosition() const
     return _position;
 }
 
-std::string Egg::getTeam()
+std::string Egg::getTeam() const
 {
     return _team;
 }

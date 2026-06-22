@@ -6,10 +6,10 @@
 */
 
 #ifndef GUIEGG_HPP
-#define GUIEGG_HPP
-#include <string>
+    #define GUIEGG_HPP
 
-#include "Position.hpp"
+    #include <string>
+    #include "Position.hpp"
 
 namespace zappy::data {
 using PlayerId = std::string;
@@ -21,14 +21,11 @@ public:
 
     [[nodiscard]] std::string getId() const;
 
-    PlayerId getPlayerId();
-    [[nodiscard]] const PlayerId getPlayerId() const;
+    [[nodiscard]] PlayerId getPlayerId() const;
+    
+    [[nodiscard]] std::string getTeam() const;
 
     [[nodiscard]] Position getPosition() const;
-
-    std::string getTeam();
-    [[nodiscard]] const std::string getTeam() const;
-
     [[nodiscard]] uint getLevel() const;
 
 private:
