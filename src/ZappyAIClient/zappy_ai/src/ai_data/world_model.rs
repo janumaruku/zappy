@@ -14,6 +14,13 @@ pub enum Resource {
     Unknown(String),
 }
 
+#[derive(Eq, Hash, PartialEq, Clone)]
+pub enum TileObject {
+    Resource(Resource),
+    Player,
+    Unknown(String),
+}
+
 #[derive(Clone)]
 pub enum Orientation {
     Up,
@@ -29,7 +36,18 @@ pub struct WorldModel {
     inventory: HashMap<Resource, u32>,
     map_width: u32,
     map_height: u32,
+    visible_tiles: Vec<Vec<TileObject>>,
 }
+
+const STONES: [Resource; 7] = [
+    Resource::Food,
+    Resource::Linemate,
+    Resource::Deraumere,
+    Resource::Sibur,
+    Resource::Mendiane,
+    Resource::Phiras,
+    Resource::Thystame,
+];
 
 impl Resource {
     pub fn from(str: &str) -> Self {
@@ -42,6 +60,22 @@ impl Resource {
             "phiras" => Resource::Phiras,
             "thystame" => Resource::Thystame,
             s => Resource::Unknown(s.to_string()),
+        }
+    }
+}
+
+impl TileObject {
+    pub fn from(str: &str) -> Self {
+        match str {
+            "player" => TileObject::Player,
+            str => {
+                let result = Resource::from(str);
+
+                match result {
+                    Resource::Unknown(line) => TileObject::Unknown(line),
+                    other => TileObject::Resource(other),
+                }
+            }
         }
     }
 }
@@ -73,12 +107,17 @@ impl WorldModel {
             ]),
             map_width: 0,
             map_height: 0,
+            visible_tiles: Vec::new(),
         }
     }
 
     pub fn update(&mut self, response: &ServerMessage, blackboard: &mut BlackBoard) {
         match response {
             ServerMessage::Inventory(inventory) => self.update_inventory(inventory, blackboard),
+            ServerMessage::Look(tiles) => self.update_look(tiles, blackboard),
+            ServerMessage::LevelUp(level) => self.update_level_up(*level, blackboard),
+            ServerMessage::Ok => blackboard.set("last_response", ServerMessage::Ok),
+            ServerMessage::Ko => blackboard.set("last_response", ServerMessage::Ko),
             _ => return,
         }
         blackboard.set("last_response", response.clone());
@@ -104,10 +143,61 @@ impl WorldModel {
             }
         }
     }
+
+    fn update_look(&mut self, tiles: &Vec<Vec<TileObject>>, blackboard: &mut BlackBoard) {
+        self.visible_tiles = tiles.clone();
+
+        for res in &STONES {
+            blackboard.set(
+                &format!("visible_{}_count", resource_blackboard_key(res).unwrap()),
+                tiles.iter().fold(0u32, |acc, tile| {
+                    let count = tile.iter().fold(0, |count, obj| {
+                        if *obj == TileObject::Resource(res.clone()) {
+                            count + 1
+                        } else {
+                            count
+                        }
+                    });
+                    acc + count
+                }),
+            )
+        }
+
+        let players = tiles
+            .get(0)
+            .map(|tile| {
+                tile.iter().fold(0u32, |acc, count| {
+                    if *count == TileObject::Player {
+                        acc + 1
+                    } else {
+                        acc
+                    }
+                })
+            })
+            .unwrap_or(0)
+            .saturating_sub(1);
+        blackboard.set("teammates_on_tile", players);
+
+        for res in &STONES {
+            blackboard.set(
+                &format!("{}_target_tile", resource_blackboard_key(res).unwrap()),
+                tiles
+                    .iter()
+                    .position(|tile| tile.contains(&TileObject::Resource(res.clone()))),
+            )
+        }
+    }
+
+    fn update_level_up(&mut self, level: u8, blackboard: &mut BlackBoard) {
+        self.level = level;
+
+        blackboard.set("level", level);
+    }
 }
 
 pub fn resource_blackboard_key(resource: &Resource) -> Option<&'static str> {
     match resource {
+        Resource::Food => Some("food"),
         Resource::Linemate => Some("linemate"),
         Resource::Deraumere => Some("deraumere"),
         Resource::Sibur => Some("sibur"),
