@@ -80,7 +80,7 @@ Player &Map::spawnPlayer(const PlayerId &id, const TeamId &team)
         utils::randomNumber(0, _height - 1)
     };
 
-    auto [it, inserted] = _players.emplace(id, Player{id, team, position, 1});
+    auto [it, inserted] = _players.emplace(id, Player{id, team, position, 1, _width, _height});
     if (!inserted)
         throw std::runtime_error("Player already exists: " + id);
     return it->second;

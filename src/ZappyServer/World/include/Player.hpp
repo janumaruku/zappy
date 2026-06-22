@@ -27,8 +27,8 @@ public:
         const TeamId &team,
         const data::Position &position,
         const std::uint8_t &level,
-        std::uint32_t mapWidth,
-        std::uint32_t mapHeight
+        int mapWidth,
+        int mapHeight
     );
 
     void left();
