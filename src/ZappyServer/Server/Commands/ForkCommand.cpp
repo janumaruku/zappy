@@ -27,20 +27,18 @@ bool ForkCommand::execute(AISession &session,
     Server &server = session.getServer();
     const Player &player = session.getPlayer();
     const auto pos = player.getPosition();
-
     uint nextId = 1;
     const auto &eggs = server.getMap().getEggs();
+
     for (const auto &kv : eggs)
         nextId = std::max(nextId, kv.first + 1);
 
     std::string eggId = std::to_string(nextId);
     data::Egg egg(eggId, player.getId(), player.getTeam(), pos, 0);
     server.getMap().addEgg(egg);
-
     server.notifyGUI(std::format("pfk #{}\n", player.getId()));
     server.notifyGUI(std::format("enw #{} #{} {} {}\n",
         eggId, player.getId(), pos.getX(), pos.getY()));
-
     session.scheduleResponse(TIME_LIMIT, "ok\n");
     return true;
 }
