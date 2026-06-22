@@ -18,7 +18,7 @@ HUDManager::HUDManager()
 
 void HUDManager::loadImages()
 {
-    _images.insert({"bkgTeam",
+    _images.insert({BACKGROUND_TEAM_NAME,
         GenImageColor(BACKGROUND_TEAM_WIDTH, BACKGROUND_TEAM_HEIGHT, WHITE)});
     _images.insert({SELECT_DROPDOWN_BUTTON_NAME,
         GenImageColor(BACKGROUND_DROPDOWN_BUTTON_WIDTH,

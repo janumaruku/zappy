@@ -26,6 +26,7 @@ constexpr int PLAYER_COUNT_Y_OFFSET = 10;
 constexpr int TEXT_FONT_SIZE = 5;
 
 const std::string SELECT_DROPDOWN_BUTTON_NAME = "PlayerSelectDropdownButton";
+const std::string BACKGROUND_TEAM_NAME = "BackgroundTeam";
 
 class HUDManager: public designPattern::ARenderManager {
 public:
