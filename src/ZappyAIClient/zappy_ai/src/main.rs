@@ -77,6 +77,12 @@ fn handshake(port: i32, host: &str, team: &str) -> Result<Rc<RefCell<AiTcpClient
     }
 }
 
+fn parse_broadcast_level(text: &str) -> Option<u8> {
+    let rest = text.strip_prefix("LVL")?;
+    let end = rest.find(|c: char| !c.is_ascii_digit())?;
+    rest[..end].parse::<u8>().ok()
+}
+
 fn main() {
     let port = Rc::new(RefCell::new(0));
     let team = Rc::new(RefCell::new(String::new()));
@@ -113,9 +119,10 @@ fn main() {
         let response = classify(&transmission);
         match response {
             ServerMessage::Dead => break,
-            ServerMessage::Broadcast(orientation, message) => {
-                bb.set("broadcast_k", orientation);
-                bb.set("broadcast_text", message);
+            ServerMessage::Broadcast(k, text) => {
+                bb.set("broadcast_k", k);
+                bb.set("broadcast_text", text.clone());
+                bb.set("broadcast_level", parse_broadcast_level(&text));
                 bb.set("broadcast_timestamp", std::time::Instant::now());
             }
             ServerMessage::Eject(orientation) => {}
