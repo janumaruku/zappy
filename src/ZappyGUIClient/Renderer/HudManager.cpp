@@ -18,7 +18,9 @@ HUDManager::HUDManager()
 
 void HUDManager::loadImages()
 {
-    _images.insert({"backgroundTeam",
+    _images.insert({"bkgTeam",
         GenImageColor(BACKGROUND_TEAM_WIDTH, BACKGROUND_TEAM_HEIGHT, WHITE)});
+    _images.insert({"bkgPlayerDropdown",
+        GenImageColor(BACKGROUND_DROPDOWN_BUTTON_WIDTH, BACKGROUND_DROPDOWN_BUTTON_HEIGHT, WHITE)});
 }
 } // namespace zappy::gui

@@ -14,6 +14,9 @@ namespace zappy::gui {
 
 constexpr int BACKGROUND_TEAM_WIDTH  = 80;
 constexpr int BACKGROUND_TEAM_HEIGHT = 30;
+constexpr int BACKGROUND_DROPDOWN_BUTTON_WIDTH  = 100;
+constexpr int BACKGROUND_DROPDOWN_BUTTON_HEIGHT = 50;
+constexpr int PLAYER_COUNT_Y_OFFSET = 10;
 constexpr int TEXT_FONT_SIZE = 5;
 
 class HUDManager: public designPattern::ARenderManager {
