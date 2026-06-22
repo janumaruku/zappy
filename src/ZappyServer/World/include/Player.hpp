@@ -22,8 +22,14 @@ using TeamId = std::string;
 class Player {
 public:
     Player() = delete;
-    explicit Player(const PlayerId &id, const TeamId &team,
-        const data::Position &position, const std::uint8_t &level);
+    explicit Player(
+        const PlayerId &id,
+        const TeamId &team,
+        const data::Position &position,
+        const std::uint8_t &level,
+        std::uint32_t mapWidth,
+        std::uint32_t mapHeight
+    );
 
     void left();
     void forward(int width, int height);
@@ -40,6 +46,8 @@ public:
 
 private:
     PlayerId _id;
+    std::uint32_t _mapWidth;
+    std::uint32_t _mapHeight;
     TeamId _team;
     data::Position _position;
     std::uint8_t _level;

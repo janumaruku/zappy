@@ -9,9 +9,16 @@
 #include "constants.hpp"
 
 namespace zappy::server {
-Player::Player(const PlayerId &id, const TeamId &team,
-    const data::Position &position, const std::uint8_t &level): _id{id},
-    _team{team}, _position{position}, _level{level}
+Player::Player(
+    const PlayerId &id,
+    const TeamId &team,
+    const data::Position &position,
+    const std::uint8_t &level,
+    std::uint32_t mapWidth,
+    std::uint32_t mapHeight
+) : _id{id}, _mapWidth(mapWidth), _mapHeight(mapHeight),
+    _team{team}, _position{position},
+     _level{level}
 {
     _orientation = static_cast<data::Orientation>(utils::randomNumber(0, 3));
     _inventory[data::Resource::FOOD] = 10;
