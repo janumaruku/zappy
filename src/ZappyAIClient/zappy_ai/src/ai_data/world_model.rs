@@ -1,6 +1,9 @@
 use crate::ai_data::ServerMessage;
 use behavior_tree::behavior_tree::BlackBoard;
+use std::cell::RefCell;
+use std::cmp::Ordering;
 use std::collections::HashMap;
+use std::sync::{OnceLock, RwLock};
 
 #[derive(Eq, Hash, PartialEq, Clone)]
 pub enum Resource {
@@ -209,4 +212,55 @@ pub fn resource_blackboard_key(resource: &Resource) -> Option<&'static str> {
         Resource::Thystame => Some("thystame"),
         _ => None,
     }
+}
+
+pub fn find_row_and_col(tile_index: usize) -> (usize, i32) {
+    if tile_index == 0 {
+        return (0, 0);
+    }
+
+    let mut prev_tt = 0usize;
+    let mut level = 1usize;
+    loop {
+        let tt = prev_tt + 2usize * level + 1;
+        if (tile_index <= tt) {
+            let center = 2 * level + 1;
+            return (level, tile_index as i32 - center as i32);
+        }
+
+        prev_tt = tt;
+        level += 1;
+    }
+}
+
+pub fn tile_to_commands(tile_index: usize) -> Vec<String> {
+    if tile_index == 0 {
+        return vec![];
+    }
+
+    let mut commands = Vec::new();
+    let (row, col) = find_row_and_col(tile_index);
+    match col.cmp(&0) {
+        Ordering::Less => {
+            commands.push("Left".to_string());
+            for _ in 0..col.unsigned_abs() as usize {
+                commands.push("Forward".to_string());
+            }
+            commands.push("Right".to_string());
+        }
+        Ordering::Equal => {}
+        Ordering::Greater => {
+            commands.push("Right".to_string());
+            for _ in 0..col.unsigned_abs() as usize {
+                commands.push("Forward".to_string());
+            }
+            commands.push("Left".to_string());
+        }
+    };
+
+    for _ in 0..row {
+        commands.push("Forward".to_string());
+    }
+
+    commands
 }
