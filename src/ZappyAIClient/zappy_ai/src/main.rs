@@ -7,6 +7,7 @@ use std::cell::RefCell;
 use std::rc::Rc;
 
 mod ai_data;
+mod config;
 
 fn build_command(
     port: Rc<RefCell<i32>>,
