@@ -12,6 +12,8 @@
 #include <string>
 
 #include "AObserver.hpp"
+#include "Animation.hpp"
+#include "FactoryTemplate.hpp"
 #include "Grid.hpp"
 #include "raylib.h"
 #include "ResourceManager.hpp"
@@ -26,6 +28,8 @@ constexpr float WINDOW_HEIGHT = 600;
 
 class Renderer: public designPattern::AObserver<ZappyEvent, ZappyEventType> {
 public:
+    using AnimationFactory = designPattern::FactoryTemplate<Animation, Vector2, Texture2D&>;
+
     Renderer(const int &width, const int &height, const SubjectList &list);
 
     ~Renderer() override;
@@ -37,6 +41,10 @@ public:
     void onNotify(const ZappyEvent &event) override;
 
 private:
+
+    void registerCreators();
+
+
     struct OnEvent {
         explicit OnEvent(Renderer &renderer_): renderer{renderer_} {}
 
@@ -109,6 +117,8 @@ private:
     Grid _grid;
     Camera2D _camera;
     std::unique_ptr<ResourceManager> _resourceManager;
+
+    AnimationFactory _animationFactory;
 };
 } // namespace zappy::gui
 #endif // RENDERER_HPP

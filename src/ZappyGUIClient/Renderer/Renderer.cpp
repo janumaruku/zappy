@@ -10,6 +10,7 @@
 #include <algorithm>
 #include <cmath>
 
+#include "Animation.hpp"
 #include "raymath.h"
 #include "ResourceManager.hpp"
 
@@ -38,6 +39,12 @@ Renderer::~Renderer()
 {
     _resourceManager.reset();
     CloseWindow();
+}
+
+
+void Renderer::registerCreators()
+{
+    //_animationFactory.registerCreator<>(Vector2 key);
 }
 
 void Renderer::render(const WorldState &world)
