@@ -34,7 +34,7 @@ AISession::AISession(const std::shared_ptr<network::ConnectedSocket> &socket,
 
 AISession::~AISession() = default;
 
-void AISession::start()
+void AISession::armStarvationTimer()
 {
     const auto starvationDuration = std::chrono::duration<double>(
         126.0 / static_cast<double>(_server.getFrequency()));
@@ -42,8 +42,21 @@ void AISession::start()
     _starvation_timer.asyncWait(
         std::chrono::duration_cast<SteadyTimer::Duration>(starvationDuration),
         [this]() {
-            _socket->close();
+            const auto &inventory = _player.getInventory();
+            const auto foodIt = inventory.find(data::Resource::FOOD);
+
+            if (foodIt == inventory.end() || foodIt->second == 0)
+                return;
+
+            _player.removeResource(data::Resource::FOOD);
+            if (foodIt->second > 0)
+                armStarvationTimer();
         });
+}
+
+void AISession::start()
+{
+    armStarvationTimer();
     handleRead();
 }
 

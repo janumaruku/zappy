@@ -62,6 +62,7 @@ public:
 
 private:
 
+    void armStarvationTimer();
     void onCommandComplete();
     void executeNext();
 
