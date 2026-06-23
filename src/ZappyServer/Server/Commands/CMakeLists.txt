@@ -10,6 +10,7 @@ add_library(commands STATIC
     MszCommand.cpp
     LeftCommand.cpp
     LookCommand.cpp
+    PinCommand.cpp
     PnwCommand.cpp
     PpoCommand.cpp
     RightCommand.cpp
