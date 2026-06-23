@@ -16,9 +16,16 @@
 
 namespace zappy::server {
 
-bool ForwardCommand::execute(AISession& s, const std::vector<std::string>& v)
+bool ForwardCommand::execute(AISession& s, const std::vector<std::string>& /*v*/)
 {
-    s.send(v[0]);
+    auto &player = s.getPlayer();
+    auto &server = s.getServer();
+
+    player.forward();
+    server.notifyGUI(std::format("ppo #{} {} {} {}\n",
+        player.getId(), player.getPosition().getX(),
+        player.getPosition().getY(), static_cast<int>(player.getOrientation()) + 1));
+    s.scheduleResponse(7, "ok\n");
     return true;
 }
 

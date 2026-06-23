@@ -23,10 +23,10 @@ class Player {
 public:
     Player() = delete;
     explicit Player(const PlayerId &id, const TeamId &team,
-        const data::Position &position, const std::uint8_t &level);
+        const data::Position &position, const std::uint8_t &level, uint mapWidth, uint mapHeight);
 
     void left();
-    void forward(int width, int height);
+    void forward();
     void right();
     void takeResource(const data::Resource &resource);
     bool removeResource(const data::Resource &resource);
@@ -45,6 +45,8 @@ private:
     std::uint8_t _level;
     std::unordered_map<data::Resource, std::uint8_t> _inventory;
     data::Orientation _orientation;
+    uint _mapWidth;
+    uint _mapHeight;
 };
 
 } // namespace zappy::server
