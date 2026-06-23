@@ -134,6 +134,7 @@ const std::unordered_map<uint, data::Egg> &Map::getEggs() const noexcept
 std::vector<uint> Map::getEggsOnTile(const data::Position &pos) const
 {
     std::vector<uint> out;
+
     for (const auto &kv : _eggs) {
         const auto &e = kv.second;
         if (e.getPosition().getX() == pos.getX() &&
