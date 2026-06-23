@@ -17,7 +17,7 @@ Team::Team(const std::string &name, const Color &color): _name(name)
 
 }
 
-std::string Team::getName()
+std::string Team::getName() const
 {
     return _name;
 }

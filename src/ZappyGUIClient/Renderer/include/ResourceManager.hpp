@@ -26,7 +26,7 @@ constexpr int PLAYER_RADIUS = TILE_SIZE / 4;
 
 constexpr int GRID_SIZE = 3;
 
-const std::string PLAYER_SPRITE_PATH = "src/resources/testSprite.png";
+const std::string PLAYER_SPRITE_PATH = "resources/testSprite.png";
 
 struct TextureData {
     std::string name;

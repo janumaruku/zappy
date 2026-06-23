@@ -1,4 +1,5 @@
-add_library(renderer Renderer.cpp
+add_library(renderer STATIC
+        Renderer.cpp
         ResourceManager.cpp
         Grid.cpp
         Hud.cpp

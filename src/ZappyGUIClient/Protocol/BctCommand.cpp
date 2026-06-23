@@ -8,6 +8,7 @@
 
 #include <array>
 #include <cassert>
+#include <iostream>
 #include <memory>
 #include <stdexcept>
 #include <string>
@@ -34,10 +35,10 @@ bool BctCommand::execute(WorldState&s, const std::vector<std::string>&cmd)
 
     if (qts.size() != data::EXISTING_RESSOURCES) {
         std::cerr << "Missing ressources in request" << std::endl;
-        return;
+        return false;
     }
 
-    const std::unordered_map<data::Resource, uint> resources = {
+    const std::unordered_map<data::Resource, int> resources = {
         {data::Resource::FOOD, qts[0]},
         {data::Resource::LINEMATE,qts[1]},
         {data::Resource::DERAUMERE, qts[2]},

@@ -66,10 +66,10 @@ std::size_t getResultSize(const std::string &str)
     std::size_t i = 0;
 
     for (; i < strSize; i++) {
-        if (!std::isalpha(str[i]))
+        if (!std::isalnum(str[i]))
             continue;
         count++;
-        for (; i != strSize && std::isalpha(str[i + 1]); i++);
+        for (; i != strSize && std::isalnum(str[i + 1]); i++);
     }
     return count;
 }
@@ -86,8 +86,8 @@ std::vector<std::string> StringUtils::split(const std::string &str) noexcept
     std::string buf;
     std::size_t j = 0;
     for (std::size_t i = 0; i != resultSize; i++) {
-        for (; j < strSize && !std::isalpha(str[j]); j++);
-        while (j < strSize && std::isalpha(str[j]))
+        for (; j < strSize && !std::isalnum(str[j]); j++);
+        while (j < strSize && std::isalnum(str[j]))
             buf.push_back(str[j++]);
         result.push_back(buf);
         buf.clear();

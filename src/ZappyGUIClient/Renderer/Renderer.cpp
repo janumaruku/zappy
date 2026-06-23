@@ -43,6 +43,12 @@ Renderer::~Renderer()
     CloseWindow();
 }
 
+
+void Renderer::registerCreators()
+{
+    //_animationFactory.registerCreator<>(Vector2 key);
+}
+
 void Renderer::render(const WorldState &world)
 {
     updateCamera();

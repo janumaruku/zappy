@@ -12,6 +12,8 @@
 #include <string>
 
 #include "AObserver.hpp"
+#include "Animation.hpp"
+#include "FactoryTemplate.hpp"
 #include "Grid.hpp"
 #include "Hud.hpp"
 #include "HudManager.hpp"
@@ -39,8 +41,12 @@ public:
     void onNotify(const ZappyEvent &event) override;
 
 private:
+
+    void registerCreators();
+
+
     struct OnEvent {
-        explicit OnEvent(Renderer &renderer_): renderer{renderer_} {}
+        explicit OnEvent(Renderer &renderer): renderer{renderer} {}
 
         void operator()(const PlayerNewEvent &/*event*/)
         {
@@ -114,6 +120,8 @@ private:
     HUD _hud;
     std::unique_ptr<HUDManager> _hudManager;
     std::unique_ptr<ResourceManager> _resourceManager;
+
+    //AnimationFactory _animationFactory;
 };
 } // namespace zappy::gui
 #endif // RENDERER_HPP
