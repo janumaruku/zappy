@@ -64,16 +64,19 @@ private:
         {
         }
 
-        void operator()(const EggLaidEvent &/*event*/)
+        void operator()(const EggLaidEvent &event)
         {
+            renderer._eggs.insert({event.eggId, tileToPixel(event.position)});
         }
 
-        void operator()(const EggHatchedEvent &/*event*/)
+        void operator()(const EggHatchedEvent &event)
         {
+            renderer._eggs.erase(event.egdId);
         }
 
-        void operator()(const EggDiedEvent &/*event*/)
+        void operator()(const EggDiedEvent &event)
         {
+            renderer._eggs.erase(event.egdId);
         }
 
         void operator()(const IncantationStartEvent &/*event*/)
@@ -120,6 +123,7 @@ private:
     HUD _hud;
     std::unique_ptr<HUDManager> _hudManager;
     std::unique_ptr<ResourceManager> _resourceManager;
+    std::unordered_map<std::string, Vector2> _eggs;
 
     //AnimationFactory _animationFactory;
 };
