@@ -18,6 +18,7 @@
 #include "IoContext.hpp"
 #include "GUIProtocolHandler.hpp"
 #include "Map.hpp"
+#include "Player.hpp"
 
 namespace zappy::server {
 
@@ -37,6 +38,7 @@ public:
         const std::vector<std::string> &args = {});
     void broadcastToAll(const std::string &data);
     void forEachAISession(const std::function<void(AISession &)> &fn);
+    void onPlayerDied(const Player &player);
 
     [[nodiscard]] const uint &getFrequency() const;
     [[nodiscard]] const Map &getMap() const noexcept { return _map; }

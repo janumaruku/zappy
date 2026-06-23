@@ -7,7 +7,6 @@
 
 #include "Server.hpp"
 
-#include <algorithm>
 #include <iostream>
 
 #include "AISession.hpp"
@@ -153,7 +152,7 @@ void Server::notifyGUI(const std::string &command,
 void Server::broadcastToAll(const std::string &data)
 {
     for (auto &a : _aiSessions) {
-        if (a)
+        if (a && !a->needsCleanup())
             a->send(data);
     }
 }
@@ -161,8 +160,25 @@ void Server::broadcastToAll(const std::string &data)
 void Server::forEachAISession(const std::function<void(AISession &)> &fn)
 {
     for (auto &a : _aiSessions) {
-        if (a)
+        if (a && !a->needsCleanup())
             fn(*a);
+    }
+}
+
+void Server::onPlayerDied(const Player &player)
+{
+    const auto &playerId = player.getId();
+
+    if (!_map.removePlayer(playerId))
+        return;
+
+    notifyGUI("pdi", {playerId});
+
+    for (auto &session : _aiSessions) {
+        if (session && session->getPlayer().getId() == playerId) {
+            session->markForCleanup();
+            break;
+        }
     }
 }
 
