@@ -25,8 +25,9 @@ bool EjectCommand::execute(AISession& s, const std::vector<std::string>& /*v*/)
     std::vector<AISession *> playersToPush;
 
     s.getServer().forEachAISession([&](AISession& other) {
-        if (&other != &s && other.getPlayer().getPosition().getX() == pos.getX() &&
-            other.getPlayer().getPosition().getY() == pos.getY()) {
+        const auto &otherPos = other.getPlayer().getPosition();
+        if (&other != &s && otherPos.getX() == pos.getX() &&
+            otherPos.getY() == pos.getY()) {
             playersToPush.push_back(&other);
         }
     });
