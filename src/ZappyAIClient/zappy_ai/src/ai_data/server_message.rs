@@ -1,15 +1,16 @@
-use crate::ai_data::{Orientation, Resource};
+use crate::ai_data::{Orientation, Resource, TileObject};
 use std::collections::HashMap;
+use std::num::ParseIntError;
 
 #[derive(Clone)]
 pub enum ServerMessage {
     Ok,
     Ko,
-    Look(Vec<Vec<Resource>>),
+    Look(Vec<Vec<TileObject>>),
     Inventory(HashMap<Resource, u32>),
     LevelUp(u8),
     Dead,
-    Broadcast(Orientation, String),
+    Broadcast(u8, String),
     Eject(Orientation),
     Unknown(String),
 }
@@ -29,24 +30,34 @@ pub fn classify(line: &str) -> ServerMessage {
         "ok" => ServerMessage::Ok,
         "ko" => ServerMessage::Ko,
         "dead" => ServerMessage::Dead,
-        "eject:" => parse_eject(tokens),
-        "message" => parse_broadcast(&tokens),
+        "eject:" => parse_eject(&tokens),
+        "message" => parse_broadcast(&trimmed),
         "Current" => parse_level_up(&tokens),
         _ => ServerMessage::Unknown(line.to_string()),
     }
 }
 
 fn parse_level_up(tokens: &Vec<&str>) -> ServerMessage {
-    ServerMessage::LevelUp(tokens[2].parse::<u8>().unwrap())
+    match tokens[2].parse::<u8>() {
+        Ok(level) => ServerMessage::LevelUp(level),
+        Err(_) => ServerMessage::Unknown(format!("Current level: {}", tokens[2])),
+    }
 }
 
-fn parse_broadcast(tokens: &Vec<&str>) -> ServerMessage {
-    let orientation = Orientation::from(tokens[1].trim_end_matches(',').parse::<u8>().unwrap());
+fn parse_broadcast(line: &str) -> ServerMessage {
+    let rest = line.trim_start_matches("message ");
+    let Some((k_part, text)) = rest.split_once(',') else {
+        return ServerMessage::Unknown(line.to_string());
+    };
 
-    ServerMessage::Broadcast(orientation, tokens[2].to_string())
+    let Ok(k) = k_part.trim().parse::<u8>() else {
+        return ServerMessage::Unknown(line.to_string());
+    };
+
+    ServerMessage::Broadcast(k, text.trim().to_string())
 }
 
-fn parse_eject(tokens: Vec<&str>) -> ServerMessage {
+fn parse_eject(tokens: &Vec<&str>) -> ServerMessage {
     let orientation = Orientation::from(tokens[1].parse::<u8>().unwrap());
 
     ServerMessage::Eject(orientation)
@@ -56,7 +67,7 @@ fn parse_bracket_response(line: &str) -> ServerMessage {
     let tokens: Vec<&str> = line
         .trim_start_matches('[')
         .trim_end_matches(']')
-        .split(' ')
+        .split(',')
         .collect();
 
     let is_inventory = tokens
@@ -91,7 +102,7 @@ fn parse_bracket_response(line: &str) -> ServerMessage {
             .map(|token| {
                 token
                     .split_whitespace()
-                    .map(|obj| Resource::from(obj))
+                    .map(|obj| TileObject::from(obj))
                     .collect::<Vec<_>>()
             })
             .collect::<Vec<_>>(),

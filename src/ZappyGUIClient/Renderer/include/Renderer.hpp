@@ -15,6 +15,8 @@
 #include "Animation.hpp"
 #include "FactoryTemplate.hpp"
 #include "Grid.hpp"
+#include "Hud.hpp"
+#include "HudManager.hpp"
 #include "raylib.h"
 #include "ResourceManager.hpp"
 #include "WorldState.hpp"
@@ -28,9 +30,7 @@ constexpr float WINDOW_HEIGHT = 600;
 
 class Renderer: public designPattern::AObserver<ZappyEvent, ZappyEventType> {
 public:
-    using AnimationFactory = designPattern::FactoryTemplate<Animation, Vector2, Texture2D&>;
-
-    Renderer(const int &width, const int &height, const SubjectList &list);
+    Renderer(const int &width, const int &height, const SubjectList &list, const WorldState &worldState);
 
     ~Renderer() override;
 
@@ -106,6 +106,7 @@ private:
     void updateCamera();
     void updateZoom(const float &wheel);
     void updateCameraMovement();
+    void updateHud(const WorldState& worldState);
 
     [[nodiscard]] static Vector2 tileToPixel(data::Position pos);
 
@@ -116,6 +117,8 @@ private:
     // std::map<data::PlayerId, Animation> _animations;
     Grid _grid;
     Camera2D _camera;
+    HUD _hud;
+    std::unique_ptr<HUDManager> _hudManager;
     std::unique_ptr<ResourceManager> _resourceManager;
 
     //AnimationFactory _animationFactory;

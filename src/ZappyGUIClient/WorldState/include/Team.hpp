@@ -23,6 +23,8 @@ public:
 
     [[nodiscard]] Color getColor() const;
 
+    [[nodiscard]] std::vector<PlayerId> getPlayers() const;
+
     void addPlayer(const PlayerId &id);
 
     void removePlayer(const PlayerId &id);

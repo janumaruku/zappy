@@ -26,6 +26,10 @@ Color Team::getColor() const
 {
     return _color;
 }
+std::vector<Team::PlayerId> Team::getPlayers() const
+{
+    return _players;
+}
 
 void Team::addPlayer(const PlayerId &id)
 {
