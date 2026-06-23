@@ -59,6 +59,8 @@ public:
 
     void scheduleTask(const uint &durationConstant,
         const std::function<void()> &task);
+    void markForCleanup() noexcept;
+    [[nodiscard]] bool needsCleanup() const noexcept;
 
 private:
 
@@ -75,6 +77,7 @@ private:
     std::queue<std::vector<std::string>> _commandQueue;
 
     bool _frozen = false;
+    bool _cleanup_pending = false;
 
     std::unique_ptr<AIProtocolHandler> _protocolHandler;
 
