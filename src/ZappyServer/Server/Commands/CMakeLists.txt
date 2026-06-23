@@ -11,6 +11,7 @@ add_library(commands STATIC
     LeftCommand.cpp
     LookCommand.cpp
     PinCommand.cpp
+    PdiCommand.cpp
     PnwCommand.cpp
     PlvCommand.cpp
     PpoCommand.cpp
