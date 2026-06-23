@@ -7,21 +7,25 @@
 
 #include "Egg.hpp"
 
+#include <utility>
+
 namespace zappy::data {
-Egg::Egg(const std::string &id, const PlayerId &playerId,
-    const std::string &team, const Position &position,
+Egg::Egg(std::string id, PlayerId playerId,
+    std::string team, Position position,
     uint level):
-    _id(id), _playerId(playerId), _team(team), _position(position),
+    _id(std::move(id)),
+    _playerId(std::move(playerId)),
+    _team(std::move(team)),
+    _position(position),
     _level(level)
-{
-}
+{}
 
 std::string Egg::getId() const
 {
     return _id;
 }
 
-PlayerId Egg::getPlayerId()
+const PlayerId &Egg::getPlayerId() const
 {
     return _playerId;
 }
@@ -31,7 +35,12 @@ Position Egg::getPosition() const
     return _position;
 }
 
-std::string Egg::getTeam()
+TeamId &Egg::getTeam()
+{
+    return _team;
+}
+
+const TeamId &Egg::getTeam() const
 {
     return _team;
 }
