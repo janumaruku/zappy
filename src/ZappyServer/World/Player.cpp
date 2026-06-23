@@ -13,6 +13,8 @@ Player::Player(const PlayerId &id, const TeamId &team,
     const data::Position &position, const std::uint8_t &level, uint mapWidth, uint mapHeight): _id{id},
     _team{team}, _position{position}, _level{level}, _mapWidth{mapWidth}, _mapHeight{mapHeight}
 {
+    (void)this->_mapWidth;
+    (void)this->_mapHeight;
     _orientation = static_cast<data::Orientation>(utils::randomNumber(0, 3));
     _inventory[data::Resource::FOOD] = 10;
 

@@ -40,6 +40,8 @@ public:
 
 private:
     PlayerId _id;
+    std::uint32_t _mapWidth;
+    std::uint32_t _mapHeight;
     TeamId _team;
     data::Position _position;
     std::uint8_t _level;
