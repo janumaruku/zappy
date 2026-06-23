@@ -11,6 +11,7 @@
 #include <cstdint>
 #include <string>
 #include <unordered_map>
+#include <vector>
 #include <sys/types.h>
 
 #include "Position.hpp"
@@ -39,6 +40,7 @@ public:
     [[nodiscard]] Position getPosition() const;
 
     [[nodiscard]] const std::unordered_map<Resource, int> &getResources() const;
+    [[nodiscard]] const std::vector<PlayerId> &getPlayers() const;
 
     void setResources(const std::unordered_map<Resource, int> &resources);
 
@@ -50,9 +52,13 @@ public:
 
     void dropResource(const Resource &resource);
 
+    void addPlayer(const PlayerId &id);
+    void removePlayer(const PlayerId &id);
+
 private:
     Position _position;
     std::unordered_map<Resource, int> _resources;
+    std::vector<PlayerId> _players;
 };
 }
 
