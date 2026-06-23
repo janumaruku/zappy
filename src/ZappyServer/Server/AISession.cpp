@@ -36,7 +36,14 @@ AISession::~AISession() = default;
 
 void AISession::start()
 {
-    this->_starvation_timer = 128;
+    const auto starvationDuration = std::chrono::duration<double>(
+        126.0 / static_cast<double>(_server.getFrequency()));
+
+    _starvation_timer.asyncWait(
+        std::chrono::duration_cast<SteadyTimer::Duration>(starvationDuration),
+        [this]() {
+            _socket->close();
+        });
     handleRead();
 }
 
