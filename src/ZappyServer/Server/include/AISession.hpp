@@ -44,6 +44,7 @@ public:
     ~AISession() override;
 
     void handleTransmission() override;
+    void start() override;
 
     [[nodiscard]] const Player &getPlayer() const noexcept;
     [[nodiscard]] Player &getPlayer() noexcept;

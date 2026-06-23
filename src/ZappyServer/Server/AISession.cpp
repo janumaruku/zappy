@@ -34,6 +34,12 @@ AISession::AISession(const std::shared_ptr<network::ConnectedSocket> &socket,
 
 AISession::~AISession() = default;
 
+void AISession::start()
+{
+    this->_starvation_timer = 128;
+    handleRead();
+}
+
 Player &AISession::getPlayer() noexcept
 {
     return _player;
