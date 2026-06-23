@@ -27,7 +27,7 @@ void Core::run()
     _guiCommands.run(std::move(_argv));
     const auto &map = _worldState.getMap();
 
-    Renderer renderer(map.getWidth(), map.getHeight(), {});
+    Renderer renderer(map.getWidth(), map.getHeight(), {}, _worldState);
     while (renderer.isWindowOpen()) {
         renderer.render(_worldState);
     }

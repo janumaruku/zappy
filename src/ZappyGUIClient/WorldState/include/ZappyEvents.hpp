@@ -75,7 +75,7 @@ struct GameEndEvent {
 
 using ZappyEvent = std::variant<PlayerNewEvent, PlayerMovedEvent,
     PlayerDiedEvent, TileUpdateEvent, EggLaidEvent, EggHatchedEvent,
-    EggDiedEvent, IncantationStartEvent, IncantationEndEvent>;
+    EggDiedEvent, IncantationStartEvent, IncantationEndEvent, GameEndEvent>;
 }
 
 #endif //ZAPPY_ZAPPYEVENTS_HPP

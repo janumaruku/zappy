@@ -7,7 +7,14 @@
 
 #include "WorldState.hpp"
 
+#include <algorithm>
 #include <iostream>
+#include <optional>
+#include <string>
+#include <vector>
+#include "GUIPlayer.hpp"
+#include "Position.hpp"
+#include "ZappyEvents.hpp"
 
 namespace zappy::gui {
 WorldState::WorldState(const std::unordered_map<std::string, Team> &teams,
@@ -52,14 +59,55 @@ void WorldState::onPlayerNew(GUIPlayer player)
     notify(ZappyEventType::GUI_EVENT, PlayerNewEvent{player});
 }
 
+static bool hasMovedClockwise(const data::Orientation &old, const data::Orientation &other)
+{
+    if (old == data::Orientation::UP && other == data::Orientation::RIGHT)
+        return true;
+    if (old == data::Orientation::RIGHT && other == data::Orientation::DOWN)
+        return true;
+    if (old == data::Orientation::DOWN && other == data::Orientation::LEFT)
+        return true;
+    if (old == data::Orientation::LEFT && other == data::Orientation::UP)
+        return true;
+    return false;
+}
+
+static bool hasMovedCounterClockwise(const data::Orientation &old, const data::Orientation &other)
+{
+    if (old == data::Orientation::UP && other == data::Orientation::LEFT)
+        return true;
+    if (old == data::Orientation::LEFT && other == data::Orientation::DOWN)
+        return true;
+    if (old == data::Orientation::DOWN && other == data::Orientation::RIGHT)
+        return true;
+    if (old == data::Orientation::RIGHT && other == data::Orientation::UP)
+        return true;
+    return false;
+}
+
 void WorldState::onPlayerPosition(const std::string &id,
     const data::Position &pos, const data::Orientation &orientation)
 {
     auto &player = _players.at(id);
+    const auto &oldPos = player.getPosition();
+    const auto &oldOrient = player.getOrientation();
+    ActionType a;
+
+    if (oldPos != pos)
+        a = ActionType::FORWARD;
+    if (hasMovedClockwise(oldOrient, orientation))
+        a = ActionType::RIGHT;
+    if (hasMovedCounterClockwise(oldOrient, orientation))
+        a = ActionType::LEFT;
+
     player.setOrientation(orientation);
     player.setPosition(pos);
 
+    Action action{.type=a, .duration=7.0F / static_cast<float>(_timeUnit)};
+
     notify(ZappyEventType::GUI_EVENT, PlayerMovedEvent{player});
+    player.enqueueAction(action);
+
 }
 
 void WorldState::onPlayerDeath(const PlayerId &id)
@@ -101,6 +149,15 @@ int WorldState::getTimeUnit() const
 
 }*/
 
+void WorldState::onEggHatched(const uint &id)
+{
+    auto idStr = std::to_string(id);
+    const auto it = _eggs.find(idStr);
+
+    if (it != _eggs.end())
+        _eggs.erase(it);
+}
+
 void WorldState::onEggDeath(const std::string& eggId)
 {
     if (!_eggs.contains(eggId)) {
@@ -117,4 +174,29 @@ void WorldState::onMapDimension(const int &width, const int &height)
     _map.updateWidth(width);
     _map.updateHeight(height);
 }
+
+void WorldState::onIncantationStart(const data::Position &pos, const uint &level, const std::vector<PlayerId> &playerIds)
+{
+    IncantationStartEvent i(pos, level, playerIds);
+    notify(ZappyEventType::GUI_EVENT, i);
+}
+
+void WorldState::onIncantationEnd(const data::Position &pos, bool result)
+{
+    IncantationEndEvent e(pos, result);
+    notify(ZappyEventType::GUI_EVENT, e);
+}
+
+void WorldState::onGameEnd(const Team &winningTeam)
+{
+    _winner = winningTeam.getName();
+    GameEndEvent evt(winningTeam.getName());
+    notify(ZappyEventType::GUI_EVENT, evt);
+}
+
+const std::optional<std::string> &WorldState::getWinner() const
+{
+    return _winner;
+}
+
 }

@@ -92,6 +92,33 @@ impl Orientation {
     }
 }
 
+impl Resource {
+    pub fn from(str: &str) -> Self {
+        match str {
+            "food" => Resource::Food,
+            "linemate" => Resource::Food,
+            "deraumere" => Resource::Food,
+            "sibur" => Resource::Food,
+            "mendiane" => Resource::Food,
+            "phiras" => Resource::Food,
+            "thystame" => Resource::Food,
+            s => Resource::Unknown(s.to_string()),
+        }
+    }
+}
+
+impl Orientation {
+    pub fn from(num: u8) -> Self {
+        match num {
+            0 => Orientation::Up,
+            1 => Orientation::Right,
+            2 => Orientation::Down,
+            3 => Orientation::Left,
+            n => Orientation::Unknown(n),
+        }
+    }
+}
+
 impl WorldModel {
     pub fn new() -> Self {
         WorldModel {

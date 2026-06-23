@@ -111,4 +111,14 @@ Position Position::operator%=(const Position &other)
 
     return *this;
 }
+
+bool Position::operator==(const Position &other) const
+{
+    return _x == other.getX() && _y == other.getY();
+}
+
+bool Position::operator!=(const Position &other) const
+{
+    return !(*this == other);
+}
 }

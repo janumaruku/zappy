@@ -12,7 +12,11 @@
 #include <string>
 
 #include "AObserver.hpp"
+#include "Animation.hpp"
+#include "FactoryTemplate.hpp"
 #include "Grid.hpp"
+#include "Hud.hpp"
+#include "HudManager.hpp"
 #include "raylib.h"
 #include "ResourceManager.hpp"
 #include "WorldState.hpp"
@@ -26,7 +30,7 @@ constexpr float WINDOW_HEIGHT = 600;
 
 class Renderer: public designPattern::AObserver<ZappyEvent, ZappyEventType> {
 public:
-    Renderer(const int &width, const int &height, const SubjectList &list);
+    Renderer(const int &width, const int &height, const SubjectList &list, const WorldState &worldState);
 
     ~Renderer() override;
 
@@ -37,8 +41,12 @@ public:
     void onNotify(const ZappyEvent &event) override;
 
 private:
+
+    void registerCreators();
+
+
     struct OnEvent {
-        explicit OnEvent(Renderer &renderer_): renderer{renderer_} {}
+        explicit OnEvent(Renderer &renderer): renderer{renderer} {}
 
         void operator()(const PlayerNewEvent &/*event*/)
         {
@@ -98,6 +106,7 @@ private:
     void updateCamera();
     void updateZoom(const float &wheel);
     void updateCameraMovement();
+    void updateHud(const WorldState& worldState);
 
     [[nodiscard]] static Vector2 tileToPixel(data::Position pos);
 
@@ -108,7 +117,11 @@ private:
     // std::map<data::PlayerId, Animation> _animations;
     Grid _grid;
     Camera2D _camera;
+    HUD _hud;
+    std::unique_ptr<HUDManager> _hudManager;
     std::unique_ptr<ResourceManager> _resourceManager;
+
+    //AnimationFactory _animationFactory;
 };
 } // namespace zappy::gui
 #endif // RENDERER_HPP

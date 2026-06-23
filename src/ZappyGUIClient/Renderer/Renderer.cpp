@@ -10,12 +10,13 @@
 #include <algorithm>
 #include <cmath>
 
+#include "Hud.hpp"
 #include "raymath.h"
 #include "ResourceManager.hpp"
 
 namespace zappy::gui {
 Renderer::Renderer(const int &width, const int &height,
-    const SubjectList &list):
+    const SubjectList &list, const WorldState& worldState):
     AObserver{list}, _grid(width, height),
     _camera({
         .offset = Vector2{
@@ -32,17 +33,26 @@ Renderer::Renderer(const int &width, const int &height,
     InitWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Zappy - Renderer");
     SetTargetFPS(60);
     _resourceManager = std::make_unique<ResourceManager>();
+    _hudManager = std::make_unique<HUDManager>(worldState);
 }
 
 Renderer::~Renderer()
 {
     _resourceManager.reset();
+    _hudManager.reset();
     CloseWindow();
+}
+
+
+void Renderer::registerCreators()
+{
+    //_animationFactory.registerCreator<>(Vector2 key);
 }
 
 void Renderer::render(const WorldState &world)
 {
     updateCamera();
+    updateHud(world);
     BeginDrawing();
     ClearBackground(BLACK);
 
@@ -51,6 +61,7 @@ void Renderer::render(const WorldState &world)
 
     renderPlayers(world.getPlayers(), world.getTeams());
     EndMode2D();
+    _hud.draw(world, _hudManager);
     EndDrawing();
 }
 
@@ -147,6 +158,11 @@ void Renderer::updateCameraMovement()
     _camera.target      = Vector2Add(_camera.target, delta);
 }
 
+void Renderer::updateHud(const WorldState& worldState)
+{
+    _hud.update(worldState, _hudManager);
+}
+
 Vector2 Renderer::tileToPixel(const data::Position pos)
 {
     return {
@@ -159,6 +175,7 @@ std::string Renderer::resourceToString(const data::Resource &resource)
 {
     return RESOURCE_DATA[static_cast<int>(resource)].name;
 }
+
 std::string Renderer::playerOrientationToString(const data::Orientation
         &orientation)
 {
