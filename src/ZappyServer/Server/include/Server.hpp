@@ -33,8 +33,7 @@ public:
 
     void run();
 
-    void notifyGUI(const std::string &command,
-        const std::vector<std::string> &args = {});
+    void notifyGUI(const std::string &command);
     void broadcastToAll(const std::string &data);
     void forEachAISession(const std::function<void(AISession &)> &fn);
 
@@ -61,6 +60,8 @@ private:
     void onAccept(
         const std::shared_ptr<network::ConnectedSocket> &socket
         );
+    void onPlayerMoved(const Player &player);
+
     void handleAiHandshake(const std::shared_ptr<network::ConnectedSocket> &socket,
         const std::string &teamName);
     void handleGuiHandshake(const std::shared_ptr<network::ConnectedSocket> &socket);

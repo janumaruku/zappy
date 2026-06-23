@@ -57,13 +57,13 @@ struct CommandDefinition {
     std::vector<Flag> flags;
     CommandHandler handler;
 
-    std::optional<Option> hasOption(const std::string &option) const;
+    [[nodiscard]] std::optional<Option> hasOption(const std::string &option) const;
 
-    std::optional<XOption> hasXOption(const std::string &xOption) const;
+    [[nodiscard]] std::optional<XOption> hasXOption(const std::string &xOption) const;
 
-    std::optional<Flag> hasFlag(const std::string &flag) const;
+    [[nodiscard]] std::optional<Flag> hasFlag(const std::string &flag) const;
 
-    CommandContext buildCommandContext(std::vector<std::string> tokens) const;
+    [[nodiscard]] CommandContext buildCommandContext(std::vector<std::string> tokens) const;
 
     static void processOption(CommandContext &context,
     std::vector<std::string> &tokens, const Option &option);

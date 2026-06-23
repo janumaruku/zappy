@@ -6,6 +6,7 @@
 */
 
 #include "GUIProtocolHandler.hpp"
+#include "AISession.hpp"
 #include "GUISession.hpp"
 
 #include <exception>

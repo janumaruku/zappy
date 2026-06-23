@@ -7,6 +7,7 @@
 
 #include "AClientSession.hpp"
 
+#include "Logger.hpp"
 #include "ZappyConstants.hpp"
 
 namespace zappy::server {
@@ -19,32 +20,21 @@ AClientSession::AClientSession(
 {
     this->_readBuffer.resize(READ_BUFFER_SIZE);
     this->_asyncReadBuffer.resize(READ_BUFFER_SIZE);
+    auto config = network::BASIC_CONFIG;
+    config.context = "ACLIENT-SESSION";
+    _logger.config(config);
 }
 
 void AClientSession::start()
 {
     handleRead();
+    _logger.start(LogLevel::INFO) << "AClientSession up" << utils::END;
 }
 
 void AClientSession::send(const std::string &data)
 {
     _socket->write(network::buffer(data),
-        [this](const std::error_code &err, const std::size_t &bytes) {
-            if (err) {
-                std::cerr << err.message() << std::endl;
-                _socket->close();
-                return;
-            }
-
-            if (bytes == 0)
-                this->_socket->close();
-        });
-}
-
-std::string AClientSession::receive()
-{
-    _socket->read(network::buffer(this->_readBuffer, this->_readBuffer.size()),
-        [this](const std::error_code &err, const std::size_t &bytes) {
+        [this, &data](const std::error_code &err, const std::size_t &bytes) {
             if (err) {
                 std::cerr << err.message() << std::endl;
                 _socket->close();
@@ -55,13 +45,35 @@ std::string AClientSession::receive()
                 _socket->close();
                 return;
             }
-
-            if (!isTransmissionReady(bytes))
-                receive();
+            _logger.start(LogLevel::INFO) << "Sent: " << data << utils::END;
         });
+}
 
+std::string AClientSession::receive()
+{
+    bool done = false;
+
+    while (!done) {
+    _socket->read(network::buffer(this->_readBuffer, this->_readBuffer.size()),
+        [this, &done](const std::error_code &err, const std::size_t &bytes) {
+            if (err) {
+                std::cerr << err.message() << std::endl;
+                done = true;
+                return;
+            }
+
+            if (bytes == 0) {
+                _socket->close();
+                done = true;
+                return;
+            }
+
+            done = isTransmissionReady(bytes);
+        });
+    }
     const auto result = std::string{_transmission.data(), _transmission.size()};
     _transmission.clear();
+    _logger.start(LogLevel::INFO) << "Received: " << result << utils::END;
 
     return result;
 }
@@ -69,9 +81,9 @@ std::string AClientSession::receive()
 void AClientSession::handleRead()
 {
     _socket->asyncReadSome(network::buffer(_asyncReadBuffer, READ_BUFFER_SIZE),
-        [this](const std::error_code &ec, const std::size_t &bytes) {
-            if (ec) {
-                std::cerr << ec.message() << std::endl;
+        [this](const std::error_code &err, const std::size_t &bytes) {
+            if (err) {
+                std::cerr << err.message() << std::endl;
                 _socket->close();
                 return;
             }
@@ -81,18 +93,22 @@ void AClientSession::handleRead()
                 return;
             }
 
-            if (!isTransmissionReady(bytes))
+            if (!isTransmissionReady(bytes)) {
                 handleRead();
-            handleTransmission();
+            } else {
+                handleTransmission();
+                handleRead();
+                _logger.start(LogLevel::INFO) << "Received: " << _transmission << utils::END;
+            }
         });
 }
 
 void AClientSession::handleWrite(const std::string &message)
 {
     _socket->asyncWrite(network::buffer(message),
-        [this](const std::error_code &ec, const std::size_t &bytes) {
-            if (ec) {
-                std::cerr << ec.message() << std::endl;
+        [this](const std::error_code &err, const std::size_t &bytes) {
+            if (err) {
+                std::cerr << err.message() << std::endl;
                 _socket->close();
                 return;
             }

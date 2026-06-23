@@ -8,11 +8,16 @@
 #include "Server.hpp"
 
 #include <algorithm>
+#include <format>
 #include <iostream>
+#include <memory>
+#include <string>
+#include <vector>
 
 #include "AISession.hpp"
 #include "Buffer.hpp"
 #include "GUISession.hpp"
+#include "Player.hpp"
 
 namespace zappy::server {
 
@@ -140,14 +145,22 @@ void Server::handleAiHandshake(const std::shared_ptr<network::ConnectedSocket> &
 
     _aiSessions.push_back(std::make_unique<AISession>(socket, *this, player));
     _aiSessions.back()->start();
-    notifyGUI("pnw", {player.getId()});
+
+
+    auto command = std::format("pnw #{} {} {} {} {} {}\n", player.getId(),
+        std::to_string(player.getPosition().getX()),
+        std::to_string(player.getPosition().getY()),
+        std::to_string(static_cast<uint>(player.getOrientation())),
+        std::to_string(player.getLevel()),
+        player.getTeam()
+    );
+    notifyGUI(command);
 }
 
-void Server::notifyGUI(const std::string &command,
-    const std::vector<std::string> &args)
+void Server::notifyGUI(const std::string &command)
 {
     for (auto &session : _guiSessions)
-        _guiProtocolHandler.handleLine(command, *session, args);
+        session->send(command);
 }
 
 void Server::broadcastToAll(const std::string &data)
@@ -164,6 +177,13 @@ void Server::forEachAISession(const std::function<void(AISession &)> &fn)
         if (a)
             fn(*a);
     }
+}
+
+void Server::onPlayerMoved(const Player &player)
+{
+    const auto command = std::format("ppo #{} {} {} {}\n",
+        player.getId(), player.getPosition().getX(), player.getPosition().getY(), static_cast<uint>(player.getOrientation()));
+    notifyGUI(command);
 }
 
 }

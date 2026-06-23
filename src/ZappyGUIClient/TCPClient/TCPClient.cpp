@@ -24,6 +24,7 @@ TCPClient::TCPClient(network::IOContext &ioc, const int port,
         if (receive() == "WELCOME") {
             send("GRAPHIC");
         } else {
+            _socket.close();
             throw std::runtime_error{"Received incorrect connection"};
         }
     } catch (std::exception &) {
@@ -45,9 +46,10 @@ void TCPClient::send(std::string data)
                 return;
             }
 
-            if (bytes == 0)
+            if (bytes == 0) {
                 _socket.close();
-
+                return;
+            }
             _logger.start(LogLevel::INFO) << "Sent: " << data << utils::END;
         });
 }
@@ -55,6 +57,7 @@ void TCPClient::send(std::string data)
 std::string TCPClient::receive()
 {
     bool done = false;
+
     while (!done) {
         _socket.read(network::buffer(_readBuffer, _readBuffer.size()),
             [this, &done](const std::error_code &err, const std::size_t &bytes) {

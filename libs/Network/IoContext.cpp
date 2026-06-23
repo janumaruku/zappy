@@ -60,7 +60,7 @@ void IOContext::run()
     while (true) {
         if (::poll(_pollFds.data(), _pollFds.size(), 10) == -1)
             throw std::runtime_error(
-                utils::RED + "Error: " + utils::RESET + std::string{
+                utils::RED + "Error: " += utils::RESET + std::string{
                     strerror(errno)
                 });
 
