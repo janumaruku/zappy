@@ -21,7 +21,7 @@ public:
     HUD() = default;
     void update(const WorldState &world, const std::unique_ptr<HUDManager> &hudManager);
 
-    void draw(const WorldState &world,
+    void draw(const WorldState &worldState,
         const std::unique_ptr<HUDManager> &hudManager) const;
 
     bool isDropdownOpen() const;
@@ -46,6 +46,9 @@ private:
             &hudManager) const;
 
     static void drawPlayerSelectorDropdown(const WorldState &worldState,
+        const std::unique_ptr<HUDManager> &hudManager);
+
+    static void drawSelectedPlayer(const GUIPlayer &player,
         const std::unique_ptr<HUDManager> &hudManager);
 
     static size_t getMaxPlayersFromNames(

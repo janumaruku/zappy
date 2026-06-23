@@ -28,7 +28,7 @@ constexpr float WINDOW_HEIGHT = 600;
 
 class Renderer: public designPattern::AObserver<ZappyEvent, ZappyEventType> {
 public:
-    Renderer(const int &width, const int &height, const SubjectList &list);
+    Renderer(const int &width, const int &height, const SubjectList &list, const WorldState &worldState);
 
     ~Renderer() override;
 

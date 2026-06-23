@@ -16,7 +16,7 @@
 
 namespace zappy::gui {
 Renderer::Renderer(const int &width, const int &height,
-    const SubjectList &list):
+    const SubjectList &list, const WorldState& worldState):
     AObserver{list}, _grid(width, height),
     _camera({
         .offset = Vector2{
@@ -33,7 +33,7 @@ Renderer::Renderer(const int &width, const int &height,
     InitWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Zappy - Renderer");
     SetTargetFPS(60);
     _resourceManager = std::make_unique<ResourceManager>();
-    _hudManager = std::make_unique<HUDManager>();
+    _hudManager = std::make_unique<HUDManager>(worldState);
 }
 
 Renderer::~Renderer()

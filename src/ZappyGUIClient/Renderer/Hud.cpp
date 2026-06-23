@@ -24,21 +24,25 @@ void HUD::update(const WorldState &world,
     }
 }
 
-void HUD::draw(const WorldState &world,
+void HUD::draw(const WorldState &worldState,
     const std::unique_ptr<HUDManager> &hudManager) const
 {
     size_t count = 0;
 
-    for (const auto &it: world.getTeams()) {
-        drawTeamsPanel(world.getPlayers(), it, static_cast<int>(count),
+    for (const auto &it: worldState.getTeams()) {
+        drawTeamsPanel(worldState.getPlayers(), it, static_cast<int>(count),
             hudManager);
         ++count;
     }
 
-    drawTime(world.getTimeUnit());
+    drawTime(worldState.getTimeUnit());
     drawPlayerSelectorDropdownButton(hudManager);
     if (_dropdownOpen) {
-        drawPlayerSelectorDropdown(world, hudManager);
+        drawPlayerSelectorDropdown(worldState, hudManager);
+    }
+    if (_selectedPlayerId.has_value()) {
+        drawSelectedPlayer(worldState.getPlayerById(_selectedPlayerId.value()),
+            hudManager);
     }
 }
 
@@ -128,28 +132,20 @@ void HUD::drawPlayerSelectorDropdownButton(const std::unique_ptr<HUDManager>
 void HUD::drawPlayerSelectorDropdown(const WorldState &worldState,
     const std::unique_ptr<HUDManager> &hudManager)
 {
-
-    int count = 0;
-
     for (auto &it: worldState.getPlayers()) {
-        data::Position playerRecPosition = {BACKGROUND_PLAYER_DROPDOWN_X,
-            BACKGROUND_PLAYER_DROPDOWN_Y +
-                (BACKGROUND_PLAYER_DROPDOWN_HEIGHT * count)};
 
-        hudManager->createRectangle(it.first,
-            {static_cast<float>(playerRecPosition.getX()),
-                static_cast<float>(playerRecPosition.getY())},
-            BACKGROUND_PLAYER_DROPDOWN_WIDTH,
-            BACKGROUND_PLAYER_DROPDOWN_HEIGHT);
+        const Rectangle &playerRectangle = hudManager->getRectangle(it.first);
+        const Team &playerTeam = worldState.getTeams().at(it.second.getTeam());
 
-        DrawTexture(hudManager->getTexture(BACKGROUND_PLAYER_DROPDOWN_NAME),
-            playerRecPosition.getX(), playerRecPosition.getY(),
+        DrawTextureRec(hudManager->getTexture(BACKGROUND_PLAYER_DROPDOWN_NAME),
+            playerRectangle, {playerRectangle.x, playerRectangle.y},
             worldState.getTeams().at(it.second.getTeam()).getColor());
 
-        DrawText(it.first.c_str(), playerRecPosition.getX(),
-            playerRecPosition.getY(), TEXT_FONT_SIZE, BLACK);
+        DrawTexture(hudManager->getTexture(BACKGROUND_PLAYER_DROPDOWN_NAME),
+            playerRectangle.x, playerRectangle.y, playerTeam.getColor());
 
-        ++count;
+        DrawText(it.first.c_str(), playerRectangle.x,
+            playerRectangle.y, TEXT_FONT_SIZE, BLACK);
     }
 }
 
