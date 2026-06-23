@@ -28,7 +28,14 @@ constexpr int GRID_SIZE = 3;
 
 const std::string PLAYER_SPRITE_PATH = "src/resources/testSprite.png";
 
-const std::vector<designPattern::TextureData> RESOURCE_DATA = {
+struct TextureData {
+    std::string name;
+    int x;
+    int y;
+    Color color;
+};
+
+const std::vector<TextureData> RESOURCE_DATA = {
     {.name = "food", .x = 0, .y = 0, .color = RED},
     {.name = "linemate", .x = 1, .y = 0, .color = LIME},
     {.name = "deraumere", .x = 2, .y = 0, .color = BLUE},
