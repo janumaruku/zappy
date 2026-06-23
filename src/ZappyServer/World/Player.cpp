@@ -10,8 +10,13 @@
 
 namespace zappy::server {
 Player::Player(const PlayerId &id, const TeamId &team,
-    const data::Position &position, const std::uint8_t &level, uint mapWidth, uint mapHeight): _id{id},
-    _team{team}, _position{position}, _level{level}, _mapWidth{mapWidth}, _mapHeight{mapHeight}
+    const data::Position &position, const std::uint8_t &level, int mapWidth, int mapHeight):
+    _id{id},
+    _team{team},
+    _position{position},
+    _level{level},
+    _mapWidth{mapWidth},
+    _mapHeight{mapHeight}
 {
     (void)this->_mapWidth;
     (void)this->_mapHeight;
