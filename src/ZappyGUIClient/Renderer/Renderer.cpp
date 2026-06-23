@@ -43,7 +43,6 @@ Renderer::~Renderer()
     CloseWindow();
 }
 
-
 void Renderer::registerCreators()
 {
     //_animationFactory.registerCreator<>(Vector2 key);
@@ -58,7 +57,7 @@ void Renderer::render(const WorldState &world)
 
     BeginMode2D(_camera);
     renderMap(world.getMap());
-
+    renderEggs();
     renderPlayers(world.getPlayers(), world.getTeams());
     EndMode2D();
     _hud.draw(world, _hudManager);
@@ -92,8 +91,9 @@ void Renderer::renderMap(const GUIMap &map) const
     }
 }
 
-void Renderer::renderResourcesFromTile(const std::unordered_map<data::Resource, int>&
-    tile, const data::Position position) const
+void Renderer::renderResourcesFromTile(const std::unordered_map<data::Resource,
+                                           int> &tile,
+    const data::Position position) const
 {
 
     for (auto const &[name, count]: tile) {
@@ -107,7 +107,8 @@ void Renderer::renderResourcesFromTile(const std::unordered_map<data::Resource, 
 }
 
 void Renderer::renderPlayers(const std::unordered_map<data::PlayerId, GUIPlayer>
-    &players, const std::unordered_map<std::string, Team> &teams) const
+                                 &players,
+    const std::unordered_map<std::string, Team> &teams) const
 {
     for (const auto &it: players) {
         const auto resourceTexture =
@@ -123,9 +124,20 @@ void Renderer::renderPlayers(const std::unordered_map<data::PlayerId, GUIPlayer>
     }
 }
 
-void Renderer::renderEggs(const std::map<unsigned int, data::Egg> &eggs)
+void Renderer::renderEggs()
 {
-    (void)eggs;
+    for (const auto &it: _eggs) {
+        const data::Position &eggPosition = it.second;
+
+        const auto &eggTexture = _resourceManager->getTexture("egg");
+
+        float centerX = (eggPosition.getX() * TILE_SIZE) + CELL_SIZE +
+            (CELL_SIZE / 2.0f) - (eggTexture.width / 2.0f) + GRID_SIZE;
+        float centerY = (eggPosition.getY() * TILE_SIZE) + CELL_SIZE +
+            (CELL_SIZE / 2.0f) - (eggTexture.height / 2.0f) + GRID_SIZE;
+
+        DrawTexture(eggTexture, centerX + GRID_SIZE, centerY, WHITE);
+    }
 }
 
 void Renderer::updateAnimation(const GUIPlayer &player)

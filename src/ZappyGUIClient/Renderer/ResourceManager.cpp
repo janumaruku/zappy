@@ -28,7 +28,6 @@ void ResourceManager::loadImages()
         insertImage(it.name, position, RESOURCE_RADIUS, it.color);
     }
 
-    insertImage("egg", {CELL_SIZE, CELL_SIZE}, RESOURCE_RADIUS, BLACK);
     _images.insert({"tile", GenImageColor(TILE_SIZE, TILE_SIZE, GRAY)});
 
     for (const auto &it: PLAYER_DIRECTION_DATA) {
@@ -36,6 +35,9 @@ void ResourceManager::loadImages()
         ImageRotate(&imagePlayer, it.second);
         _images.insert({it.first, imagePlayer});
     }
+
+    Image imageEgg = createImageFromFile(EGG_SPRITE_PATH);
+    _images.insert({"egg", imageEgg});
 }
 
 void ResourceManager::loadRectangles()

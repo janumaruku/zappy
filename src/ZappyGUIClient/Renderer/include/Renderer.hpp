@@ -66,7 +66,7 @@ private:
 
         void operator()(const EggLaidEvent &event)
         {
-            renderer._eggs.insert({event.eggId, tileToPixel(event.position)});
+            renderer._eggs.insert({event.eggId, event.position});
         }
 
         void operator()(const EggHatchedEvent &event)
@@ -123,7 +123,7 @@ private:
     HUD _hud;
     std::unique_ptr<HUDManager> _hudManager;
     std::unique_ptr<ResourceManager> _resourceManager;
-    std::unordered_map<std::string, Vector2> _eggs;
+    std::unordered_map<std::string, data::Position> _eggs;
 
     //AnimationFactory _animationFactory;
 };

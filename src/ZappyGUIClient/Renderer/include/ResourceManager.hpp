@@ -27,6 +27,7 @@ constexpr int PLAYER_RADIUS = TILE_SIZE / 4;
 constexpr int GRID_SIZE = 3;
 
 const std::string PLAYER_SPRITE_PATH = "resources/testSprite.png";
+const std::string EGG_SPRITE_PATH    = "resources/egg.png";
 
 struct TextureData {
     std::string name;
