@@ -118,9 +118,4 @@ const Server &AISession::getServer() const noexcept
     return _server;
 }
 
-Server &AISession::getServer() noexcept
-{
-    return _server;
-}
-
 } // namespace zappy::server
