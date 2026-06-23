@@ -57,6 +57,10 @@ uint8_t GUIPlayer::getLevel() const
     return _level;
 }
 
+const std::unordered_map<data::Resource, uint> &GUIPlayer::getInventory() const
+{
+    return _inventory;
+}
 void GUIPlayer::enqueueAction(const Action action)
 {
     _actionQueue.push(action);

@@ -56,6 +56,8 @@ public:
 
     uint8_t getLevel() const;
 
+    const std::unordered_map<data::Resource, uint> &getInventory() const;
+
     void enqueueAction(Action action);
 
     Action dequeueAction();
