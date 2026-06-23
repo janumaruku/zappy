@@ -11,6 +11,7 @@
 #include <exception>
 
 #include "MszCommand.hpp"
+#include "PinCommand.hpp"
 #include "PnwCommand.hpp"
 #include "PpoCommand.hpp"
 #include "TnaCommand.hpp"
@@ -27,6 +28,7 @@ GUIProtocolHandler::~GUIProtocolHandler() = default;
 void GUIProtocolHandler::registerCreators() noexcept
 {
     _factory.registerCreator<MszCommand>("msz");
+    _factory.registerCreator<PinCommand>("pin");
     _factory.registerCreator<PnwCommand>("pnw");
     _factory.registerCreator<PpoCommand>("ppo");
     _factory.registerCreator<TnaCommand>("tna");
