@@ -20,6 +20,8 @@ Player::Player(
     _team{team}, _position{position},
      _level{level}
 {
+    (void)this->_mapWidth;
+    (void)this->_mapHeight;
     _orientation = static_cast<data::Orientation>(utils::randomNumber(0, 3));
     _inventory[data::Resource::FOOD] = 10;
 
