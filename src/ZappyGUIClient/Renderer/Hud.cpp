@@ -149,6 +149,37 @@ void HUD::drawPlayerSelectorDropdown(const WorldState &worldState,
     }
 }
 
+void HUD::drawSelectedPlayer(const GUIPlayer &player,
+    const std::unique_ptr<HUDManager> &hudManager)
+{
+    data::Position position = {BACKGROUND_SELECTED_PLAYER_INFO_X,
+        static_cast<int>(WINDOW_HEIGHT - BACKGROUND_SELECTED_PLAYER_INFO_HEIGHT)};
+
+    DrawTexture(hudManager->getTexture(BACKGROUND_SELECTED_PLAYER_INFO_NAME),
+        position.getX(), position.getY(), GRAY);
+
+    DrawText(std::format("player : {}", player.getId()).c_str(),
+        position.getX(), position.getY(), TEXT_FONT_SIZE, WHITE);
+
+    DrawText(std::format("team : {}", player.getTeam()).c_str(),
+        position.getX(), position.getY() + (TEXT_FONT_SIZE * 2), TEXT_FONT_SIZE,
+        WHITE);
+
+    DrawText(std::format("level : {}", player.getLevel()).c_str(),
+        position.getX(), position.getY() + (TEXT_FONT_SIZE * 4), TEXT_FONT_SIZE,
+        WHITE);
+
+    size_t offsetY = 6;
+    for (const auto &it: player.getInventory()) {
+        DrawText(std::format("{} : {}",
+            RESOURCE_DATA[static_cast<int>(it.first)].name, it.second).c_str(),
+            position.getX(), position.getY() + (TEXT_FONT_SIZE * offsetY),
+            TEXT_FONT_SIZE, WHITE);
+
+        offsetY += 2;
+    }
+}
+
 size_t HUD::getMaxPlayersFromNames(const std::unordered_map<data::PlayerId,
                                        GUIPlayer> &players,
     const std::vector<data::PlayerId> &playerNames)

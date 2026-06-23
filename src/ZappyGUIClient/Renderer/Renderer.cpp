@@ -169,6 +169,7 @@ std::string Renderer::resourceToString(const data::Resource &resource)
 {
     return RESOURCE_DATA[static_cast<int>(resource)].name;
 }
+
 std::string Renderer::playerOrientationToString(const data::Orientation
         &orientation)
 {
