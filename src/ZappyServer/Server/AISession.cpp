@@ -36,21 +36,31 @@ AISession::~AISession() = default;
 
 void AISession::armStarvationTimer()
 {
+    if (_cleanup_pending)
+        return;
+
     const auto starvationDuration = std::chrono::duration<double>(
         126.0 / static_cast<double>(_server.getFrequency()));
 
     _starvation_timer.asyncWait(
         std::chrono::duration_cast<SteadyTimer::Duration>(starvationDuration),
         [this]() {
+            if (_cleanup_pending)
+                return;
+
             const auto &inventory = _player.getInventory();
             const auto foodIt = inventory.find(data::Resource::FOOD);
 
-            if (foodIt == inventory.end() || foodIt->second == 0)
+            if (foodIt == inventory.end() || foodIt->second == 0) {
+                _server.onPlayerDied(_player);
                 return;
+            }
 
             _player.removeResource(data::Resource::FOOD);
-            if (foodIt->second > 0)
+            if (_player.getInventory().at(data::Resource::FOOD) > 0)
                 armStarvationTimer();
+            else
+                _server.onPlayerDied(_player);
         });
 }
 
@@ -88,15 +98,23 @@ bool AISession::isFrozen() const noexcept
 void AISession::scheduleTask(const uint &durationConstant,
     const std::function<void()> &task)
 {
+    if (_cleanup_pending)
+        return;
+
     _command_timer.asyncWait(std::chrono::high_resolution_clock::duration(
         durationConstant / _server.getFrequency()),
-    [task]() {
+    [this, task]() {
+        if (_cleanup_pending)
+            return;
         task();
     });
 }
 
 void AISession::handleTransmission()
 {
+    if (_cleanup_pending)
+        return;
+
     if (_pending_commands >= MAX_PENDING_COMMANDS)
         return;
 
@@ -111,6 +129,9 @@ void AISession::handleTransmission()
 
 void AISession::executeNext()
 {
+    if (_cleanup_pending || _commandQueue.empty())
+        return;
+
     const auto &command = _commandQueue.front();
 
     _protocolHandler->handleLine(command, *this);
@@ -127,8 +148,13 @@ void AISession::onCommandComplete()
 
 void AISession::scheduleResponse(const uint &durationConstant, const std::string &response)
 {
+    if (_cleanup_pending)
+        return;
+
     _command_timer.asyncWait(std::chrono::high_resolution_clock::duration(durationConstant / _server.getFrequency()),
     [this, response]() {
+        if (_cleanup_pending)
+            return;
         send(response);
         onCommandComplete();
     });
@@ -142,6 +168,22 @@ const Player &AISession::getPlayer() const noexcept
 const Server &AISession::getServer() const noexcept
 {
     return _server;
+}
+
+void AISession::markForCleanup() noexcept
+{
+    if (_cleanup_pending)
+        return;
+
+    _cleanup_pending = true;
+    _command_timer.cancel();
+    _starvation_timer.cancel();
+    _socket->close();
+}
+
+bool AISession::needsCleanup() const noexcept
+{
+    return _cleanup_pending;
 }
 
 } // namespace zappy::server

@@ -47,6 +47,17 @@ const data::Tile &Map::getTile(const data::Position &pos) const
     return _tiles[index];
 }
 
+data::Tile &Map::getTile(const data::Position &pos)
+{
+    if (pos.getX() > _width || pos.getX() < 0 || pos.getY() > _height || pos.
+        getY() < 0)
+        throw std::out_of_range("Position out of map bounds");
+
+    const std::size_t index = (pos.getY() * this->_width) + pos.getX();
+
+    return _tiles[index];
+}
+
 const Player &Map::getPlayer(const PlayerId &id) const
 {
     if (!_players.contains(id))
@@ -83,7 +94,21 @@ Player &Map::spawnPlayer(const PlayerId &id, const TeamId &team)
     auto [it, inserted] = _players.emplace(id, Player{id, team, position, 1, _width, _height});
     if (!inserted)
         throw std::runtime_error("Player already exists: " + id);
+
+    _tiles[(position.getY() * this->_width) + position.getX()].addPlayer(id);
     return it->second;
+}
+
+bool Map::removePlayer(const PlayerId &id)
+{
+    auto playerIt = _players.find(id);
+    if (playerIt == _players.end())
+        return false;
+
+    const auto position = playerIt->second.getPosition();
+    _tiles[(position.getY() * this->_width) + position.getX()].removePlayer(id);
+    _players.erase(playerIt);
+    return true;
 }
 
 void Map::generate()
