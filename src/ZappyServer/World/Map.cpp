@@ -143,4 +143,35 @@ void Map::dropResource(const data::Resource &resource, const data::Position &pos
 
     tile.dropResource(resource);
 }
+
+void Map::addEgg(const data::Egg &egg)
+{
+    const uint id = _nextEggId++;
+    data::Egg storedEgg(std::to_string(id),
+        egg.getPlayerId(), egg.getTeam(), egg.getPosition(), egg.getLevel());
+    _eggs.emplace(id, std::move(storedEgg));
+}
+
+void Map::removeEgg(const uint &eggId)
+{
+    _eggs.erase(eggId);
+}
+
+const std::unordered_map<uint, data::Egg> &Map::getEggs() const noexcept
+{
+    return _eggs;
+}
+
+std::vector<uint> Map::getEggsOnTile(const data::Position &pos) const
+{
+    std::vector<uint> out;
+
+    for (const auto &kv : _eggs) {
+        const auto &e = kv.second;
+        if (e.getPosition().getX() == pos.getX() &&
+            e.getPosition().getY() == pos.getY())
+            out.push_back(kv.first);
+    }
+    return out;
+}
 }
