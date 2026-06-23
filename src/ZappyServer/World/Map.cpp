@@ -142,5 +142,4 @@ std::vector<uint> Map::getEggsOnTile(const data::Position &pos) const
     }
     return out;
 }
-
 }
