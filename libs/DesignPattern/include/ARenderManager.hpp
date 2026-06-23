@@ -14,6 +14,12 @@
 #include "IRenderManager.hpp"
 
 namespace designPattern {
+struct TextureData {
+    std::string name;
+    int x;
+    int y;
+    Color color;
+};
 class ARenderManager: public IRenderManager {
 public:
     ARenderManager() = default;

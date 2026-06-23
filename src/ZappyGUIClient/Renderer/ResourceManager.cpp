@@ -23,8 +23,8 @@ void ResourceManager::loadImages()
         _images.insert({name, createImageResource(pos, radius, c)});
     };
     for (const auto &it: RESOURCE_DATA) {
-        data::Position position = {(it.pos.getX() * CELL_SIZE) + GRID_SIZE,
-            (it.pos.getY() * CELL_SIZE) + GRID_SIZE};
+        data::Position position = {(it.x * CELL_SIZE) + GRID_SIZE,
+            (it.y * CELL_SIZE) + GRID_SIZE};
         insertImage(it.name, position, RESOURCE_RADIUS, it.color);
     }
 
