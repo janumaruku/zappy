@@ -17,6 +17,7 @@
 #include "Grid.hpp"
 #include "Hud.hpp"
 #include "HudManager.hpp"
+#include "ZappyEvents.hpp"
 #include "raylib.h"
 #include "ResourceManager.hpp"
 #include "WorldState.hpp"
@@ -57,6 +58,10 @@ private:
         }
 
         void operator()(const PlayerDiedEvent &/*event*/)
+        {
+        }
+
+        void operator()(const PlayerLevelEvent &/*event*/)
         {
         }
 

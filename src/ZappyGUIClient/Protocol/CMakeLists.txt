@@ -9,6 +9,8 @@ add_library(gui_protocol STATIC
         PieCommand.cpp
         PnwCommand.cpp
         PpoCommand.cpp
+        PlvCommand.cpp
+        TnaCommand.cpp
         ProtocolHandler.cpp)
 
 

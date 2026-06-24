@@ -43,6 +43,7 @@ public:
     GUIPlayer &getPlayerById(PlayerId id);
 
     const std::unordered_map<std::string, Team> &getTeams() const noexcept;
+    std::unordered_map<std::string, Team> &getTeams() noexcept;
 
     int getTimeUnit() const;
 
@@ -54,6 +55,8 @@ public:
         const data::Orientation &orientation);
 
     void onPlayerDeath(const PlayerId &id);
+
+    void onTeamName(const data::TeamId &teamName);
 
     void onTileContent(data::Position pos,
         const std::unordered_map<data::Resource, int> &resources);

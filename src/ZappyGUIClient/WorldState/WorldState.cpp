@@ -10,6 +10,7 @@
 #include <algorithm>
 #include <iostream>
 #include <optional>
+#include <raylib.h>
 #include <string>
 #include <vector>
 #include "GUIPlayer.hpp"
@@ -54,6 +55,12 @@ GUIPlayer &WorldState::getPlayerById(PlayerId id)
 
 const std::unordered_map<std::string, Team> &WorldState::getTeams()
     const noexcept
+{
+    return _teams;
+}
+
+std::unordered_map<std::string, Team> &WorldState::getTeams()
+    noexcept
 {
     return _teams;
 }
@@ -138,6 +145,11 @@ void WorldState::onPlayerDeath(const PlayerId &id)
     _players.erase(id);
 
     notify(ZappyEventType::GUI_EVENT, PlayerDiedEvent{id});
+}
+
+void WorldState::onTeamName(const data::TeamId &teamName)
+{
+    _teams.insert_or_assign(teamName, Team{teamName, WHITE});
 }
 
 void WorldState::onTileContent(const data::Position pos,

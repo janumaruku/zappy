@@ -6,6 +6,7 @@
 */
 
 #include "ZappyEvents.hpp"
+#include "GUIPlayer.hpp"
 
 namespace zappy::gui {
 PlayerNewEvent::PlayerNewEvent(const GUIPlayer &player): id{player.getId()},
@@ -18,4 +19,8 @@ PlayerMovedEvent::PlayerMovedEvent(const GUIPlayer &player): id{player.getId()},
     position{player.getPosition()}, orientation{player.getOrientation()}
 {
 }
+
+PlayerLevelEvent::PlayerLevelEvent(const GUIPlayer &player) : id(player.getId()),
+level(player.getLevel()), team(player.getTeam())
+{}
 }
