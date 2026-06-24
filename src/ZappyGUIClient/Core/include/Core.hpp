@@ -12,6 +12,7 @@
 
 #include "CommandDefinition.hpp"
 #include "IoContext.hpp"
+#include "Renderer.hpp"
 #include "TCPClient.hpp"
 #include "WorldState.hpp"
 
@@ -27,7 +28,6 @@ private:
     network::IOContext _ioc;
     std::unique_ptr<TCPClient> _tcpClient;
     WorldState _worldState;
-    // Renderer _renderer;
     shell::command::CommandDefinition _guiCommands;
 
     void buildGUICommands();

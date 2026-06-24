@@ -14,6 +14,16 @@ GUISession::GUISession(const std::shared_ptr<network::ConnectedSocket> &socket,
 {
 }
 
+const Server &GUISession::getServer() const noexcept
+{
+    return _server;
+}
+
+Server &GUISession::getServer() noexcept
+{
+    return _server;
+}
+
 void GUISession::handleTransmission()
 {
     // !todo(call protocol handler here)

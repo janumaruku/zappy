@@ -60,7 +60,7 @@ void IOContext::run()
     while (true) {
         if (::poll(_pollFds.data(), _pollFds.size(), 10) == -1)
             throw std::runtime_error(
-                utils::RED + "Error: " + utils::RESET + std::string{
+                utils::RED + "Error: " += utils::RESET + std::string{
                     strerror(errno)
                 });
 
@@ -165,18 +165,6 @@ void IOContext::triggerHandler(const int &itt)
         handler();
         updateEventType(fd);
     }
-}
-
-void IOContext::cancelTimer(const std::size_t &id)
-{
-    auto &values = container(_timerQueue);
-
-    const auto it = std::ranges::find_if(values,
-        [id](const TimerEntry &entry) {
-            return entry.id == id;
-        });
-    if (it != values.end())
-        it->cancellation = true;
 }
 
 void IOContext::drainExpiredTimers()

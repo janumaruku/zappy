@@ -11,21 +11,25 @@
 
 namespace zappy::gui {
 
-Team::Team(const std::string &name/*, Color color*/): _name(name)
-/*, _color(color)*/
+Team::Team(const std::string &name, const Color &color): _name(name)
+, _color(color)
 {
 
 }
 
-std::string Team::getName()
+std::string Team::getName() const
 {
     return _name;
 }
 
-/*Team::Color Team::getColor()
+Color Team::getColor() const
 {
     return _color;
-}*/
+}
+std::vector<Team::PlayerId> Team::getPlayers() const
+{
+    return _players;
+}
 
 void Team::addPlayer(const PlayerId &id)
 {

@@ -8,7 +8,6 @@
 #ifndef GUIMAP_HPP
 #define GUIMAP_HPP
 #include <vector>
-#include <sys/types.h>
 
 #include "Tile.hpp"
 
@@ -16,20 +15,25 @@ namespace zappy::gui {
 class GUIMap {
 public:
     GUIMap() = default;
-    GUIMap(const uint &width, const uint &height);
 
-    [[nodiscard]] uint getWidth() const;
+    GUIMap(const int &width, const int &height);
 
-    [[nodiscard]] uint getHeight() const;
+    [[nodiscard]] int getWidth() const;
+
+    [[nodiscard]] int getHeight() const;
 
     [[nodiscard]] const data::Tile &getTile(data::Position pos) const;
 
+    void updateWidth(int width);
+
+    void updateHeight(int height);
+
     void updateTile(data::Position pos,
-        const std::unordered_map<data::Resource, uint> &resources);
+        const std::unordered_map<data::Resource, int> &resources);
 
 private:
-    uint _width = 0;
-    uint _height = 0;
+    int _width = 0;
+    int _height = 0;
     std::vector<data::Tile> _tiles;
 };
 }

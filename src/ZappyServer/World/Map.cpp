@@ -55,6 +55,37 @@ const Player &Map::getPlayer(const PlayerId &id) const
     return _players.at(id);
 }
 
+Player &Map::getPlayer(const PlayerId &id)
+{
+    if (!_players.contains(id))
+        throw std::out_of_range("No data found for key " + id);
+
+    return _players.at(id);
+}
+
+const std::unordered_map<PlayerId, Player> &Map::getPlayers() const noexcept
+{
+    return _players;
+}
+
+bool Map::hasPlayer(const PlayerId &id) const noexcept
+{
+    return _players.contains(id);
+}
+
+Player &Map::spawnPlayer(const PlayerId &id, const TeamId &team)
+{
+    const data::Position position{
+        utils::randomNumber(0, _width - 1),
+        utils::randomNumber(0, _height - 1)
+    };
+
+    auto [it, inserted] = _players.emplace(id, Player{id, team, position, 1, _width, _height});
+    if (!inserted)
+        throw std::runtime_error("Player already exists: " + id);
+    return it->second;
+}
+
 void Map::generate()
 {
     static const uint food = static_cast<uint>(_width * _height * 0.5);
@@ -111,5 +142,36 @@ void Map::dropResource(const data::Resource &resource, const data::Position &pos
     auto &tile = _tiles[index];
 
     tile.dropResource(resource);
+}
+
+void Map::addEgg(const data::Egg &egg)
+{
+    const uint id = _nextEggId++;
+    data::Egg storedEgg(std::to_string(id),
+        egg.getPlayerId(), egg.getTeam(), egg.getPosition(), egg.getLevel());
+    _eggs.emplace(id, std::move(storedEgg));
+}
+
+void Map::removeEgg(const uint &eggId)
+{
+    _eggs.erase(eggId);
+}
+
+const std::unordered_map<uint, data::Egg> &Map::getEggs() const noexcept
+{
+    return _eggs;
+}
+
+std::vector<uint> Map::getEggsOnTile(const data::Position &pos) const
+{
+    std::vector<uint> out;
+
+    for (const auto &kv : _eggs) {
+        const auto &e = kv.second;
+        if (e.getPosition().getX() == pos.getX() &&
+            e.getPosition().getY() == pos.getY())
+            out.push_back(kv.first);
+    }
+    return out;
 }
 }

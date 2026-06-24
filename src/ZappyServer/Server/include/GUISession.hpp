@@ -5,19 +5,22 @@
 ** New header
 */
 
-#ifndef GUISESSION_HPP_
-#define GUISESSION_HPP_
+#pragma once
 
 #include "AClientSession.hpp"
-#include "Server.hpp"
 
 namespace zappy::server {
+
+class Server;
 
 class GUISession: public AClientSession {
 public:
     GUISession(const std::shared_ptr<network::ConnectedSocket> &socket,
         Server &server);
     ~GUISession() override = default;
+
+    [[nodiscard]] const Server &getServer() const noexcept;
+    [[nodiscard]] Server &getServer() noexcept;
 
 protected:
     Server &_server;
@@ -26,5 +29,3 @@ protected:
 };
 
 }
-
-#endif

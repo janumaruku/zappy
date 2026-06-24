@@ -5,13 +5,15 @@
 ** GUIPlayer.cpp
 */
 
-#include "GUIPlayer.hpp"
 
 #include <iostream>
 
+#include "Position.hpp"
+#include "GUIPlayer.hpp"
 #include "constants.hpp"
 
 namespace zappy::gui {
+
 GUIPlayer::GUIPlayer(const PlayerId &id, const std::string &team,
     const data::Position &position, data::Orientation orientation,
     const uint8_t level): _id(id), _team(team),
@@ -34,16 +36,31 @@ data::Position GUIPlayer::getPosition() const
     return _position;
 }
 
+void GUIPlayer::setPosition(const data::Position &to)
+{
+    _position = to;
+}
+
 data::Orientation GUIPlayer::getOrientation() const
 {
     return _orientation;
+
 }
 
-uint8_t &GUIPlayer::getLevel()
+void GUIPlayer::setOrientation(const data::Orientation &to)
+{
+    _orientation = to;
+}
+
+uint8_t GUIPlayer::getLevel() const
 {
     return _level;
 }
 
+const std::unordered_map<data::Resource, uint> &GUIPlayer::getInventory() const
+{
+    return _inventory;
+}
 void GUIPlayer::enqueueAction(const Action action)
 {
     _actionQueue.push(action);

@@ -1,0 +1,236 @@
+use crate::ai_data::ServerMessage;
+use behavior_tree::behavior_tree::BlackBoard;
+use std::collections::HashMap;
+
+#[derive(Eq, Hash, PartialEq, Clone)]
+pub enum Resource {
+    Food,
+    Linemate,
+    Deraumere,
+    Sibur,
+    Mendiane,
+    Phiras,
+    Thystame,
+    Unknown(String),
+}
+
+#[derive(Eq, Hash, PartialEq, Clone)]
+pub enum TileObject {
+    Resource(Resource),
+    Player,
+    Unknown(String),
+}
+
+#[derive(Clone)]
+pub enum Orientation {
+    Up,
+    Right,
+    Down,
+    Left,
+    Unknown(u8),
+}
+
+pub struct WorldModel {
+    level: u8,
+    food: u32,
+    inventory: HashMap<Resource, u32>,
+    map_width: u32,
+    map_height: u32,
+    visible_tiles: Vec<Vec<TileObject>>,
+}
+
+const STONES: [Resource; 7] = [
+    Resource::Food,
+    Resource::Linemate,
+    Resource::Deraumere,
+    Resource::Sibur,
+    Resource::Mendiane,
+    Resource::Phiras,
+    Resource::Thystame,
+];
+
+impl Resource {
+    pub fn from(str: &str) -> Self {
+        match str {
+            "food" => Resource::Food,
+            "linemate" => Resource::Linemate,
+            "deraumere" => Resource::Deraumere,
+            "sibur" => Resource::Sibur,
+            "mendiane" => Resource::Mendiane,
+            "phiras" => Resource::Phiras,
+            "thystame" => Resource::Thystame,
+            s => Resource::Unknown(s.to_string()),
+        }
+    }
+}
+
+impl TileObject {
+    pub fn from(str: &str) -> Self {
+        match str {
+            "player" => TileObject::Player,
+            str => {
+                let result = Resource::from(str);
+
+                match result {
+                    Resource::Unknown(line) => TileObject::Unknown(line),
+                    other => TileObject::Resource(other),
+                }
+            }
+        }
+    }
+}
+
+impl Orientation {
+    pub fn from(num: u8) -> Self {
+        match num {
+            0 => Orientation::Up,
+            1 => Orientation::Right,
+            2 => Orientation::Down,
+            3 => Orientation::Left,
+            n => Orientation::Unknown(n),
+        }
+    }
+}
+
+impl Resource {
+    pub fn from(str: &str) -> Self {
+        match str {
+            "food" => Resource::Food,
+            "linemate" => Resource::Food,
+            "deraumere" => Resource::Food,
+            "sibur" => Resource::Food,
+            "mendiane" => Resource::Food,
+            "phiras" => Resource::Food,
+            "thystame" => Resource::Food,
+            s => Resource::Unknown(s.to_string()),
+        }
+    }
+}
+
+impl Orientation {
+    pub fn from(num: u8) -> Self {
+        match num {
+            0 => Orientation::Up,
+            1 => Orientation::Right,
+            2 => Orientation::Down,
+            3 => Orientation::Left,
+            n => Orientation::Unknown(n),
+        }
+    }
+}
+
+impl WorldModel {
+    pub fn new() -> Self {
+        WorldModel {
+            level: 1,
+            food: 0,
+            inventory: HashMap::from([
+                (Resource::Linemate, 0),
+                (Resource::Deraumere, 0),
+                (Resource::Sibur, 0),
+                (Resource::Mendiane, 0),
+                (Resource::Phiras, 0),
+                (Resource::Thystame, 0),
+            ]),
+            map_width: 0,
+            map_height: 0,
+            visible_tiles: Vec::new(),
+        }
+    }
+
+    pub fn update(&mut self, response: &ServerMessage, blackboard: &mut BlackBoard) {
+        match response {
+            ServerMessage::Inventory(inventory) => self.update_inventory(inventory, blackboard),
+            ServerMessage::Look(tiles) => self.update_look(tiles, blackboard),
+            ServerMessage::LevelUp(level) => self.update_level_up(*level, blackboard),
+            ServerMessage::Ok => blackboard.set("last_response", ServerMessage::Ok),
+            ServerMessage::Ko => blackboard.set("last_response", ServerMessage::Ko),
+            _ => return,
+        }
+        blackboard.set("last_response", response.clone());
+    }
+
+    fn update_inventory(
+        &mut self,
+        inventory: &HashMap<Resource, u32>,
+        blackboard: &mut BlackBoard,
+    ) {
+        self.food = *inventory.get(&Resource::Food).unwrap_or(&0);
+
+        self.inventory = inventory
+            .iter()
+            .filter(|(res, _)| **res != Resource::Food)
+            .map(|(res, count)| (res.clone(), *count))
+            .collect();
+
+        blackboard.set("food", self.food);
+        for (res, count) in &self.inventory {
+            if let Some(key) = resource_blackboard_key(res) {
+                blackboard.set(key, *count);
+            }
+        }
+    }
+
+    fn update_look(&mut self, tiles: &Vec<Vec<TileObject>>, blackboard: &mut BlackBoard) {
+        self.visible_tiles = tiles.clone();
+
+        for res in &STONES {
+            blackboard.set(
+                &format!("visible_{}_count", resource_blackboard_key(res).unwrap()),
+                tiles.iter().fold(0u32, |acc, tile| {
+                    let count = tile.iter().fold(0, |count, obj| {
+                        if *obj == TileObject::Resource(res.clone()) {
+                            count + 1
+                        } else {
+                            count
+                        }
+                    });
+                    acc + count
+                }),
+            )
+        }
+
+        let players = tiles
+            .get(0)
+            .map(|tile| {
+                tile.iter().fold(0u32, |acc, count| {
+                    if *count == TileObject::Player {
+                        acc + 1
+                    } else {
+                        acc
+                    }
+                })
+            })
+            .unwrap_or(0)
+            .saturating_sub(1);
+        blackboard.set("teammates_on_tile", players);
+
+        for res in &STONES {
+            blackboard.set(
+                &format!("{}_target_tile", resource_blackboard_key(res).unwrap()),
+                tiles
+                    .iter()
+                    .position(|tile| tile.contains(&TileObject::Resource(res.clone()))),
+            )
+        }
+    }
+
+    fn update_level_up(&mut self, level: u8, blackboard: &mut BlackBoard) {
+        self.level = level;
+
+        blackboard.set("level", level);
+    }
+}
+
+pub fn resource_blackboard_key(resource: &Resource) -> Option<&'static str> {
+    match resource {
+        Resource::Food => Some("food"),
+        Resource::Linemate => Some("linemate"),
+        Resource::Deraumere => Some("deraumere"),
+        Resource::Sibur => Some("sibur"),
+        Resource::Mendiane => Some("mendiane"),
+        Resource::Phiras => Some("phiras"),
+        Resource::Thystame => Some("thystame"),
+        _ => None,
+    }
+}

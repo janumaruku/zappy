@@ -20,7 +20,7 @@ public:
     virtual ~IClientSession() = default;
 
     virtual void start() = 0;
-    virtual void send(std::string &data) = 0;
+    virtual void send(const std::string &data) = 0;
     virtual std::string receive() = 0;
 
 protected:

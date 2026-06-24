@@ -47,6 +47,11 @@ public:
 
     Position operator%=(const Position &other);
 
+    bool operator==(const Position &other) const;
+    
+    bool operator!=(const Position &other) const;
+
+
 private:
     int _x = 0;
     int _y = 0;

@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "Player.hpp"
+#include "Egg.hpp"
 
 namespace zappy::server {
 
@@ -26,6 +27,10 @@ public:
     [[nodiscard]] int getHeight() const noexcept;
     [[nodiscard]] const data::Tile &getTile(const data::Position &pos) const;
     [[nodiscard]] const Player &getPlayer(const PlayerId &id) const;
+    [[nodiscard]] Player &getPlayer(const PlayerId &id);
+    [[nodiscard]] const std::unordered_map<PlayerId, Player> &getPlayers() const noexcept;
+    Player &spawnPlayer(const PlayerId &id, const TeamId &team);
+    [[nodiscard]] bool hasPlayer(const PlayerId &id) const noexcept;
     void generate();
     void generateResource(const data::Resource &resource, uint amount);
     [[nodiscard]] bool takeResource(const data::Resource &resource,
@@ -33,11 +38,18 @@ public:
     void dropResource(const data::Resource &resource,
         const data::Position &pos);
 
+    void addEgg(const data::Egg &egg);
+    void removeEgg(const uint &eggId);
+    [[nodiscard]] const std::unordered_map<uint, data::Egg> &getEggs() const noexcept;
+    [[nodiscard]] std::vector<uint> getEggsOnTile(const data::Position &pos) const;
+
 private:
     int _width;
     int _height;
     std::vector<data::Tile> _tiles;
     std::unordered_map<PlayerId, Player> _players;
+    std::unordered_map<uint, data::Egg> _eggs;
+    uint _nextEggId = 1;
 };
 
 }
