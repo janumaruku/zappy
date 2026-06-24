@@ -8,7 +8,6 @@
 #ifndef ZAPPY_ZAPPYEVENTS_HPP
 #define ZAPPY_ZAPPYEVENTS_HPP
 
-#include <chrono>
 #include <unordered_map>
 #include <variant>
 #include <vector>
