@@ -8,6 +8,7 @@
 #ifndef ZAPPY_ZAPPYEVENTS_HPP
 #define ZAPPY_ZAPPYEVENTS_HPP
 
+#include <chrono>
 #include <unordered_map>
 #include <variant>
 #include <vector>
@@ -34,6 +35,12 @@ struct PlayerLevelEvent {
     std::string team;
 };
 
+struct PlayerInventoryAssignEvent {
+    explicit PlayerInventoryAssignEvent(GUIPlayer &player);
+    data::PlayerId id;
+    const std::unordered_map<data::Resource, uint> &inventory;
+};
+
 struct PlayerMovedEvent {
     explicit PlayerMovedEvent(const GUIPlayer &player);
 
@@ -49,6 +56,11 @@ struct PlayerDiedEvent {
 struct TileUpdateEvent {
     data::Position position;
     std::unordered_map<data::Resource, int> resources;
+};
+
+struct TimeUpdateEvent {
+    explicit TimeUpdateEvent(uint timeUnit);
+    uint timeUint;
 };
 
 struct EggLaidEvent {
@@ -81,8 +93,11 @@ struct GameEndEvent {
 };
 
 using ZappyEvent = std::variant<PlayerNewEvent, PlayerMovedEvent, PlayerLevelEvent,
-    PlayerDiedEvent, TileUpdateEvent, EggLaidEvent, EggHatchedEvent,
-    EggDiedEvent, IncantationStartEvent, IncantationEndEvent, GameEndEvent>;
+    PlayerInventoryAssignEvent, PlayerDiedEvent,
+    TileUpdateEvent,
+    TimeUpdateEvent,
+    EggLaidEvent, EggHatchedEvent, EggDiedEvent,
+    IncantationStartEvent, IncantationEndEvent, GameEndEvent>;
 }
 
 #endif //ZAPPY_ZAPPYEVENTS_HPP

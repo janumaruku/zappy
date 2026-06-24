@@ -13,16 +13,20 @@
 #include "EdiCommand.hpp"
 #include "PicCommand.hpp"
 #include "PieCommand.hpp"
+#include "PinCommand.hpp"
 #include "PlvCommand.hpp"
 #include "PnwCommand.hpp"
 #include "PpoCommand.hpp"
 #include "SegCommand.hpp"
+#include "SgtCommand.hpp"
+#include "SstCommand.hpp"
 #include "StringUtils.hpp"
 #include "ProtocolHandler.hpp"
 #include "BctCommand.hpp"
 #include "MctCommand.hpp"
 #include "MszCommand.hpp"
 #include "EnwCommand.hpp"
+#include "TnaCommand.hpp"
 #include "WorldState.hpp"
 
 namespace zappy::gui {
@@ -42,10 +46,14 @@ void ProtocolHandler::registerCommands() noexcept
     _factory.registerCreator<MszCommand>("msz");
     _factory.registerCreator<PicCommand>("pic");
     _factory.registerCreator<PieCommand>("pie");
-    _factory.registerCreator<PnwCommand>("pnw");
+    _factory.registerCreator<PinCommand>("pin");
     _factory.registerCreator<PlvCommand>("plv");
+    _factory.registerCreator<PnwCommand>("pnw");
     _factory.registerCreator<PpoCommand>("ppo");
     _factory.registerCreator<SegCommand>("seg");
+    _factory.registerCreator<SgtCommand>("sgt");
+    _factory.registerCreator<SstCommand>("sst");
+    _factory.registerCreator<TnaCommand>("tna");
 }
 
 void ProtocolHandler::handleLine(const std::string& line) noexcept

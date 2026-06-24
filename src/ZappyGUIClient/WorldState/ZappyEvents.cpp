@@ -23,4 +23,10 @@ PlayerMovedEvent::PlayerMovedEvent(const GUIPlayer &player): id{player.getId()},
 PlayerLevelEvent::PlayerLevelEvent(const GUIPlayer &player) : id(player.getId()),
 level(player.getLevel()), team(player.getTeam())
 {}
+
+PlayerInventoryAssignEvent::PlayerInventoryAssignEvent(GUIPlayer &player) :
+id(player.getId()), inventory(player.getInventory())
+{}
+
+TimeUpdateEvent::TimeUpdateEvent(uint t) : timeUint(t) {}
 }

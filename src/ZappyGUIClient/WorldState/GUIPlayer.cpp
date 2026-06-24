@@ -68,6 +68,12 @@ const std::unordered_map<data::Resource, uint> &GUIPlayer::getInventory() const
 {
     return _inventory;
 }
+
+void GUIPlayer::setInventory(const std::unordered_map<data::Resource, uint> &inventory)
+{
+    _inventory = inventory;
+}
+
 void GUIPlayer::enqueueAction(const Action action)
 {
     _actionQueue.push(action);

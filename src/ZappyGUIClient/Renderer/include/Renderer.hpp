@@ -49,23 +49,31 @@ private:
     struct OnEvent {
         explicit OnEvent(Renderer &renderer): renderer{renderer} {}
 
-        void operator()(const PlayerNewEvent &/*event*/)
+        void operator()(const PlayerNewEvent &)
         {
         }
 
-        void operator()(const PlayerMovedEvent &/*event*/)
+        void operator()(const PlayerMovedEvent &)
         {
         }
 
-        void operator()(const PlayerDiedEvent &/*event*/)
+        void operator()(const PlayerDiedEvent &)
         {
         }
 
-        void operator()(const PlayerLevelEvent &/*event*/)
+        void operator()(const PlayerLevelEvent &)
         {
         }
 
-        void operator()(const TileUpdateEvent &/*event*/)
+        void operator()(const PlayerInventoryAssignEvent &)
+        {
+        }
+
+        void operator()(const TileUpdateEvent &)
+        {
+        }
+
+        void operator()(const TimeUpdateEvent &)
         {
         }
 
@@ -84,15 +92,15 @@ private:
             renderer._eggs.erase(event.egdId);
         }
 
-        void operator()(const IncantationStartEvent &/*event*/)
+        void operator()(const IncantationStartEvent &)
         {
         }
 
-        void operator()(const IncantationEndEvent &/*event*/)
+        void operator()(const IncantationEndEvent &)
         {
         }
 
-        void operator()(const GameEndEvent &/*event*/)
+        void operator()(const GameEndEvent &)
         {
         }
 

@@ -17,8 +17,7 @@ using TeamId = std::string;
 
 class Egg {
 public:
-    Egg(std::string id, PlayerId playerId,
-        std::string team, Position position, uint level);
+    Egg(std::string id, PlayerId playerId, std::string team, Position position, uint level);
 
     [[nodiscard]] std::string getId() const;
 
