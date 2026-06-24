@@ -18,6 +18,7 @@
 #include "IoContext.hpp"
 #include "GUIProtocolHandler.hpp"
 #include "Map.hpp"
+#include "Timer.hpp"
 
 namespace zappy::server {
 
@@ -46,6 +47,8 @@ public:
     [[nodiscard]] const std::vector<std::string> &getTeams() const noexcept { return _teams; }
 
 private:
+    static constexpr uint RESOURCE_RESPAWN_TIME_UNIT = 20;
+
     network::IOContext _ioContext;
     network::Acceptor _acceptor;
     std::vector<std::string> _teams;
@@ -55,6 +58,7 @@ private:
     GUIProtocolHandler _guiProtocolHandler;
 
     Map _map;
+    SteadyTimer _resourceRespawnTimer;
     std::vector<std::unique_ptr<AISession>> _aiSessions;
     std::vector<std::unique_ptr<GUISession>> _guiSessions;
 
@@ -68,6 +72,10 @@ private:
     void handleAiHandshake(const std::shared_ptr<network::ConnectedSocket> &socket,
         const std::string &teamName);
     void handleGuiHandshake(const std::shared_ptr<network::ConnectedSocket> &socket);
+    void scheduleResourceRespawn();
+    void respawnResources();
+    void notifyMapContent();
+    void sendMapContent(GUISession &session);
     [[nodiscard]] std::string makePlayerId();
 };
 }
