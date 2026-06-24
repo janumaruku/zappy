@@ -61,6 +61,9 @@ void Renderer::render(const WorldState &world)
     renderPlayers(world.getPlayers(), world.getTeams());
     EndMode2D();
     _hud.draw(world, _hudManager);
+    if (_winner.has_value()) {
+        renderGameOver();
+    }
     EndDrawing();
 }
 
@@ -165,6 +168,16 @@ void Renderer::renderIncantation(const data::Position position)
             _incantationsRes.erase(position);
         }
     }
+}
+
+void Renderer::renderGameOver()
+{
+    DrawRectangle(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, GAMEOVER_BACKRGOUND_COLOR);
+    const auto &winingText = std::format("Team {} WINS", _winner.value());
+    DrawText(winingText.c_str(),
+        static_cast<int>((WINDOW_WIDTH / 2) - (static_cast<float>(winingText.size()) * TEXT_FONT_SIZE)),
+        WINDOW_HEIGHT / 2, TEXT_FONT_SIZE,
+        BLACK);
 }
 
 void Renderer::updateAnimation(const GUIPlayer &player)
