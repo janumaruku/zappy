@@ -64,16 +64,19 @@ private:
         {
         }
 
-        void operator()(const EggLaidEvent &/*event*/)
+        void operator()(const EggLaidEvent &event)
         {
+            renderer._eggs.insert({event.eggId, event.position});
         }
 
-        void operator()(const EggHatchedEvent &/*event*/)
+        void operator()(const EggHatchedEvent &event)
         {
+            renderer._eggs.erase(event.egdId);
         }
 
-        void operator()(const EggDiedEvent &/*event*/)
+        void operator()(const EggDiedEvent &event)
         {
+            renderer._eggs.erase(event.egdId);
         }
 
         void operator()(const IncantationStartEvent &/*event*/)
@@ -99,7 +102,7 @@ private:
     void renderPlayers(const std::unordered_map<data::PlayerId, GUIPlayer>
             &players, const std::unordered_map<std::string, Team>& teams) const;
 
-    static void renderEggs(const std::map<unsigned int, data::Egg> &eggs);
+    void renderEggs();
 
     static void updateAnimation(const GUIPlayer &player);
 
@@ -120,6 +123,7 @@ private:
     HUD _hud;
     std::unique_ptr<HUDManager> _hudManager;
     std::unique_ptr<ResourceManager> _resourceManager;
+    std::unordered_map<std::string, data::Position> _eggs;
 
     //AnimationFactory _animationFactory;
 };
