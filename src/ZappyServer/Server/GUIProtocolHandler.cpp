@@ -17,6 +17,7 @@
 #include "PlvCommand.hpp"
 #include "PpoCommand.hpp"
 #include "SgtCommand.hpp"
+#include "SstCommand.hpp"
 #include "TnaCommand.hpp"
 
 namespace zappy::server {
@@ -36,6 +37,7 @@ void GUIProtocolHandler::registerCreators() noexcept
     _factory.registerCreator<PlvCommand>("plv");
     _factory.registerCreator<PpoCommand>("ppo");
     _factory.registerCreator<SgtCommand>("sgt");
+    _factory.registerCreator<SstCommand>("sst");
     _factory.registerCreator<TnaCommand>("tna");
 }
 

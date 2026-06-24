@@ -44,6 +44,10 @@ void Server::run()
     return _frequency;
 }
 
+void Server::setFrequency(const uint frequency) noexcept
+{
+    _frequency = frequency;
+}
 
 void Server::startAccept()
 {
@@ -161,6 +165,12 @@ void Server::notifyGUI(const std::string &command)
 {
     for (auto &session : _guiSessions)
         session->send(command);
+}
+
+bool Server::handleGUICommand(GUISession &session, const std::string &command,
+    const std::vector<std::string> &args)
+{
+    return _guiProtocolHandler.handleLine(command, session, args);
 }
 
 void Server::broadcastToAll(const std::string &data)

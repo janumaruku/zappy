@@ -34,10 +34,13 @@ public:
     void run();
 
     void notifyGUI(const std::string &command);
+    bool handleGUICommand(GUISession &session, const std::string &command,
+        const std::vector<std::string> &args = {});
     void broadcastToAll(const std::string &data);
     void forEachAISession(const std::function<void(AISession &)> &fn);
 
     [[nodiscard]] const uint &getFrequency() const;
+    void setFrequency(uint frequency) noexcept;
     [[nodiscard]] const Map &getMap() const noexcept { return _map; }
     [[nodiscard]] Map &getMap() noexcept { return _map; }
     [[nodiscard]] const std::vector<std::string> &getTeams() const noexcept { return _teams; }
