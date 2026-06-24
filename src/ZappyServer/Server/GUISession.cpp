@@ -32,8 +32,6 @@ Server &GUISession::getServer() noexcept
 
 void GUISession::handleTransmission()
 {
-    while (!_transmission.empty() && _transmission.back() == '\r')
-        _transmission.pop_back();
     if (_transmission.empty())
         return;
 
