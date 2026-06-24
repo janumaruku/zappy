@@ -8,6 +8,8 @@
 #include "Server.hpp"
 
 #include <algorithm>
+#include <array>
+#include <chrono>
 #include <format>
 #include <iostream>
 #include <memory>
@@ -21,12 +23,21 @@
 
 namespace zappy::server {
 
+static int resourceQuantity(const data::Tile &tile, const data::Resource &resource)
+{
+    const auto &resources = tile.getResources();
+
+    if (!resources.contains(resource))
+        return 0;
+    return resources.at(resource);
+}
+
 Server::~Server() = default;
 
 Server::Server(int port, int width, int height, std::vector<std::string> teams,
     uint playersPerTeam, uint frequency):
     _acceptor(_ioContext, network::Endpoint(port)), _teams(teams),
-    _frequency(frequency), _map(width, height)
+    _frequency(frequency), _map(width, height), _resourceRespawnTimer(_ioContext)
 {
     for (const auto &team : _teams)
         _availableSlots[team] = playersPerTeam;
@@ -34,7 +45,7 @@ Server::Server(int port, int width, int height, std::vector<std::string> teams,
 
 void Server::run()
 {
-    (void)_frequency;
+    scheduleResourceRespawn();
     startAccept();
     _ioContext.run();
 }
@@ -44,6 +55,59 @@ void Server::run()
     return _frequency;
 }
 
+void Server::setFrequency(const uint frequency) noexcept
+{
+    _frequency = frequency;
+    scheduleResourceRespawn();
+}
+
+void Server::scheduleResourceRespawn()
+{
+    const uint delay = std::max(1U,
+        (RESOURCE_RESPAWN_TIME_UNIT * 1000U) / std::max(1U, _frequency));
+
+    _resourceRespawnTimer.cancel();
+    _resourceRespawnTimer.asyncWait(std::chrono::milliseconds(delay), [this]() {
+        respawnResources();
+    });
+}
+
+void Server::respawnResources()
+{
+    _map.generate();
+    notifyMapContent();
+    scheduleResourceRespawn();
+}
+
+void Server::notifyMapContent()
+{
+    for (auto &session : _guiSessions)
+        sendMapContent(*session);
+}
+
+void Server::sendMapContent(GUISession &session)
+{
+    constexpr std::array resources = {
+        data::Resource::FOOD,
+        data::Resource::LINEMATE,
+        data::Resource::DERAUMERE,
+        data::Resource::SIBUR,
+        data::Resource::MENDIANE,
+        data::Resource::PHIRAS,
+        data::Resource::THYSTAME,
+    };
+
+    for (int y = 0; y < _map.getHeight(); ++y) {
+        for (int x = 0; x < _map.getWidth(); ++x) {
+            const auto &tile = _map.getTile(data::Position{x, y});
+            std::string command = std::format("bct {} {}", x, y);
+
+            for (const auto &resource : resources)
+                command += std::format(" {}", resourceQuantity(tile, resource));
+            session.send(command + "\n");
+        }
+    }
+}
 
 void Server::startAccept()
 {
@@ -122,6 +186,8 @@ void Server::handleGuiHandshake(const std::shared_ptr<network::ConnectedSocket> 
     auto &session = *_guiSessions.back();
     _guiProtocolHandler.handleLine("msz", session);
     _guiProtocolHandler.handleLine("tna", session);
+    _guiProtocolHandler.handleLine("sgt", session);
+    sendMapContent(session);
     _guiProtocolHandler.handleLine("pnw", session);
     session.start();
 }
@@ -161,6 +227,12 @@ void Server::notifyGUI(const std::string &command)
 {
     for (auto &session : _guiSessions)
         session->send(command);
+}
+
+bool Server::handleGUICommand(GUISession &session, const std::string &command,
+    const std::vector<std::string> &args)
+{
+    return _guiProtocolHandler.handleLine(command, session, args);
 }
 
 void Server::broadcastToAll(const std::string &data)

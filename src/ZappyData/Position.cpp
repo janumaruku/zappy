@@ -121,4 +121,12 @@ bool Position::operator!=(const Position &other) const
 {
     return !(*this == other);
 }
+
+bool Position::operator<(const Position &other) const {
+    if (_x != other.getX()) {
+        return _x < other.getX();
+    }
+    return _y < other.getY();
+}
+
 }

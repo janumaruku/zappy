@@ -17,6 +17,7 @@ add_library(commands STATIC
     RightCommand.cpp
     SetCommand.cpp
     SgtCommand.cpp
+    SstCommand.cpp
     TakeCommand.cpp
     TnaCommand.cpp
 )

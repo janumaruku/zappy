@@ -61,6 +61,9 @@ void Renderer::render(const WorldState &world)
     renderPlayers(world.getPlayers(), world.getTeams());
     EndMode2D();
     _hud.draw(world, _hudManager);
+    if (_winner.has_value()) {
+        renderGameOver();
+    }
     EndDrawing();
 }
 
@@ -75,19 +78,18 @@ void Renderer::onNotify(const ZappyEvent &event)
     std::visit(OnEvent{*this}, event);
 }
 
-void Renderer::renderMap(const GUIMap &map) const
+void Renderer::renderMap(const GUIMap &map)
 {
     _grid.render();
-    const auto width = map.getWidth();
-    const auto len   = map.getWidth() * map.getHeight();
+    const auto width  = map.getWidth();
+    const auto height = map.getHeight();
 
-    auto y = 0;
-    for (auto x = 0; x < len; ++x) {
-        if (x == width - 1)
-            ++y;
-        const auto tile = map.getTile({x % width, y}).getResources();
-
-        renderResourcesFromTile(tile, {(x % width), y});
+    for (auto y = 0; y < height; ++y) {
+        for (auto x = 0; x < width; ++x) {
+            const auto tile = map.getTile({x, y}).getResources();
+            renderResourcesFromTile(tile, {x, y});
+            renderIncantation({x, y});
+        }
     }
 }
 
@@ -138,6 +140,44 @@ void Renderer::renderEggs()
 
         DrawTexture(eggTexture, centerX + GRID_SIZE, centerY, WHITE);
     }
+}
+
+void Renderer::renderIncantation(const data::Position position)
+{
+    const data::Position incantationPosition = {
+        position.getX() * TILE_SIZE, position.getY() * TILE_SIZE};
+
+    if (_incantations.contains(position)) {
+        DrawRectangle(incantationPosition.getX(), incantationPosition.getY(),
+            TILE_SIZE, TILE_SIZE, INCANTATION_COLOR);
+    }
+
+    if (_incantationsRes.contains(position)) {
+        auto [result, addedTime] = _incantationsRes.at(position);
+
+        const auto elapsed = std::chrono::duration_cast<
+            std::chrono::milliseconds>(std::chrono::steady_clock::now() -
+            addedTime);
+
+        if (elapsed < INCANTATION_END_DURATION) {
+            const Color overlayColor =
+                result ? INCANTATION_SUCCESS_COLOR : INCANTATION_FAILURE_COLOR;
+            DrawRectangle(incantationPosition.getX(), incantationPosition.getY(),
+                TILE_SIZE, TILE_SIZE, overlayColor);
+        } else {
+            _incantationsRes.erase(position);
+        }
+    }
+}
+
+void Renderer::renderGameOver()
+{
+    DrawRectangle(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, GAMEOVER_BACKRGOUND_COLOR);
+    const auto &winingText = std::format("Team {} WINS", _winner.value());
+    DrawText(winingText.c_str(),
+        static_cast<int>((WINDOW_WIDTH / 2) - (static_cast<float>(winingText.size()) * TEXT_FONT_SIZE)),
+        WINDOW_HEIGHT / 2, TEXT_FONT_SIZE,
+        BLACK);
 }
 
 void Renderer::updateAnimation(const GUIPlayer &player)
