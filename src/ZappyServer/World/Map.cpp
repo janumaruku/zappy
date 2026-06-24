@@ -88,13 +88,13 @@ Player &Map::spawnPlayer(const PlayerId &id, const TeamId &team)
 
 void Map::generate()
 {
-    static const uint food = static_cast<uint>(_width * _height * 0.5);
-    static const uint linemate = static_cast<uint>(_width * _height * 0.3);
-    static const uint deraumere = static_cast<uint>(_width * _height * 0.15);
-    static const uint sibur = static_cast<uint>(_width * _height * 0.1);
-    static const uint mendiane = static_cast<uint>(_width * _height * 0.1);
-    static const uint phiras = static_cast<uint>(_width * _height * 0.08);
-    static const uint thystame = static_cast<uint>(_width * _height * 0.05);
+    const uint food = static_cast<uint>(_width * _height * 0.5);
+    const uint linemate = static_cast<uint>(_width * _height * 0.3);
+    const uint deraumere = static_cast<uint>(_width * _height * 0.15);
+    const uint sibur = static_cast<uint>(_width * _height * 0.1);
+    const uint mendiane = static_cast<uint>(_width * _height * 0.1);
+    const uint phiras = static_cast<uint>(_width * _height * 0.08);
+    const uint thystame = static_cast<uint>(_width * _height * 0.05);
 
     generateResource(data::Resource::FOOD, food);
     generateResource(data::Resource::LINEMATE, linemate);
@@ -125,7 +125,7 @@ bool Map::takeResource(const data::Resource& resource, const data::Position& pos
     const auto index = (pos.getY() * this->_width) + pos.getX();
     auto &tile = _tiles[index];
 
-    if (tile.hasResource(resource))
+    if (!tile.hasResource(resource))
         return false;
 
     tile.takeResource(resource);
