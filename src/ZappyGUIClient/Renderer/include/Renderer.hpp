@@ -32,6 +32,8 @@ constexpr Color INCANTATION_COLOR = {.r=160, .g=32, .b=255, .a=100};
 constexpr Color INCANTATION_FAILURE_COLOR = {.r=0, .g=255, .b=0, .a=100};
 constexpr Color INCANTATION_SUCCESS_COLOR = {.r=255, .g=0, .b=0, .a=100};
 
+constexpr Color GAMEOVER_BACKRGOUND_COLOR = {.r=0, .g=0, .b=0, .a=50};
+
 constexpr std::chrono::milliseconds INCANTATION_END_DURATION = std::chrono::milliseconds(1000);
 
 class Renderer: public designPattern::AObserver<ZappyEvent, ZappyEventType> {
@@ -97,8 +99,9 @@ private:
             renderer._incantationsRes.emplace(event.position, std::make_pair(event.result, std::chrono::steady_clock::now()));
         }
 
-        void operator()(const GameEndEvent &/*event*/)
+        void operator()(const GameEndEvent &event)
         {
+            renderer._winner = event.team;
         }
 
         Renderer &renderer;
@@ -115,6 +118,8 @@ private:
     void renderEggs();
 
     void renderIncantation(const data::Position position);
+
+    void renderGameOver();
 
     static void updateAnimation(const GUIPlayer &player);
 
@@ -138,6 +143,7 @@ private:
     std::unordered_map<std::string, data::Position> _eggs;
     std::map<data::Position, std::chrono::steady_clock::time_point> _incantations;
     std::map<data::Position, std::pair<bool, std::chrono::steady_clock::time_point>> _incantationsRes;
+    std::optional<std::string> _winner;
 
     //AnimationFactory _animationFactory;
 };
