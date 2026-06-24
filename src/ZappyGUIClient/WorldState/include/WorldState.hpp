@@ -19,6 +19,7 @@
 #include "GUIPlayer.hpp"
 #include "Position.hpp"
 #include "Team.hpp"
+#include "Tile.hpp"
 #include "ZappyEvents.hpp"
 
 namespace zappy::gui {
@@ -40,24 +41,32 @@ public:
     const std::unordered_map<PlayerId, GUIPlayer> &getPlayers() const noexcept;
 
     const GUIPlayer &getPlayerById(const PlayerId &id) const;
+    GUIPlayer &getPlayerById(PlayerId id);
 
     const std::unordered_map<std::string, Team> &getTeams() const noexcept;
+    std::unordered_map<std::string, Team> &getTeams() noexcept;
 
-    int getTimeUnit() const;
+    uint getTimeUnit() const;
 
-    void onPlayerNew(GUIPlayer player);
+    void onPlayerNew(const GUIPlayer &player);
+
+    void onPlayerLevel(const GUIPlayer &player);
 
     void onPlayerPosition(const std::string &id, const data::Position &pos,
         const data::Orientation &orientation);
 
     void onPlayerDeath(const PlayerId &id);
 
+    void onPlayerInventory(GUIPlayer &player, const std::unordered_map<data::Resource, uint> &);
+
+    void onTeamName(const data::TeamId &teamName);
+
     void onTileContent(data::Position pos,
         const std::unordered_map<data::Resource, int> &resources);
 
-    void onTimeUnit(int t);
+    void onTimeUnit(uint t);
 
-    void onEggLaid(int eggId, PlayerId playerId, data::Position pos);
+    void onEggLaid(int eggId, const PlayerId &playerId, const data::Position &pos);
     void onEggDeath(const std::string& eggId);
     void onEggHatched(const uint &id);
 
@@ -76,7 +85,7 @@ private:
     std::unordered_map<std::string, data::Egg> _eggs;
     std::unordered_map<std::string, Team> _teams;
     std::optional<std::string> _winner = std::nullopt;
-    int _timeUnit = 1;
+    uint _timeUnit = 1;
 };
 }
 

@@ -55,8 +55,10 @@ public:
     void setOrientation(const data::Orientation &);
 
     uint8_t getLevel() const;
+    void setLevel(uint8_t lvl) noexcept;
 
     const std::unordered_map<data::Resource, uint> &getInventory() const;
+    void setInventory(const std::unordered_map<data::Resource, uint> &);
 
     void enqueueAction(Action action);
 

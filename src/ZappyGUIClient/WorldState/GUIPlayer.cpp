@@ -6,7 +6,9 @@
 */
 
 
+#include <cstdint>
 #include <iostream>
+#include <sys/types.h>
 
 #include "Position.hpp"
 #include "GUIPlayer.hpp"
@@ -57,10 +59,21 @@ uint8_t GUIPlayer::getLevel() const
     return _level;
 }
 
+void GUIPlayer::setLevel(uint8_t lvl) noexcept
+{
+    _level = lvl;
+}
+
 const std::unordered_map<data::Resource, uint> &GUIPlayer::getInventory() const
 {
     return _inventory;
 }
+
+void GUIPlayer::setInventory(const std::unordered_map<data::Resource, uint> &inventory)
+{
+    _inventory = inventory;
+}
+
 void GUIPlayer::enqueueAction(const Action action)
 {
     _actionQueue.push(action);

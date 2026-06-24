@@ -10,10 +10,13 @@
 #include <algorithm>
 #include <iostream>
 #include <optional>
+#include <raylib.h>
 #include <string>
 #include <vector>
+#include "Egg.hpp"
 #include "GUIPlayer.hpp"
 #include "Position.hpp"
+#include "Team.hpp"
 #include "ZappyEvents.hpp"
 
 namespace zappy::gui {
@@ -43,13 +46,27 @@ const GUIPlayer &WorldState::getPlayerById(const PlayerId &id) const
     return _players.at(id);
 }
 
+GUIPlayer &WorldState::getPlayerById(PlayerId id)
+{
+
+    if (!_players.contains(id))
+        throw std::runtime_error("Player not found: " + id);
+    return _players.at(id);
+}
+
 const std::unordered_map<std::string, Team> &WorldState::getTeams()
     const noexcept
 {
     return _teams;
 }
 
-void WorldState::onPlayerNew(GUIPlayer player)
+std::unordered_map<std::string, Team> &WorldState::getTeams()
+    noexcept
+{
+    return _teams;
+}
+
+void WorldState::onPlayerNew(const GUIPlayer &player)
 {
     if (_teams.contains(player.getTeam()))
         _teams.at(player.getTeam()).addPlayer(player.getId());
@@ -57,6 +74,13 @@ void WorldState::onPlayerNew(GUIPlayer player)
     std::clog << "New Player " << player.getId() << " has joined" << std::endl;
 
     notify(ZappyEventType::GUI_EVENT, PlayerNewEvent{player});
+}
+
+void WorldState::onPlayerLevel(const GUIPlayer &player)
+{
+    if (! _teams.contains(player.getTeam()))
+        return;
+    notify(ZappyEventType::GUI_EVENT, PlayerLevelEvent{player});
 }
 
 static bool hasMovedClockwise(const data::Orientation &old, const data::Orientation &other)
@@ -124,6 +148,17 @@ void WorldState::onPlayerDeath(const PlayerId &id)
     notify(ZappyEventType::GUI_EVENT, PlayerDiedEvent{id});
 }
 
+void WorldState::onPlayerInventory(GUIPlayer &player, const std::unordered_map<data::Resource, uint> &inventory)
+{
+    player.setInventory(inventory);
+    notify(ZappyEventType::GUI_EVENT, PlayerInventoryAssignEvent{player});
+}
+
+void WorldState::onTeamName(const data::TeamId &teamName)
+{
+    _teams.insert_or_assign(teamName, Team{teamName, WHITE});
+}
+
 void WorldState::onTileContent(const data::Position pos,
     const std::unordered_map<data::Resource, int> &resources)
 {
@@ -135,19 +170,23 @@ void WorldState::onTileContent(const data::Position pos,
     });
 }
 
-/*void WorldState::onTimeUnit(int t)
+void WorldState::onTimeUnit(uint t)
 {
-    (void)t;
-}*/
+    _timeUnit = t;
+    notify(ZappyEventType::GUI_EVENT, TimeUpdateEvent{t});
+}
 
-int WorldState::getTimeUnit() const
+uint WorldState::getTimeUnit() const
 {
     return _timeUnit;
 }
 
-/*void WorldState::onEggLaid(int eggId, PlayerId playerId, Position pos){
-
-}*/
+void WorldState::onEggLaid(int eggId, const PlayerId &playerId, const data::Position &pos)
+{
+    auto player =  getPlayers().at(playerId);
+    data::Egg e(std::to_string(eggId), playerId, player.getTeam(), pos, player.getLevel());
+    _eggs.emplace(std::to_string(eggId), e);
+}
 
 void WorldState::onEggHatched(const uint &id)
 {

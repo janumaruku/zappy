@@ -27,6 +27,19 @@ struct PlayerNewEvent {
     std::string team;
 };
 
+struct PlayerLevelEvent {
+    explicit PlayerLevelEvent(const GUIPlayer &player);
+    data::PlayerId id;
+    uint8_t level;
+    std::string team;
+};
+
+struct PlayerInventoryAssignEvent {
+    explicit PlayerInventoryAssignEvent(GUIPlayer &player);
+    data::PlayerId id;
+    const std::unordered_map<data::Resource, uint> &inventory;
+};
+
 struct PlayerMovedEvent {
     explicit PlayerMovedEvent(const GUIPlayer &player);
 
@@ -42,6 +55,11 @@ struct PlayerDiedEvent {
 struct TileUpdateEvent {
     data::Position position;
     std::unordered_map<data::Resource, int> resources;
+};
+
+struct TimeUpdateEvent {
+    explicit TimeUpdateEvent(uint timeUnit);
+    uint timeUint;
 };
 
 struct EggLaidEvent {
@@ -73,9 +91,12 @@ struct GameEndEvent {
     std::string team;
 };
 
-using ZappyEvent = std::variant<PlayerNewEvent, PlayerMovedEvent,
-    PlayerDiedEvent, TileUpdateEvent, EggLaidEvent, EggHatchedEvent,
-    EggDiedEvent, IncantationStartEvent, IncantationEndEvent, GameEndEvent>;
+using ZappyEvent = std::variant<PlayerNewEvent, PlayerMovedEvent, PlayerLevelEvent,
+    PlayerInventoryAssignEvent, PlayerDiedEvent,
+    TileUpdateEvent,
+    TimeUpdateEvent,
+    EggLaidEvent, EggHatchedEvent, EggDiedEvent,
+    IncantationStartEvent, IncantationEndEvent, GameEndEvent>;
 }
 
 #endif //ZAPPY_ZAPPYEVENTS_HPP

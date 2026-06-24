@@ -17,6 +17,7 @@
 #include "Grid.hpp"
 #include "Hud.hpp"
 #include "HudManager.hpp"
+#include "ZappyEvents.hpp"
 #include "raylib.h"
 #include "ResourceManager.hpp"
 #include "WorldState.hpp"
@@ -56,19 +57,31 @@ private:
     struct OnEvent {
         explicit OnEvent(Renderer &renderer): renderer{renderer} {}
 
-        void operator()(const PlayerNewEvent &/*event*/)
+        void operator()(const PlayerNewEvent &)
         {
         }
 
-        void operator()(const PlayerMovedEvent &/*event*/)
+        void operator()(const PlayerMovedEvent &)
         {
         }
 
-        void operator()(const PlayerDiedEvent &/*event*/)
+        void operator()(const PlayerDiedEvent &)
         {
         }
 
-        void operator()(const TileUpdateEvent &/*event*/)
+        void operator()(const PlayerLevelEvent &)
+        {
+        }
+
+        void operator()(const PlayerInventoryAssignEvent &)
+        {
+        }
+
+        void operator()(const TileUpdateEvent &)
+        {
+        }
+
+        void operator()(const TimeUpdateEvent &)
         {
         }
 
