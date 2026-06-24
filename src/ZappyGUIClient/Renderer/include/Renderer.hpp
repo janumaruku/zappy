@@ -99,8 +99,9 @@ private:
             renderer._incantationsRes.emplace(event.position, std::make_pair(event.result, std::chrono::steady_clock::now()));
         }
 
-        void operator()(const GameEndEvent &/*event*/)
+        void operator()(const GameEndEvent &event)
         {
+            renderer._winner = event.team;
         }
 
         Renderer &renderer;
