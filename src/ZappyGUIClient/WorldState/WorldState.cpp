@@ -14,6 +14,7 @@
 #include <vector>
 #include "GUIPlayer.hpp"
 #include "Position.hpp"
+#include "Team.hpp"
 #include "ZappyEvents.hpp"
 
 namespace zappy::gui {
@@ -43,13 +44,21 @@ const GUIPlayer &WorldState::getPlayerById(const PlayerId &id) const
     return _players.at(id);
 }
 
+GUIPlayer &WorldState::getPlayerById(PlayerId id)
+{
+
+    if (!_players.contains(id))
+        throw std::runtime_error("Player not found: " + id);
+    return _players.at(id);
+}
+
 const std::unordered_map<std::string, Team> &WorldState::getTeams()
     const noexcept
 {
     return _teams;
 }
 
-void WorldState::onPlayerNew(GUIPlayer player)
+void WorldState::onPlayerNew(const GUIPlayer &player)
 {
     if (_teams.contains(player.getTeam()))
         _teams.at(player.getTeam()).addPlayer(player.getId());
@@ -57,6 +66,13 @@ void WorldState::onPlayerNew(GUIPlayer player)
     std::clog << "New Player " << player.getId() << " has joined" << std::endl;
 
     notify(ZappyEventType::GUI_EVENT, PlayerNewEvent{player});
+}
+
+void WorldState::onPlayerLevel(const GUIPlayer &player)
+{
+    if (! _teams.contains(player.getTeam()))
+        return;
+    notify(ZappyEventType::GUI_EVENT, PlayerLevelEvent{player});
 }
 
 static bool hasMovedClockwise(const data::Orientation &old, const data::Orientation &other)

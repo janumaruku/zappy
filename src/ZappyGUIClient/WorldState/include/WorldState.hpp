@@ -40,12 +40,15 @@ public:
     const std::unordered_map<PlayerId, GUIPlayer> &getPlayers() const noexcept;
 
     const GUIPlayer &getPlayerById(const PlayerId &id) const;
+    GUIPlayer &getPlayerById(PlayerId id);
 
     const std::unordered_map<std::string, Team> &getTeams() const noexcept;
 
     int getTimeUnit() const;
 
-    void onPlayerNew(GUIPlayer player);
+    void onPlayerNew(const GUIPlayer &player);
+
+    void onPlayerLevel(const GUIPlayer &player);
 
     void onPlayerPosition(const std::string &id, const data::Position &pos,
         const data::Orientation &orientation);

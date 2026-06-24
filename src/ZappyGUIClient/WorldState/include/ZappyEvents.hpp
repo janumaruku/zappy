@@ -27,6 +27,13 @@ struct PlayerNewEvent {
     std::string team;
 };
 
+struct PlayerLevelEvent {
+    explicit PlayerLevelEvent(const GUIPlayer &player);
+    data::PlayerId id;
+    uint8_t level;
+    std::string team;
+};
+
 struct PlayerMovedEvent {
     explicit PlayerMovedEvent(const GUIPlayer &player);
 
@@ -73,7 +80,7 @@ struct GameEndEvent {
     std::string team;
 };
 
-using ZappyEvent = std::variant<PlayerNewEvent, PlayerMovedEvent,
+using ZappyEvent = std::variant<PlayerNewEvent, PlayerMovedEvent, PlayerLevelEvent,
     PlayerDiedEvent, TileUpdateEvent, EggLaidEvent, EggHatchedEvent,
     EggDiedEvent, IncantationStartEvent, IncantationEndEvent, GameEndEvent>;
 }

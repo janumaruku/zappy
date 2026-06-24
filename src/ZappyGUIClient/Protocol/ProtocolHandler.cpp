@@ -13,6 +13,7 @@
 #include "EdiCommand.hpp"
 #include "PicCommand.hpp"
 #include "PieCommand.hpp"
+#include "PlvCommand.hpp"
 #include "PnwCommand.hpp"
 #include "PpoCommand.hpp"
 #include "SegCommand.hpp"
@@ -42,6 +43,7 @@ void ProtocolHandler::registerCommands() noexcept
     _factory.registerCreator<PicCommand>("pic");
     _factory.registerCreator<PieCommand>("pie");
     _factory.registerCreator<PnwCommand>("pnw");
+    _factory.registerCreator<PlvCommand>("plv");
     _factory.registerCreator<PpoCommand>("ppo");
     _factory.registerCreator<SegCommand>("seg");
 }

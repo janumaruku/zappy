@@ -23,6 +23,7 @@ namespace zappy::gui {
 bool EboCommand::execute(WorldState& s, const std::vector<std::string> &cmd)
 {
     uint id;
+
     try {
         id = std::stoi(cmd[0]);
     } catch (const std::exception &e) {
