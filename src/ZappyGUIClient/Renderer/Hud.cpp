@@ -186,7 +186,7 @@ size_t HUD::getMaxPlayersFromNames(const std::unordered_map<data::PlayerId,
 {
     size_t count = 0;
     for (const auto &name: playerNames)
-        if (players.at(name).getLevel() == 8)
+        if (players.at(name).getLevel() == MAX_LEVEL)
             ++count;
     return count;
 }
