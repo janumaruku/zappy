@@ -16,6 +16,8 @@
 
 namespace zappy::gui {
 
+constexpr int MAX_LEVEL = 8;
+
 class HUD {
 public:
     HUD() = default;
