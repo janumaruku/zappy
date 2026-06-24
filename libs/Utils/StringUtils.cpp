@@ -59,16 +59,23 @@ std::vector<std::string> StringUtils::splitQuoted(const std::string &str)
     return result;
 }
 
-
 std::vector<std::string> StringUtils::split(const std::string &str) noexcept
 {
     std::vector<std::string> result;
-    std::stringstream stream{str};
-    std::string word;
+    std::string buf;
 
-    while (stream >> word)
-        result.push_back(word);
-
+    for (char c : str) {
+        if (c != ' ' && c != '\n') {
+            buf.push_back(c);
+            continue;
+        }
+        if (!buf.empty()) {
+            result.push_back(buf);
+            buf.clear();
+        }
+    }
+    if (!buf.empty())
+        result.push_back(buf);
     return result;
 }
 
