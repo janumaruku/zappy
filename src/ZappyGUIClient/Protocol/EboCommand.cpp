@@ -6,17 +6,13 @@
 */
 
 
-#include <cstdint>
-#include <exception>
 #include <iostream>
 #include <memory>
 #include <string>
-#include <utility>
 #include <vector>
-#include "GUIPlayer.hpp"
-#include "Position.hpp"
 #include "ProtocolHandler.hpp"
 #include "EboCommand.hpp"
+#include "WorldState.hpp"
 
 namespace zappy::gui {
 

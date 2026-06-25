@@ -53,6 +53,7 @@ public:
 
     void scheduleResponse(const uint &durationConstant, const std::string &response);
 
+    void cancelTimers();
     void freeze() noexcept;
     void unfreeze() noexcept;
     [[nodiscard]] bool isFrozen() const noexcept;
