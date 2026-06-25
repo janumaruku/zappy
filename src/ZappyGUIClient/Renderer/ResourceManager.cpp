@@ -31,12 +31,14 @@ void ResourceManager::loadImages()
     _images.insert({"tile", GenImageColor(TILE_SIZE, TILE_SIZE, GRAY)});
 
     for (const auto &it: PLAYER_DIRECTION_DATA) {
-        Image imagePlayer = createImageFromFile(PLAYER_SPRITE_PATH);
+        Image imagePlayer = createImageFromFile(designPattern::RESOURCE_PATH +
+            PLAYER_SPRITE_FILE);
         ImageRotate(&imagePlayer, it.second);
         _images.insert({it.first, imagePlayer});
     }
 
-    Image imageEgg = createImageFromFile(EGG_SPRITE_PATH);
+    Image imageEgg =
+        createImageFromFile(designPattern::RESOURCE_PATH + EGG_SPRITE_FILE);
     _images.insert({"egg", imageEgg});
 }
 
