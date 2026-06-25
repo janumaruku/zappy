@@ -14,6 +14,9 @@
 #include "IRenderManager.hpp"
 
 namespace designPattern {
+
+constexpr std::string RESOURCE_PATH = "resources/";
+
 class ARenderManager: public IRenderManager {
 public:
     ARenderManager() = default;
