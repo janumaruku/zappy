@@ -5,13 +5,9 @@
 ** IncantationCommand.cpp
 */
 
-#include <algorithm>
-#include <array>
-#include <chrono>
-#include <functional>
-#include <memory>
-#include <string>
-#include <vector>
+#include <iostream>
+#include <map>
+#include <format>
 
 #include "AIProtocolHandler.hpp"
 #include "AISession.hpp"
@@ -159,6 +155,12 @@ bool IncantationCommand::execute(AISession &session,
             const int newLevel = static_cast<int>(p->getPlayer().getLevel()) + 1;
             p->send(std::format("Current level: {}\n", newLevel));
             p->unfreeze();
+        }
+
+        auto winner = server.checkWinCondition();
+        if (winner) {
+            server.broadcastToAll(std::format("seg {}\n", *winner));
+            std::exit(0);
         }
 
         std::string pie = std::format("pie {} {} 1\n", pos.getX(), pos.getY());
