@@ -4,6 +4,7 @@ use ai_tcp_client::AiTcpClient;
 use behavior_tree::behavior_tree::{
     ActionNode, BehaviorNode, ConditionNode, NodeStatus, SequenceNode,
 };
+use behavior_tree::decorator_node::RunUntilNode;
 use rand::RngExt;
 use std::cell::RefCell;
 use std::rc::Rc;
@@ -167,10 +168,17 @@ pub fn take_action(client: Rc<RefCell<AiTcpClient>>, resource: String) -> Box<dy
 
 pub fn food_seeking_sequence(client: Rc<RefCell<AiTcpClient>>) -> Box<dyn BehaviorNode> {
     Box::new(SequenceNode::new(vec![
-        look_action(client.clone()),
-        Box::new(ConditionNode::new(|bb| {
-            matches!(bb.get::<Option<usize>>("food_target_tile"), Ok(Some(_)))
-        })),
+        Box::new(RunUntilNode::new(
+            |bb| {
+                let found = matches!(bb.get::<Option<usize>>("food_target_tile"), Ok(Some(_)));
+                println!("[food_seeking] food_target_tile found: {found}");
+                found
+            },
+            Box::new(SequenceNode::new(vec![
+                random_walk(client.clone()),
+                look_action(client.clone()),
+            ])),
+        )),
         navigate_to_tile_action(client.clone(), "food"),
         take_action(client.clone(), "food".to_string()),
     ]))
