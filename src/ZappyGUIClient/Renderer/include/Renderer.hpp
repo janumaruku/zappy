@@ -59,10 +59,11 @@ private:
     struct OnEvent {
         explicit OnEvent(Renderer &renderer): renderer{renderer} {}
 
-        void operator()(const PlayerNewEvent &)
+        void operator()(const PlayerNewEvent &/*event*/)
         {
         }
 
+        void operator()(const PlayerMovedEvent & event)
         void operator()(const PlayerMovedEvent &event)
         {
             auto animation =
