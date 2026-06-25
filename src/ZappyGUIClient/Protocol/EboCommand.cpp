@@ -22,15 +22,12 @@ namespace zappy::gui {
 
 bool EboCommand::execute(WorldState& s, const std::vector<std::string> &cmd)
 {
-    uint id;
+    auto id = cmd[0];
 
-    try {
-        id = std::stoi(cmd[0]);
-    } catch (const std::exception &e) {
-        std::cerr << "EboCommand::" << __func__ << "Error Parsing position";
-        return false;
-    }
-    s.onEggHatched(id);
+    if (!id.empty() && id.front() == '#')
+        id.erase(id.begin());
+
+    s.onEggHatched(std::stoi(id));
     return true;
 }
 
