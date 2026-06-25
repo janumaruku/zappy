@@ -85,9 +85,14 @@ struct EggDiedEvent {
 };
 
 struct IncantationStartEvent {
+    explicit IncantationStartEvent(data::Position pos,
+        uint level, data::PlayerId id,
+        std::vector<data::PlayerId> participants);
+        
     data::Position position;
     uint8_t level;
-    std::vector<data::PlayerId> playerIds;
+    data::PlayerId initiatorId;
+    std::vector<data::PlayerId> participants;
 };
 
 struct IncantationEndEvent {

@@ -82,7 +82,8 @@ public:
 
     void onMapDimension(const int &width, const int &height);
 
-    void onIncantationStart(const data::Position &pos, const uint &level, const std::vector<PlayerId> &playerIds);
+    void onIncantationStart(const data::Position &pos, const uint &level, const PlayerId &initiatorId,
+        const std::vector<PlayerId> &participants);
     void onIncantationEnd(const data::Position &pos, bool result);
 
     void onGameEnd(const Team &winningTeam);

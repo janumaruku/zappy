@@ -259,10 +259,9 @@ void WorldState::onMapDimension(const int &width, const int &height)
     _map.updateHeight(height);
 }
 
-void WorldState::onIncantationStart(const data::Position &pos, const uint &level, const std::vector<PlayerId> &playerIds)
+void WorldState::onIncantationStart(const data::Position &pos,const uint &level, const data::PlayerId &id, const std::vector<PlayerId> &participants)
 {
-    IncantationStartEvent i(pos, level, playerIds);
-    notify(ZappyEventType::GUI_EVENT, i);
+    notify(ZappyEventType::GUI_EVENT, IncantationStartEvent{pos, level, id, participants});
 }
 
 void WorldState::onIncantationEnd(const data::Position &pos, bool result)
