@@ -6,17 +6,13 @@
 */
 
 
-#include <cstdint>
-#include <exception>
 #include <iostream>
 #include <memory>
 #include <string>
-#include <utility>
 #include <vector>
-#include "GUIPlayer.hpp"
-#include "Position.hpp"
 #include "ProtocolHandler.hpp"
 #include "EboCommand.hpp"
+#include "WorldState.hpp"
 
 namespace zappy::gui {
 
@@ -24,12 +20,23 @@ bool EboCommand::execute(WorldState& s, const std::vector<std::string> &cmd)
 {
     uint id;
 
-    try {
-        id = std::stoi(cmd[0]);
-    } catch (const std::exception &e) {
-        std::cerr << "EboCommand::" << __func__ << "Error Parsing position";
+    if (cmd.empty()) {
+        std::cerr << "EboCommand::" << __func__ << " No egg id provided" << std::endl;
         return false;
     }
+
+    std::string idStr = cmd[0];
+
+if (!idStr.empty() && idStr.front() == '#')
+        idStr.erase(idStr.begin());
+
+    try {
+        id = std::stoi(idStr);
+    } catch (const std::exception &e) {
+        std::cerr << "EboCommand::" << __func__ << "Error Parsing egg id: " << idStr << std::endl;
+        return false;
+    }
+
     s.onEggHatched(id);
     return true;
 }
