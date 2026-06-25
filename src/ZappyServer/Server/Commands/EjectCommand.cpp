@@ -32,20 +32,22 @@ bool EjectCommand::execute(AISession& s, const std::vector<std::string>& /*v*/)
         }
     });
 
-    // auto eggs& = s.getServer().getMap().getEggsOnTile(pos);
+    auto eggs = s.getServer().getMap().getEggsOnTile(pos);
 
-    // for (auto& egg : eggs) {
-    //     s.getServer().getMap().removeEgg(egg);
-    // }
+    for (auto& egg : *eggs) {
+        s.getServer().getMap().removeEgg(egg);
+        s.getServer().notifyGUI(std::format("edi #{}", egg));
+    }
 
     for (auto& otherSession : playersToPush) {
         actionTaken = true;
         auto& otherPlayer = otherSession->getPlayer();
         (void)orientation;
 
-        std::string fmt = std::format("pex {}\n", otherPlayer.getId());
+        std::string fmt = std::format("pex #{}\n", otherPlayer.getId());
         s.getServer().notifyGUI(fmt);
-        otherSession->send("eject: 1\n");
+        otherSession->send(
+            std::format("eject: {}\n", static_cast<uint8_t>(orientation)));
     }
 
     s.scheduleResponse(7, actionTaken ? "ok\n" : "ko\n");
