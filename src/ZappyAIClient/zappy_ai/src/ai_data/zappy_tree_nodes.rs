@@ -1,5 +1,6 @@
 use crate::ai_data::{ServerMessage, tile_to_commands};
-use crate::config::{ELEVATION_TABLE, FOOD_SAFE_THRESHOLD, STONE_PRIORITIES};
+use crate::config::{ELEVATION_TABLE, FOOD_SAFE_THRESHOLD, INCANT_WAIT_TIMEOUT_S, STONE_PRIORITIES};
+use std::time::Instant;
 use ai_tcp_client::AiTcpClient;
 use behavior_tree::behavior_tree::{
     ActionNode, BehaviorNode, BlackBoard, ConditionNode, NodeStatus, SelectorNode, SequenceNode,
@@ -305,6 +306,90 @@ pub fn enough_teammates_on_tile() -> Box<dyn BehaviorNode> {
         println!("[enough_teammates] level={level}, teammates={teammates}, needed={needed} → {result}");
         result
     }))
+}
+
+pub fn not_enough_teammates_on_tile() -> Box<dyn BehaviorNode> {
+    Box::new(ConditionNode::new(|bb| {
+        let level = bb.get::<u8>("level").map(|l| *l).unwrap_or(1);
+        let idx = (level as usize).saturating_sub(1).min(6);
+        let needed = ELEVATION_TABLE[idx].players.saturating_sub(1);
+        let teammates = bb.get::<u32>("teammates_on_tile").map(|v| *v).unwrap_or(0);
+        let result = needed > 0 && teammates < needed;
+        println!("[not_enough_teammates] level={level}, teammates={teammates}, needed={needed} → {result}");
+        result
+    }))
+}
+
+pub fn broadcast_ready_action(client: Rc<RefCell<AiTcpClient>>) -> Box<dyn BehaviorNode> {
+    let mut sent = false;
+
+    Box::new(ActionNode::new(move |bb| {
+        if !sent {
+            let level = bb.get::<u8>("level").map(|l| *l).unwrap_or(1);
+            println!("[broadcast_ready] sending: Broadcast LVL{level}_READY");
+            client.borrow().send(format!("Broadcast LVL{level}_READY"));
+            sent = true;
+            return NodeStatus::Running;
+        }
+
+        match bb.get::<ServerMessage>("last_response") {
+            Ok(ServerMessage::Ok) => {
+                bb.clear("last_response").ok();
+                sent = false;
+                NodeStatus::Success
+            }
+            Ok(_) => NodeStatus::Running,
+            Err(_) => NodeStatus::Running,
+        }
+    }))
+}
+
+pub fn wait_for_teammates_action(client: Rc<RefCell<AiTcpClient>>) -> Box<dyn BehaviorNode> {
+    let mut start_time: Option<Instant> = None;
+    let mut awaiting_response = false;
+
+    Box::new(ActionNode::new(move |bb| {
+        let now = Instant::now();
+
+        if start_time.is_none() {
+            start_time = Some(now);
+        }
+
+        let elapsed = now.duration_since(start_time.unwrap()).as_secs_f32();
+        if elapsed >= INCANT_WAIT_TIMEOUT_S {
+            println!("[wait_teammates] timeout after {elapsed:.1}s → Failure");
+            start_time = None;
+            awaiting_response = false;
+            return NodeStatus::Failure;
+        }
+
+        if !awaiting_response {
+            client.borrow().send("Inventory".to_string());
+            awaiting_response = true;
+            return NodeStatus::Running;
+        }
+
+        match bb.get::<ServerMessage>("last_response") {
+            Ok(ServerMessage::Inventory(_)) => {
+                bb.clear("last_response").ok();
+                awaiting_response = false;
+                client.borrow().send("Inventory".to_string());
+                awaiting_response = true;
+                NodeStatus::Running
+            }
+            Ok(_) => NodeStatus::Running,
+            Err(_) => NodeStatus::Running,
+        }
+    }))
+}
+
+pub fn wait_for_teammates_sequence(client: Rc<RefCell<AiTcpClient>>) -> Box<dyn BehaviorNode> {
+    Box::new(SequenceNode::new(vec![
+        has_required_stones(),
+        not_enough_teammates_on_tile(),
+        broadcast_ready_action(client.clone()),
+        wait_for_teammates_action(client.clone()),
+    ]))
 }
 
 pub fn stone_navigate_take_action(client: Rc<RefCell<AiTcpClient>>) -> Box<dyn BehaviorNode> {
