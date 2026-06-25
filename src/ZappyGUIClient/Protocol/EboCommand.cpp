@@ -24,12 +24,20 @@ bool EboCommand::execute(WorldState& s, const std::vector<std::string> &cmd)
         std::cerr << "EboCommand::" << __func__ << " No egg id provided" << std::endl;
         return false;
     }
+
+    std::string idStr = cmd[0];
+
+    if (!idStr.empty() && idStr[0] == '#') {
+        idStr.erase(0, 1);
+    }
+
     try {
-        id = std::stoi(cmd[0]);
+        id = std::stoi(idStr);
     } catch (const std::exception &e) {
-        std::cerr << "EboCommand::" << __func__ << "Error Parsing egg id" << std::endl;
+        std::cerr << "EboCommand::" << __func__ << "Error Parsing egg id: " << idStr << std::endl;
         return false;
     }
+
     s.onEggHatched(id);
     return true;
 }
