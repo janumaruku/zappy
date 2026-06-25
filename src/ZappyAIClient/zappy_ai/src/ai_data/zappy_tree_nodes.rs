@@ -1,5 +1,5 @@
 use crate::ai_data::{ServerMessage, tile_to_commands};
-use crate::config::FOOD_SAFE_THRESHOLD;
+use crate::config::{ELEVATION_TABLE, FOOD_SAFE_THRESHOLD};
 use ai_tcp_client::AiTcpClient;
 use behavior_tree::behavior_tree::{
     ActionNode, BehaviorNode, ConditionNode, NodeStatus, SequenceNode,
@@ -198,6 +198,42 @@ pub fn take_action(client: Rc<RefCell<AiTcpClient>>, resource: String) -> Box<dy
                 NodeStatus::Failure
             }
         }
+    }))
+}
+
+pub fn has_required_stones() -> Box<dyn BehaviorNode> {
+    Box::new(ConditionNode::new(|bb| {
+        let level = bb.get::<u8>("level").map(|l| *l).unwrap_or(1);
+        let idx = (level as usize).saturating_sub(1).min(6);
+        let req = &ELEVATION_TABLE[idx];
+
+        let check = |key: &str, required: u32| -> bool {
+            bb.get::<u32>(key).map(|v| *v >= required).unwrap_or(false)
+        };
+
+        let result = check("linemate", req.linemate)
+            && check("deraumere", req.deraumere)
+            && check("sibur", req.sibur)
+            && check("mendiane", req.mendiane)
+            && check("phiras", req.phiras)
+            && check("thystame", req.thystame);
+
+        println!("[has_required_stones] level={level} → {result}");
+        result
+    }))
+}
+
+pub fn enough_teammates_on_tile() -> Box<dyn BehaviorNode> {
+    Box::new(ConditionNode::new(|bb| {
+        let level = bb.get::<u8>("level").map(|l| *l).unwrap_or(1);
+        let idx = (level as usize).saturating_sub(1).min(6);
+        let needed = ELEVATION_TABLE[idx].players.saturating_sub(1);
+
+        let teammates = bb.get::<u32>("teammates_on_tile").map(|v| *v).unwrap_or(0);
+        let result = teammates >= needed;
+
+        println!("[enough_teammates] level={level}, teammates={teammates}, needed={needed} → {result}");
+        result
     }))
 }
 
