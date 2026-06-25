@@ -140,9 +140,8 @@ void WorldState::onPlayerPosition(const std::string &id,
 
     Action action{.type=a, .duration=7.0F / static_cast<float>(_timeUnit)};
 
-    notify(ZappyEventType::GUI_EVENT, PlayerMovedEvent{player});
     player.enqueueAction(action);
-
+    notify(ZappyEventType::GUI_EVENT, PlayerMovedEvent{player});
 }
 
 void WorldState::onPlayerEject(const PlayerId &id)

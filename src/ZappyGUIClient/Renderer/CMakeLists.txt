@@ -3,7 +3,9 @@ add_library(renderer STATIC
         ResourceManager.cpp
         Grid.cpp
         Hud.cpp
-        HudManager.cpp)
+        HudManager.cpp
+        Animation.cpp
+        AnimationManager.cpp)
 
 target_include_directories(renderer PUBLIC include)
 

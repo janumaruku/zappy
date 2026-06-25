@@ -18,9 +18,12 @@ PlayerNewEvent::PlayerNewEvent(const GUIPlayer &player): id{player.getId()},
 {
 }
 
-PlayerMovedEvent::PlayerMovedEvent(const GUIPlayer &player): id{player.getId()},
+PlayerMovedEvent::PlayerMovedEvent(GUIPlayer &player): id{player.getId()},
     position{player.getPosition()}, orientation{player.getOrientation()}
 {
+    if (!player.hasAction())
+        return;
+    action = player.dequeueAction();
 }
 
 PlayerLevelEvent::PlayerLevelEvent(const GUIPlayer &player) : id(player.getId()),

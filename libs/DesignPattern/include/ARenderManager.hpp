@@ -26,6 +26,8 @@ public:
 
     const Texture2D &getTexture(const std::string &name) const override;
 
+    Texture2D &getTexture(const std::string &name) override;
+
     const Rectangle &getRectangle(const std::string &name) const override;
 
     void createRectangle(std::string name, const Vector2 &position,

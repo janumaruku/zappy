@@ -47,6 +47,14 @@ const Texture2D &ARenderManager::getTexture(const std::string &name) const
     throw std::out_of_range(std::format("Texture {} not found", name));
 }
 
+Texture2D &ARenderManager::getTexture(const std::string &name)
+{
+    if (_textures.contains(name)) {
+        return _textures.at(name);
+    }
+    throw std::out_of_range(std::format("Texture {} not found", name));
+}
+
 const Rectangle &ARenderManager::getRectangle(const std::string &name) const
 {
     if (_rectangles.contains(name)) {
