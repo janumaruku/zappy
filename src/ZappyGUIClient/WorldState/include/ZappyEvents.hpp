@@ -28,8 +28,9 @@ struct PlayerNewEvent {
 };
 
 struct PlayerMovedEvent {
-    explicit PlayerMovedEvent(const GUIPlayer &player);
+    explicit PlayerMovedEvent(GUIPlayer &player);
 
+    Action action{};
     data::PlayerId id;
     data::Position position;
     data::Orientation orientation;

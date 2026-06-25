@@ -60,12 +60,16 @@ private:
         {
         }
 
-        void operator()(const PlayerMovedEvent &/*event*/)
+        void operator()(const PlayerMovedEvent & event)
         {
+            const Animation animation(event.action, tileToPixel(event.position), renderer._animationManager->getTexture(PLAYER_MOVEMENT_NAME));
+
+            renderer._animations.emplace(event.id, animation);
         }
 
-        void operator()(const PlayerDiedEvent &/*event*/)
+        void operator()(const PlayerDiedEvent &event)
         {
+            renderer._animations.erase(event.id);
         }
 
         void operator()(const TileUpdateEvent &/*event*/)
@@ -140,9 +144,11 @@ private:
     HUD _hud;
     std::unique_ptr<HUDManager> _hudManager;
     std::unique_ptr<ResourceManager> _resourceManager;
+    std::unique_ptr<AnimationManager> _animationManager;
     std::unordered_map<std::string, data::Position> _eggs;
     std::map<data::Position, std::chrono::steady_clock::time_point> _incantations;
     std::map<data::Position, std::pair<bool, std::chrono::steady_clock::time_point>> _incantationsRes;
+    std::unordered_map<data::PlayerId, Animation> _animations;
     std::optional<std::string> _winner;
 
     //AnimationFactory _animationFactory;

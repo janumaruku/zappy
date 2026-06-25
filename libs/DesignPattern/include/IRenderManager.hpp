@@ -17,6 +17,8 @@ public:
 
     virtual const Texture2D &getTexture(const std::string &name) const = 0;
 
+    virtual Texture2D &getTexture(const std::string &name) = 0;
+
     virtual const Rectangle &getRectangle(const std::string &name) const = 0;
 
     virtual void createRectangle(std::string name, const Vector2 &position,
