@@ -6,15 +6,16 @@
 */
 
 #include "GUIProtocolHandler.hpp"
-#include "AISession.hpp"
-#include "GUISession.hpp"
 
 #include <exception>
 
+#include "AISession.hpp"
+#include "EdiCommand.hpp"
+#include "GUISession.hpp"
 #include "MszCommand.hpp"
 #include "PinCommand.hpp"
-#include "PnwCommand.hpp"
 #include "PlvCommand.hpp"
+#include "PnwCommand.hpp"
 #include "PpoCommand.hpp"
 #include "SgtCommand.hpp"
 #include "SstCommand.hpp"
@@ -31,6 +32,7 @@ GUIProtocolHandler::~GUIProtocolHandler() = default;
 
 void GUIProtocolHandler::registerCreators() noexcept
 {
+    _factory.registerCreator<EdiCommand>("edi");
     _factory.registerCreator<MszCommand>("msz");
     _factory.registerCreator<PinCommand>("pin");
     _factory.registerCreator<PnwCommand>("pnw");
