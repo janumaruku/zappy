@@ -47,8 +47,8 @@ bool MctCommand::execute(WorldState &s, const std::vector<std::string> &cmd)
             {data::Resource::DERAUMERE, static_cast<int>(qts[2])},
             {data::Resource::SIBUR,     static_cast<int>(qts[3])},
             {data::Resource::MENDIANE,  static_cast<int>(qts[4])},
-            {data::Resource::PHIRAS,    static_cast<int>(qts[5])},  // was [4]
-            {data::Resource::THYSTAME,  static_cast<int>(qts[6])},  // was [5]
+            {data::Resource::PHIRAS,    static_cast<int>(qts[5])},
+            {data::Resource::THYSTAME,  static_cast<int>(qts[6])},
         };
 
         s.onTileContent(data::Position(x, y), resources);
