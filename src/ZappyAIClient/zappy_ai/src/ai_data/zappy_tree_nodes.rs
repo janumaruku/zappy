@@ -2,7 +2,7 @@ use crate::ai_data::{ServerMessage, tile_to_commands};
 use crate::config::{ELEVATION_TABLE, FOOD_SAFE_THRESHOLD, STONE_PRIORITIES};
 use ai_tcp_client::AiTcpClient;
 use behavior_tree::behavior_tree::{
-    ActionNode, BehaviorNode, BlackBoard, ConditionNode, NodeStatus, SequenceNode,
+    ActionNode, BehaviorNode, BlackBoard, ConditionNode, NodeStatus, SelectorNode, SequenceNode,
 };
 use behavior_tree::decorator_node::RunUntilNode;
 use rand::RngExt;
@@ -305,6 +305,104 @@ pub fn enough_teammates_on_tile() -> Box<dyn BehaviorNode> {
         println!("[enough_teammates] level={level}, teammates={teammates}, needed={needed} → {result}");
         result
     }))
+}
+
+pub fn stone_navigate_take_action(client: Rc<RefCell<AiTcpClient>>) -> Box<dyn BehaviorNode> {
+    let mut stone: Option<String> = None;
+    let mut commands: Vec<String> = Vec::new();
+    let mut awaiting_response = false;
+    let mut taking = false;
+
+    Box::new(ActionNode::new(move |bb| {
+        // Init
+        if stone.is_none() && !awaiting_response && !taking {
+            let target = match compute_target_stone(bb) {
+                Some(s) => s,
+                None => return NodeStatus::Failure,
+            };
+            let tile_index = match bb.get::<Option<usize>>(&format!("{}_target_tile", target)) {
+                Ok(Some(idx)) => *idx,
+                _ => return NodeStatus::Failure,
+            };
+            commands = tile_to_commands(tile_index);
+            stone = Some(target);
+            if commands.is_empty() {
+                taking = true;
+            }
+        }
+
+        let stone_name = match &stone {
+            Some(s) => s.clone(),
+            None => return NodeStatus::Failure,
+        };
+
+        // Navigation
+        if !taking {
+            if !awaiting_response {
+                client.borrow().send(commands[0].clone());
+                awaiting_response = true;
+                return NodeStatus::Running;
+            }
+            return match bb.get::<ServerMessage>("last_response") {
+                Ok(ServerMessage::Ok) => {
+                    bb.clear("last_response").ok();
+                    commands.remove(0);
+                    if commands.is_empty() {
+                        awaiting_response = false;
+                        taking = true;
+                    } else {
+                        client.borrow().send(commands[0].clone());
+                    }
+                    NodeStatus::Running
+                }
+                Ok(ServerMessage::Ko) => {
+                    bb.clear("last_response").ok();
+                    commands.clear();
+                    stone = None;
+                    awaiting_response = false;
+                    NodeStatus::Failure
+                }
+                _ => NodeStatus::Running,
+            };
+        }
+
+        // Take
+        if !awaiting_response {
+            println!("[stone_seek] taking {stone_name}");
+            client.borrow().send(format!("Take {stone_name}"));
+            awaiting_response = true;
+            return NodeStatus::Running;
+        }
+
+        match bb.get::<ServerMessage>("last_response") {
+            Ok(ServerMessage::Ok) => {
+                bb.clear("last_response").ok();
+                stone = None;
+                awaiting_response = false;
+                taking = false;
+                NodeStatus::Success
+            }
+            Ok(ServerMessage::Ko) => {
+                bb.clear("last_response").ok();
+                stone = None;
+                awaiting_response = false;
+                taking = false;
+                NodeStatus::Failure
+            }
+            _ => NodeStatus::Running,
+        }
+    }))
+}
+
+pub fn stone_seeking_sequence(client: Rc<RefCell<AiTcpClient>>) -> Box<dyn BehaviorNode> {
+    Box::new(SequenceNode::new(vec![
+        inventory_action(client.clone()),
+        look_action(client.clone()),
+        Box::new(SelectorNode::new(vec![
+            stone_navigate_take_action(client.clone()),
+            random_walk(client.clone()),
+        ])),
+    ]))
 }
 
 pub fn food_seeking_sequence(client: Rc<RefCell<AiTcpClient>>) -> Box<dyn BehaviorNode> {
