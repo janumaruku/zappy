@@ -41,7 +41,7 @@ public:
     void addEgg(const data::Egg &egg);
     void removeEgg(const uint &eggId);
     [[nodiscard]] const std::unordered_map<uint, data::Egg> &getEggs() const noexcept;
-    [[nodiscard]] std::vector<uint> getEggsOnTile(const data::Position &pos) const;
+    [[nodiscard]] const std::vector<uint> &getEggsOnTile(const data::Position &pos) const;
 
 private:
     int _width;
