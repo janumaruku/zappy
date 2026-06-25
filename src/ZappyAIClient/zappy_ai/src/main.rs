@@ -49,7 +49,7 @@ fn build_command(
         .build()
 }
 
-fn handshake(port: i32, host: &str, team: &str) -> Result<Rc<RefCell<AiTcpClient>>, String> {
+fn handshake(port: i32, host: &str, team: &str) -> Result<(Rc<RefCell<AiTcpClient>>, u32, u32), String> {
     let tcp_client = AiTcpClient::new(IoContext::new());
 
     match tcp_client {
@@ -61,18 +61,33 @@ fn handshake(port: i32, host: &str, team: &str) -> Result<Rc<RefCell<AiTcpClient
 
             client.borrow_mut().receive();
             client.borrow().send(team.to_string());
+
             let num: i32;
             if let Some(result) = client.borrow_mut().receive() {
-                num = result.parse().unwrap();
+                num = result.trim().parse().unwrap();
             } else {
-                return Err(String::from("Failed to receive"));
+                return Err(String::from("Failed to receive client number"));
             }
             if num <= 0 {
                 client.borrow_mut().close();
-                Err("No slot available. Player can not connect".to_string())
-            } else {
-                Ok(client)
+                return Err("No slot available. Player can not connect".to_string());
             }
+
+            let (width, height) = if let Some(dims) = client.borrow_mut().receive() {
+                let parts: Vec<&str> = dims.trim().split_whitespace().collect();
+                if parts.len() == 2 {
+                    let w = parts[0].parse::<u32>().unwrap_or(0);
+                    let h = parts[1].parse::<u32>().unwrap_or(0);
+                    (w, h)
+                } else {
+                    return Err(format!("Unexpected map dimensions: {dims}"));
+                }
+            } else {
+                return Err("Failed to receive map dimensions".to_string());
+            };
+
+            println!("[handshake] map: {width}x{height}");
+            Ok((client, width, height))
         }
         Err(err) => Err(err.to_string()),
     }
@@ -107,9 +122,11 @@ fn main() {
     command.unwrap().run(&tokens);
 
     let tcp_client: Rc<RefCell<AiTcpClient>>;
+    let map_width: u32;
+    let map_height: u32;
     {
         match handshake(*port.borrow(), &**hostname.borrow(), &**team.borrow()) {
-            Ok(result) => tcp_client = result,
+            Ok((client, w, h)) => { tcp_client = client; map_width = w; map_height = h; }
             Err(err) => {
                 println!("{}", err);
                 return;
@@ -118,8 +135,10 @@ fn main() {
     }
 
     let mut tree = build_tree(tcp_client.clone());
-    let mut world = WorldModel::new();
+    let mut world = WorldModel::new(map_width, map_height);
     let mut bb = BlackBoard::new();
+    bb.set("map_width", map_width);
+    bb.set("map_height", map_height);
 
     tick_until_running(&mut tree, &mut bb);
 

@@ -94,7 +94,7 @@ impl Orientation {
 }
 
 impl WorldModel {
-    pub fn new() -> Self {
+    pub fn new(width: u32, height: u32) -> Self {
         WorldModel {
             level: 1,
             food: 0,
@@ -106,8 +106,8 @@ impl WorldModel {
                 (Resource::Phiras, 0),
                 (Resource::Thystame, 0),
             ]),
-            map_width: 0,
-            map_height: 0,
+            map_width: width,
+            map_height: height,
             visible_tiles: Vec::new(),
         }
     }
