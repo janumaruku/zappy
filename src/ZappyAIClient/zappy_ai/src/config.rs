@@ -21,6 +21,8 @@ pub const ELEVATION_TABLE: [ElevationRequirement; 7] = [
     ElevationRequirement { players: 6, linemate: 2, deraumere: 2, sibur: 2, mendiane: 2, phiras: 2, thystame: 1 },
 ];
 
+pub const INCANT_WAIT_TIMEOUT_S: f32 = 5.0;
+
 pub const STONE_PRIORITIES: [(&str, u32); 6] = [
     ("thystame", 10),
     ("phiras",    8),
