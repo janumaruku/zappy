@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2026
 ** ZPY
 ** File description:
-** PdrCommand.hpp
+** SmgCommand.hpp
 */
 
 #pragma once
@@ -13,9 +13,9 @@
 
 namespace zappy::gui {
 
-class PdrCommand : public IGUICommand  {
+class SmgCommand : public IGUICommand  {
 public:
-    ~PdrCommand() override = default;
+    ~SmgCommand() override = default;
 
     bool execute(WorldState &, const std::vector<std::string> &) override;
 
