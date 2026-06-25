@@ -20,7 +20,7 @@ namespace zappy::gui {
 
 bool SegCommand::execute(WorldState &s, const std::vector<std::string> &cmd)
 {
-    Team team(cmd[0], GREEN);
+    auto team = s.getTeams().at(cmd.at(0));
     s.onGameEnd(team);
     return true;
 }

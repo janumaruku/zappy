@@ -274,8 +274,7 @@ void WorldState::onIncantationEnd(const data::Position &pos, bool result)
 void WorldState::onGameEnd(const Team &winningTeam)
 {
     _winner = winningTeam.getName();
-    GameEndEvent evt(winningTeam.getName());
-    notify(ZappyEventType::GUI_EVENT, evt);
+    notify(ZappyEventType::GUI_EVENT, GameEndEvent{winningTeam.getName()});
 }
 
 const std::optional<std::string> &WorldState::getWinner() const
