@@ -72,7 +72,7 @@ bool TakeCommand::execute(AISession &session,
         return true;
     }
 
-    auto &player = const_cast<Player &>(session.getPlayer());
+    auto &player = session.getPlayer();
     player.takeResource(resource);
 
     std::string guiMsg = std::format("pgt #{} {}\n",
