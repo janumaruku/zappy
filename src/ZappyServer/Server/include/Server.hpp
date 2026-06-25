@@ -38,6 +38,7 @@ public:
     bool handleGUICommand(GUISession &session, const std::string &command,
         const std::vector<std::string> &args = {});
     [[nodiscard]] std::optional<std::string> checkWinCondition() const noexcept;
+    void stop() noexcept;
     void broadcastToAll(const std::string &data);
     void forEachAISession(const std::function<void(AISession &)> &fn);
 

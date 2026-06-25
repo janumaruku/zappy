@@ -241,6 +241,15 @@ void Server::handleAiHandshake(const std::shared_ptr<network::ConnectedSocket> &
     notifyGUI(command);
 }
 
+void Server::stop() noexcept
+{
+    _resourceRespawnTimer.cancel();
+    for (auto &a : _aiSessions) {
+        a->cancelTimers();
+    }
+    _ioContext.stop();
+}
+
 void Server::notifyGUI(const std::string &command)
 {
     for (auto &session : _guiSessions)

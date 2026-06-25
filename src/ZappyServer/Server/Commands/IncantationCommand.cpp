@@ -160,7 +160,8 @@ bool IncantationCommand::execute(AISession &session,
         auto winner = server.checkWinCondition();
         if (winner) {
             server.broadcastToAll(std::format("seg {}\n", *winner));
-            std::exit(0);
+            server.notifyGUI(std::format("seg {}\n", *winner));
+            server.stop();
         }
 
         std::string pie = std::format("pie {} {} 1\n", pos.getX(), pos.getY());
