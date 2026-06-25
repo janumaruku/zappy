@@ -34,7 +34,7 @@ bool ForkCommand::execute(AISession &session,
         nextId = std::max(nextId, kv.first + 1);
 
     std::string eggId = std::to_string(nextId);
-    data::Egg egg(eggId, player.getId(), player.getTeam(), pos, 0);
+    data::Egg egg(eggId, player.getId(), player.getTeam(), pos, 1);
     server.getMap().addEgg(egg);
     server.notifyGUI(std::format("pfk #{}\n", player.getId()));
     server.notifyGUI(std::format("enw #{} #{} {} {}\n",
