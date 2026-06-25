@@ -94,7 +94,7 @@ impl Orientation {
 }
 
 impl WorldModel {
-    pub fn new() -> Self {
+    pub fn new(width: u32, height: u32) -> Self {
         WorldModel {
             level: 1,
             food: 0,
@@ -106,13 +106,14 @@ impl WorldModel {
                 (Resource::Phiras, 0),
                 (Resource::Thystame, 0),
             ]),
-            map_width: 0,
-            map_height: 0,
+            map_width: width,
+            map_height: height,
             visible_tiles: Vec::new(),
         }
     }
 
     pub fn update(&mut self, response: &ServerMessage, blackboard: &mut BlackBoard) {
+        println!("[world] update: {}", response.variant_name());
         match response {
             ServerMessage::Inventory(inventory) => self.update_inventory(inventory, blackboard),
             ServerMessage::Look(tiles) => self.update_look(tiles, blackboard),
@@ -139,9 +140,11 @@ impl WorldModel {
             .collect();
 
         blackboard.set("food", self.food);
+        println!("[world/inventory] food={}", self.food);
         for (res, count) in &self.inventory {
             if let Some(key) = resource_blackboard_key(res) {
                 blackboard.set(key, *count);
+                println!("[world/inventory]   {key}={count}");
             }
         }
     }
@@ -149,6 +152,7 @@ impl WorldModel {
     fn update_look(&mut self, tiles: &Vec<Vec<TileObject>>, blackboard: &mut BlackBoard) {
         self.visible_tiles = tiles.clone();
         blackboard.set("last_response", ServerMessage::Look(tiles.clone()));
+        println!("[world/look] {} tiles visible", tiles.len());
 
         for res in &STONES {
             blackboard.set(
@@ -180,22 +184,23 @@ impl WorldModel {
             .unwrap_or(0)
             .saturating_sub(1);
         blackboard.set("teammates_on_tile", players);
+        println!("[world/look] teammates_on_tile={players}");
 
         for res in &STONES {
-            blackboard.set(
-                &format!("{}_target_tile", resource_blackboard_key(res).unwrap()),
-                tiles
-                    .iter()
-                    .position(|tile| tile.contains(&TileObject::Resource(res.clone()))),
-            )
+            let target = tiles
+                .iter()
+                .position(|tile| tile.contains(&TileObject::Resource(res.clone())));
+            let key = resource_blackboard_key(res).unwrap();
+            println!("[world/look]   {key}_target_tile={target:?}");
+            blackboard.set(&format!("{key}_target_tile"), target);
         }
     }
 
     fn update_level_up(&mut self, level: u8, blackboard: &mut BlackBoard) {
         self.level = level;
         blackboard.set("last_response", ServerMessage::LevelUp(level));
-
         blackboard.set("level", level);
+        println!("[world/level_up] level={level}");
     }
 }
 

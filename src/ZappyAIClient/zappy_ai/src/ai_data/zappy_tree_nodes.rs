@@ -1,78 +1,137 @@
-use crate::ai_data::{ServerMessage, WorldModel, receive_command_response, tile_to_commands};
+use crate::ai_data::{ServerMessage, tile_to_commands};
 use crate::config::FOOD_SAFE_THRESHOLD;
 use ai_tcp_client::AiTcpClient;
 use behavior_tree::behavior_tree::{
-    ActionNode, BehaviorNode, ConditionNode, NodeStatus, SelectorNode, SequenceNode,
+    ActionNode, BehaviorNode, ConditionNode, NodeStatus, SequenceNode,
 };
-use behavior_tree::behavior_tree_decorator::RetryUntilNode;
+use behavior_tree::decorator_node::RunUntilNode;
 use rand::RngExt;
 use std::cell::RefCell;
 use std::rc::Rc;
 
-pub fn random_walk(
-    client: Rc<RefCell<AiTcpClient>>,
-    world: Rc<RefCell<WorldModel>>,
-) -> Box<dyn BehaviorNode> {
+pub fn random_walk(client: Rc<RefCell<AiTcpClient>>) -> Box<dyn BehaviorNode> {
+    let mut sent = false;
+
     Box::new(ActionNode::new(move |bb| {
-        println!("====>{}<====", "random walk");
-        let roll: f32 = rand::rng().random_range(0.0..1.0);
-        let cmd = match roll {
-            r if r < 0.6 => "Forward",
-            r if r < 0.8 => "Left",
-            _ => "Right",
-        };
-        client.borrow().send(cmd.to_string());
-        match receive_command_response(&client, &world, bb) {
-            ServerMessage::Ok => NodeStatus::Success,
-            _ => NodeStatus::Failure,
+        if !sent {
+            let roll: f32 = rand::rng().random_range(0.0..1.0);
+            let cmd = match roll {
+                r if r < 0.6 => "Forward",
+                r if r < 0.8 => "Left",
+                _ => "Right",
+            };
+            println!("[random_walk] sending: {cmd}");
+            client.borrow().send(cmd.to_string());
+            sent = true;
+            return NodeStatus::Running;
         }
+
+        let status = match bb.get::<ServerMessage>("last_response") {
+            Ok(ServerMessage::Ok) => {
+                bb.clear("last_response").ok();
+                sent = false;
+                NodeStatus::Success
+            }
+            Ok(ServerMessage::Ko) => {
+                bb.clear("last_response").ok();
+                sent = false;
+                NodeStatus::Failure
+            }
+            Ok(other) => {
+                println!("[random_walk] unexpected response: {} → Running", other.variant_name());
+                NodeStatus::Running
+            }
+            Err(err) => {
+                println!("[random_walk] no last_response yet ({err}) → Running");
+                NodeStatus::Running
+            }
+        };
+        println!("[random_walk] → {status:?}");
+        status
     }))
 }
 
 pub fn food_threshold_condition() -> Box<dyn BehaviorNode> {
-    Box::new(ConditionNode::new(|bb| {
-        println!("Food condition");
-        match bb.get::<u32>("food") {
-            Ok(food) => {
-                return if *food >= FOOD_SAFE_THRESHOLD {
-                    println!("Go to next branch: elevate ...");
-                    true
-                } else {
-                    false
-                }
+    Box::new(ConditionNode::new(|bb| match bb.get::<u32>("food") {
+        Ok(food) => {
+            let result = *food >= FOOD_SAFE_THRESHOLD;
+            println!("[food_threshold] food={food}, threshold={FOOD_SAFE_THRESHOLD} → {result}");
+            result
+        }
+        Err(err) => {
+            eprintln!("[food_threshold] blackboard error: {err}");
+            false
+        }
+    }))
+}
+
+pub fn inventory_action(client: Rc<RefCell<AiTcpClient>>) -> Box<dyn BehaviorNode> {
+    let mut sent = false;
+
+    Box::new(ActionNode::new(move |bb| {
+        if !sent {
+            println!("[inventory] sending: Inventory");
+            client.borrow().send("Inventory".to_string());
+            sent = true;
+            return NodeStatus::Running;
+        }
+
+        match bb.get::<ServerMessage>("last_response") {
+            Ok(ServerMessage::Inventory(_)) => {
+                println!("[inventory] received inventory response → Success");
+                bb.clear("last_response").ok();
+                sent = false;
+                NodeStatus::Success
+            }
+            Ok(other) => {
+                println!("[inventory] unexpected response: {} → Running", other.variant_name());
+                NodeStatus::Running
             }
             Err(err) => {
-                eprintln!("Food condition: {err}");
-                false
+                println!("[inventory] no last_response yet ({err}) → Running");
+                NodeStatus::Running
             }
         }
     }))
 }
 
-pub fn look_action(
-    client: Rc<RefCell<AiTcpClient>>,
-    world: Rc<RefCell<WorldModel>>,
-) -> Box<dyn BehaviorNode> {
+pub fn look_action(client: Rc<RefCell<AiTcpClient>>) -> Box<dyn BehaviorNode> {
+    let mut flag = false;
+
     Box::new(ActionNode::new(move |bb| {
-        println!("====>{}<====", "look");
-        client.borrow().send("Look".to_string());
-        match receive_command_response(&client, &world, bb) {
-            ServerMessage::Look(_) => NodeStatus::Success,
-            _ => NodeStatus::Failure,
+        if !flag {
+            client.borrow().send("Look".to_string());
+            flag = true;
+            return NodeStatus::Running;
+        }
+
+        match bb.get::<ServerMessage>("last_response") {
+            Ok(ServerMessage::Look(_)) => {
+                match bb.clear("last_response") {
+                    Ok(_) => {}
+                    Err(err) => eprintln!("{err}"),
+                };
+                flag = false;
+                NodeStatus::Success
+            }
+            Ok(_) => NodeStatus::Running,
+            Err(err) => {
+                eprintln!("{err}");
+                NodeStatus::Running
+            }
         }
     }))
 }
 
 pub fn navigate_to_tile_action(
     client: Rc<RefCell<AiTcpClient>>,
-    world: Rc<RefCell<WorldModel>>,
     tile_key: &'static str,
 ) -> Box<dyn BehaviorNode> {
     let mut commands: Vec<String> = Vec::new();
+    let mut awaiting_response = false;
 
     Box::new(ActionNode::new(move |bb| {
-        println!("====>{}<====", "navigate to tile");
-        if commands.is_empty() {
+        if commands.is_empty() && !awaiting_response {
             let tile_index = match bb.get::<Option<usize>>(&format!("{}_target_tile", tile_key)) {
                 Ok(Some(idx)) => *idx,
                 _ => return NodeStatus::Failure,
@@ -83,64 +142,84 @@ pub fn navigate_to_tile_action(
             }
         }
 
-        while !commands.is_empty() {
+        if !awaiting_response {
             client.borrow().send(commands[0].clone());
-            match receive_command_response(&client, &world, bb) {
-                ServerMessage::Ok => {
-                    commands.remove(0);
-                }
-                ServerMessage::Dead => {
-                    commands.clear();
-                    return NodeStatus::Failure;
-                }
-                _ => {
-                    commands.clear();
-                    return NodeStatus::Failure;
+            awaiting_response = true;
+            return NodeStatus::Running;
+        }
+
+        match bb.get::<ServerMessage>("last_response") {
+            Ok(ServerMessage::Ok) => {
+                bb.clear("last_response").ok();
+                commands.remove(0);
+                if commands.is_empty() {
+                    awaiting_response = false;
+                    NodeStatus::Success
+                } else {
+                    client.borrow().send(commands[0].clone());
+                    NodeStatus::Running
                 }
             }
+            Ok(ServerMessage::Ko) => {
+                bb.clear("last_response").ok();
+                commands.clear();
+                awaiting_response = false;
+                NodeStatus::Failure
+            }
+            _ => NodeStatus::Running,
         }
-        NodeStatus::Success
     }))
 }
 
-pub fn take_action(
-    client: Rc<RefCell<AiTcpClient>>,
-    world: Rc<RefCell<WorldModel>>,
-    resource: String,
-) -> Box<dyn BehaviorNode> {
+pub fn take_action(client: Rc<RefCell<AiTcpClient>>, resource: String) -> Box<dyn BehaviorNode> {
+    let mut awaiting_response = false;
+
     Box::new(ActionNode::new(move |bb| {
-        println!("====>{}<====", "take");
-        client.borrow().send(format!("Take {resource}"));
-        match receive_command_response(&client, &world, bb) {
-            ServerMessage::Ok => NodeStatus::Success,
-            _ => NodeStatus::Failure,
+        if !awaiting_response {
+            client.borrow().send(format!("Take {resource}"));
+            awaiting_response = true;
+            return NodeStatus::Running;
+        }
+
+        match bb.get::<ServerMessage>("last_response") {
+            Ok(ServerMessage::Ok) => {
+                bb.clear("last_response").ok();
+                awaiting_response = false;
+                NodeStatus::Success
+            }
+            Ok(ServerMessage::Ko) => {
+                bb.clear("last_response").ok();
+                awaiting_response = false;
+                NodeStatus::Failure
+            }
+            Ok(_) => NodeStatus::Running,
+            Err(err) => {
+                eprintln!("{err}");
+                NodeStatus::Failure
+            }
         }
     }))
 }
 
-pub fn food_seeking_sequence(
-    client: Rc<RefCell<AiTcpClient>>,
-    world: Rc<RefCell<WorldModel>>,
-) -> Box<dyn BehaviorNode> {
+pub fn food_seeking_sequence(client: Rc<RefCell<AiTcpClient>>) -> Box<dyn BehaviorNode> {
     Box::new(SequenceNode::new(vec![
-        Box::new(RetryUntilNode::new(
-            |bb| matches!(bb.get::<Option<usize>>("food_target_tile"), Ok(Some(_))),
+        Box::new(ActionNode::new(|bb| {
+            bb.set("food_target_tile", None::<usize>);
+            println!("[food_seeking] cleared stale food_target_tile");
+            NodeStatus::Success
+        })),
+        Box::new(RunUntilNode::new(
+            |bb| {
+                let tile = bb.get::<Option<usize>>("food_target_tile").ok().and_then(|t| *t);
+                println!("[food_seeking] food_target_tile={tile:?}");
+                tile.is_some()
+            },
             Box::new(SequenceNode::new(vec![
-                look_action(client.clone(), world.clone()),
-                random_walk(client.clone(), world.clone()),
+                random_walk(client.clone()),
+                look_action(client.clone()),
             ])),
         )),
-        navigate_to_tile_action(client.clone(), world.clone(), "food"),
-        take_action(client.clone(), world.clone(), "food".to_string()),
-    ]))
-}
-
-pub fn survive_branch(
-    client: Rc<RefCell<AiTcpClient>>,
-    world: Rc<RefCell<WorldModel>>,
-) -> Box<dyn BehaviorNode> {
-    Box::new(SelectorNode::new(vec![
-        food_threshold_condition(),
-        // food_seeking_sequence(client.clone(), world.clone()),
+        navigate_to_tile_action(client.clone(), "food"),
+        take_action(client.clone(), "food".to_string()),
     ]))
 }
