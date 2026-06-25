@@ -11,6 +11,12 @@
 #include <vector>
 #include "EboCommand.hpp"
 #include "EdiCommand.hpp"
+#include "PbcCommand.hpp"
+#include "PdiCommand.hpp"
+#include "PdrCommand.hpp"
+#include "PexCommand.hpp"
+#include "PfkCommand.hpp"
+#include "PgtCommand.hpp"
 #include "PicCommand.hpp"
 #include "PieCommand.hpp"
 #include "PinCommand.hpp"
@@ -19,6 +25,7 @@
 #include "PpoCommand.hpp"
 #include "SegCommand.hpp"
 #include "SgtCommand.hpp"
+#include "SmgCommand.hpp"
 #include "SstCommand.hpp"
 #include "StringUtils.hpp"
 #include "ProtocolHandler.hpp"
@@ -44,6 +51,12 @@ void ProtocolHandler::registerCommands() noexcept
     _factory.registerCreator<EnwCommand>("enw");
     _factory.registerCreator<MctCommand>("mct");
     _factory.registerCreator<MszCommand>("msz");
+    _factory.registerCreator<PbcCommand>("pbc");
+    _factory.registerCreator<PdiCommand>("pdi");
+    _factory.registerCreator<PdrCommand>("pdr");
+    _factory.registerCreator<PexCommand>("pex");
+    _factory.registerCreator<PfkCommand>("pfk");
+    _factory.registerCreator<PgtCommand>("pgt");
     _factory.registerCreator<PicCommand>("pic");
     _factory.registerCreator<PieCommand>("pie");
     _factory.registerCreator<PinCommand>("pin");
@@ -52,6 +65,7 @@ void ProtocolHandler::registerCommands() noexcept
     _factory.registerCreator<PpoCommand>("ppo");
     _factory.registerCreator<SegCommand>("seg");
     _factory.registerCreator<SgtCommand>("sgt");
+    _factory.registerCreator<SmgCommand>("smg");
     _factory.registerCreator<SstCommand>("sst");
     _factory.registerCreator<TnaCommand>("tna");
 }
