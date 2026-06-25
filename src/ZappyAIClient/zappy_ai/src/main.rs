@@ -87,8 +87,12 @@ fn parse_broadcast_level(text: &str) -> Option<u8> {
 fn tick_until_running(tree: &mut BehaviorTree, bb: &mut BlackBoard) {
     loop {
         match tree.tick(bb) {
-            NodeStatus::Running => break,
-            _ => {}
+            NodeStatus::Running => {
+                println!("[tick] → Running, waiting for server response");
+                break;
+            }
+            NodeStatus::Success => println!("[tick] → Success, re-ticking"),
+            NodeStatus::Failure => println!("[tick] → Failure, re-ticking"),
         }
     }
 }
@@ -125,19 +129,26 @@ fn main() {
             None => break,
         };
 
+        println!("[main] ← {:?}", transmission);
         let response = classify(&transmission);
         match response {
-            ServerMessage::Dead => break,
+            ServerMessage::Dead => {
+                println!("[main] server: dead → exiting");
+                break;
+            }
             ServerMessage::Broadcast(k, text) => {
+                println!("[main] broadcast k={k}: {text:?} → blackboard only");
                 bb.set("broadcast_k", k);
                 bb.set("broadcast_text", text.clone());
                 bb.set("broadcast_level", parse_broadcast_level(&text));
                 bb.set("broadcast_timestamp", std::time::Instant::now());
             }
             ServerMessage::Eject(_) => {
+                println!("[main] ejected → blackboard only");
                 bb.set("was_ejected", true);
             }
             _ => {
+                println!("[main] command response ({}) → world.update + tick", response.variant_name());
                 world.update(&response, &mut bb);
                 tick_until_running(&mut tree, &mut bb);
             }

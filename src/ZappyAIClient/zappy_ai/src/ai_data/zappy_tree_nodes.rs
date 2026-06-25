@@ -19,12 +19,13 @@ pub fn random_walk(client: Rc<RefCell<AiTcpClient>>) -> Box<dyn BehaviorNode> {
                 r if r < 0.8 => "Left",
                 _ => "Right",
             };
+            println!("[random_walk] sending: {cmd}");
             client.borrow().send(cmd.to_string());
             sent = true;
             return NodeStatus::Running;
         }
 
-        match bb.get::<ServerMessage>("last_response") {
+        let status = match bb.get::<ServerMessage>("last_response") {
             Ok(ServerMessage::Ok) => {
                 bb.clear("last_response").ok();
                 sent = false;
@@ -35,9 +36,17 @@ pub fn random_walk(client: Rc<RefCell<AiTcpClient>>) -> Box<dyn BehaviorNode> {
                 sent = false;
                 NodeStatus::Failure
             }
-            Ok(_) => NodeStatus::Running,
-            Err(_) => NodeStatus::Running,
-        }
+            Ok(other) => {
+                println!("[random_walk] unexpected response: {} → Running", other.variant_name());
+                NodeStatus::Running
+            }
+            Err(err) => {
+                println!("[random_walk] no last_response yet ({err}) → Running");
+                NodeStatus::Running
+            }
+        };
+        println!("[random_walk] → {status:?}");
+        status
     }))
 }
 
