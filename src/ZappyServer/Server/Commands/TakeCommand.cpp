@@ -75,7 +75,7 @@ bool TakeCommand::execute(AISession &session,
     auto &player = const_cast<Player &>(session.getPlayer());
     player.takeResource(resource);
 
-    std::string guiMsg = std::format("pbc #{} {}\n",
+    std::string guiMsg = std::format("pgt #{} {}\n",
         session.getPlayer().getId(), static_cast<int>(resource));
     server.notifyGUI(guiMsg);
 
