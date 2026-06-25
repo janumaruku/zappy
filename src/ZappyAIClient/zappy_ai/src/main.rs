@@ -1,6 +1,6 @@
-use crate::ai_data::{ServerMessage, build_tree, classify, random_walk, WorldModel};
+use crate::ai_data::{build_tree, classify, WorldModel};
 use ai_tcp_client::AiTcpClient;
-use behavior_tree::behavior_tree::{BehaviorTree, BlackBoard};
+use behavior_tree::behavior_tree::{BlackBoard, NodeStatus};
 use network::network::{Endpoint, IoContext, NetworkError};
 use shell::command::{CommandBuilder, CommandDefinition};
 use std::cell::RefCell;
@@ -71,17 +71,12 @@ fn handshake(port: i32, host: &str, team: &str) -> Result<Rc<RefCell<AiTcpClient
                 client.borrow_mut().close();
                 Err("No slot available. Player can not connect".to_string())
             } else {
+                client.borrow_mut().receive();
                 Ok(client)
             }
         }
         Err(err) => Err(err.to_string()),
     }
-}
-
-fn parse_broadcast_level(text: &str) -> Option<u8> {
-    let rest = text.strip_prefix("LVL")?;
-    let end = rest.find(|c: char| !c.is_ascii_digit())?;
-    rest[..end].parse::<u8>().ok()
 }
 
 fn main() {
@@ -104,35 +99,20 @@ fn main() {
         }
     }
 
-    let mut tree = build_tree(tcp_client.clone());
-    let mut world = WorldModel::new();
+    let world = Rc::new(RefCell::new(WorldModel::new()));
+    let mut tree = build_tree(tcp_client.clone(), world.clone());
     let mut bb = BlackBoard::new();
-    tree.tick(&mut bb);
+
+    tcp_client.borrow().send("Inventory".to_string());
+    if let Some(response) = tcp_client.borrow_mut().receive() {
+        let msg = classify(&response);
+        world.borrow_mut().update(&msg, &mut bb);
+    }
 
     loop {
-        let transmission: String;
-        if let Some(result) = tcp_client.borrow_mut().receive() {
-            transmission = result;
-        } else {
-            continue;
+        match tree.tick(&mut bb) {
+            NodeStatus::Failure => break,
+            _ => {}
         }
-
-        let response = classify(&transmission);
-        match response {
-            ServerMessage::Dead => break,
-            ServerMessage::Broadcast(k, text) => {
-                bb.set("broadcast_k", k);
-                bb.set("broadcast_text", text.clone());
-                bb.set("broadcast_level", parse_broadcast_level(&text));
-                bb.set("broadcast_timestamp", std::time::Instant::now());
-            }
-            ServerMessage::Eject(orientation) => {}
-            _ => {
-                bb.set("last_response", response.clone());
-                world.update(&response, &mut bb);
-                tree.tick(&mut bb);
-            }
-        }
-        tree.tick(&mut bb);
     }
 }

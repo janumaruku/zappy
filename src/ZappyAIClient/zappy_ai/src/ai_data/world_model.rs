@@ -1,9 +1,7 @@
 use crate::ai_data::ServerMessage;
 use behavior_tree::behavior_tree::BlackBoard;
-use std::cell::RefCell;
 use std::cmp::Ordering;
 use std::collections::HashMap;
-use std::sync::{OnceLock, RwLock};
 
 #[derive(Eq, Hash, PartialEq, Clone)]
 pub enum Resource {
@@ -121,7 +119,7 @@ impl WorldModel {
             ServerMessage::LevelUp(level) => self.update_level_up(*level, blackboard),
             ServerMessage::Ok => blackboard.set("last_response", ServerMessage::Ok),
             ServerMessage::Ko => blackboard.set("last_response", ServerMessage::Ko),
-            _ => return,
+            _ => {},
         }
         blackboard.set("last_response", response.clone());
     }

@@ -68,12 +68,13 @@ fn parse_bracket_response(line: &str) -> ServerMessage {
         .trim_start_matches('[')
         .trim_end_matches(']')
         .split(',')
+        .map(|s| s.trim())
         .collect();
 
     let is_inventory = tokens
         .first()
         .map(|token| {
-            token.starts_with("food ")
+            token.starts_with(" food")
                 && token
                     .split_whitespace()
                     .nth(1)
