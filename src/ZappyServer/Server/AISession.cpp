@@ -50,6 +50,11 @@ void AISession::cancelTimers()
     _starvation_timer.cancel();
 }
 
+void AISession::freeze() noexcept
+{
+    _frozen = true;
+}
+
 void AISession::unfreeze() noexcept
 {
     _frozen = false;
