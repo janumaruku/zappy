@@ -201,6 +201,48 @@ pub fn take_action(client: Rc<RefCell<AiTcpClient>>, resource: String) -> Box<dy
     }))
 }
 
+pub fn incantation_action(client: Rc<RefCell<AiTcpClient>>) -> Box<dyn BehaviorNode> {
+    let mut sent = false;
+
+    Box::new(ActionNode::new(move |bb| {
+        if !sent {
+            println!("[incantation] sending: Incantation");
+            client.borrow().send("Incantation".to_string());
+            sent = true;
+            return NodeStatus::Running;
+        }
+
+        match bb.get::<ServerMessage>("last_response") {
+            Ok(ServerMessage::LevelUp(level)) => {
+                let level = *level;
+                println!("[incantation] level up → {level}");
+                bb.set("level", level);
+                bb.clear("last_response").ok();
+                sent = false;
+                NodeStatus::Success
+            }
+            Ok(ServerMessage::Ko) => {
+                println!("[incantation] ko → Failure");
+                bb.clear("last_response").ok();
+                sent = false;
+                NodeStatus::Failure
+            }
+            Ok(ServerMessage::ElevationUnderway) => {
+                println!("[incantation] elevation underway, waiting for level up...");
+                NodeStatus::Running
+            }
+            Ok(other) => {
+                println!("[incantation] unexpected response: {} → Running", other.variant_name());
+                NodeStatus::Running
+            }
+            Err(err) => {
+                println!("[incantation] no response yet ({err}) → Running");
+                NodeStatus::Running
+            }
+        }
+    }))
+}
+
 pub fn has_required_stones() -> Box<dyn BehaviorNode> {
     Box::new(ConditionNode::new(|bb| {
         let level = bb.get::<u8>("level").map(|l| *l).unwrap_or(1);
