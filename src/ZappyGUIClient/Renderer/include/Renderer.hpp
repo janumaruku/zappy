@@ -57,7 +57,8 @@ private:
 
 
     struct OnEvent {
-        explicit OnEvent(Renderer &renderer): renderer{renderer} {}
+        explicit OnEvent(Renderer &renderer): renderer{renderer}
+        {}
 
         void operator()(const PlayerNewEvent &/*event*/)
         {
@@ -73,9 +74,8 @@ private:
             renderer._animations[event.id] = std::move(animation);
         }
 
-        void operator()(const PlayerDiedEvent &event)
+        void operator()(const PlayerLevelEvent &)
         {
-            renderer._animations.erase(event.id);
         }
 
         void operator()(const PlayerInventoryAssignEvent &)
@@ -86,6 +86,11 @@ private:
         {
         }
 
+        void operator()(const PlayerDiedEvent &event)
+        {
+            renderer._animations.erase(event.id);
+        }
+
         void operator()(const TileUpdateEvent &)
         {
         }
@@ -93,7 +98,6 @@ private:
         void operator()(const TimeUpdateEvent &)
         {
         }
-
         void operator()(const EggLaidEvent &event)
         {
             renderer._eggs.emplace(event.eggId, event.position);
@@ -156,7 +160,6 @@ private:
     static std::string playerOrientationToString(
         const data::Orientation &orientation);
 
-    // std::map<data::PlayerId, Animation> _animations;
     Grid _grid;
     Camera2D _camera;
     HUD _hud;

@@ -43,9 +43,7 @@ void ResourceManager::loadImages()
 }
 
 void ResourceManager::loadRectangles()
-{
-
-}
+{}
 
 Image ResourceManager::createImageResource(const data::Position offset,
     const int radius, const Color color)
