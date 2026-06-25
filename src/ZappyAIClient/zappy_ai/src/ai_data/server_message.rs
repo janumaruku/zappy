@@ -9,6 +9,7 @@ pub enum ServerMessage {
     Look(Vec<Vec<TileObject>>),
     Inventory(HashMap<Resource, u32>),
     LevelUp(u8),
+    ElevationUnderway,
     Dead,
     Broadcast(u8, String),
     Eject(Orientation),
@@ -23,6 +24,7 @@ impl ServerMessage {
             ServerMessage::Look(_) => "Look",
             ServerMessage::Inventory(_) => "Inventory",
             ServerMessage::LevelUp(_) => "LevelUp",
+            ServerMessage::ElevationUnderway => "ElevationUnderway",
             ServerMessage::Dead => "Dead",
             ServerMessage::Broadcast(_, _) => "Broadcast",
             ServerMessage::Eject(_) => "Eject",
@@ -48,6 +50,7 @@ pub fn classify(line: &str) -> ServerMessage {
             "eject:" => parse_eject(&tokens),
             "message" => parse_broadcast(&trimmed),
             "Current" => parse_level_up(&tokens),
+            "Elevation" => ServerMessage::ElevationUnderway,
             _ => ServerMessage::Unknown(line.to_string()),
         }
     };
