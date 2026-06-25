@@ -53,9 +53,13 @@ pub fn random_walk(client: Rc<RefCell<AiTcpClient>>) -> Box<dyn BehaviorNode> {
 
 pub fn food_threshold_condition() -> Box<dyn BehaviorNode> {
     Box::new(ConditionNode::new(|bb| match bb.get::<u32>("food") {
-        Ok(food) => *food >= FOOD_SAFE_THRESHOLD,
+        Ok(food) => {
+            let result = *food >= FOOD_SAFE_THRESHOLD;
+            println!("[food_threshold] food={food}, threshold={FOOD_SAFE_THRESHOLD} → {result}");
+            result
+        }
         Err(err) => {
-            eprintln!("{err}");
+            eprintln!("[food_threshold] blackboard error: {err}");
             false
         }
     }))
@@ -118,10 +122,11 @@ pub fn navigate_to_tile_action(
             Ok(ServerMessage::Ok) => {
                 bb.clear("last_response").ok();
                 commands.remove(0);
-                awaiting_response = false;
                 if commands.is_empty() {
+                    awaiting_response = false;
                     NodeStatus::Success
                 } else {
+                    client.borrow().send(commands[0].clone());
                     NodeStatus::Running
                 }
             }
@@ -168,11 +173,16 @@ pub fn take_action(client: Rc<RefCell<AiTcpClient>>, resource: String) -> Box<dy
 
 pub fn food_seeking_sequence(client: Rc<RefCell<AiTcpClient>>) -> Box<dyn BehaviorNode> {
     Box::new(SequenceNode::new(vec![
+        Box::new(ActionNode::new(|bb| {
+            bb.set("food_target_tile", None::<usize>);
+            println!("[food_seeking] cleared stale food_target_tile");
+            NodeStatus::Success
+        })),
         Box::new(RunUntilNode::new(
             |bb| {
-                let found = matches!(bb.get::<Option<usize>>("food_target_tile"), Ok(Some(_)));
-                println!("[food_seeking] food_target_tile found: {found}");
-                found
+                let tile = bb.get::<Option<usize>>("food_target_tile").ok().and_then(|t| *t);
+                println!("[food_seeking] food_target_tile={tile:?}");
+                tile.is_some()
             },
             Box::new(SequenceNode::new(vec![
                 random_walk(client.clone()),

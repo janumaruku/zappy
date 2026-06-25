@@ -14,12 +14,14 @@ impl<F: Fn(&BlackBoard) -> bool> RunUntilNode<F> {
 impl<F: Fn(&BlackBoard) -> bool> BehaviorNode for RunUntilNode<F> {
     fn tick(&mut self, bb: &mut BlackBoard) -> NodeStatus {
         loop {
-            if (self.predicate)(bb) {
-                return NodeStatus::Success;
-            }
             match self.child.tick(bb) {
                 NodeStatus::Running => return NodeStatus::Running,
-                _ => {} // child completed — re-check predicate on same tick
+                _ => {
+                    // child completed a full cycle — now check predicate
+                    if (self.predicate)(bb) {
+                        return NodeStatus::Success;
+                    }
+                }
             }
         }
     }
