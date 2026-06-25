@@ -38,7 +38,8 @@
 
 namespace zappy::gui {
 
-ProtocolHandler::ProtocolHandler(WorldState &w) noexcept : _worldState(w)
+ProtocolHandler::ProtocolHandler(WorldState &w) noexcept :
+_worldState(w)
 {
     registerCommands();
 }
