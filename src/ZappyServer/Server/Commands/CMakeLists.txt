@@ -3,6 +3,7 @@ add_library(commands STATIC
     BroadcastCommand.cpp
     ConnectNbrCommand.cpp
     EjectCommand.cpp
+    EdiCommand.cpp
     ForkCommand.cpp
     ForwardCommand.cpp
     IncantationCommand.cpp
