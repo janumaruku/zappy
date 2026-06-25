@@ -1,8 +1,8 @@
 use crate::ai_data::{ServerMessage, tile_to_commands};
-use crate::config::{ELEVATION_TABLE, FOOD_SAFE_THRESHOLD};
+use crate::config::{ELEVATION_TABLE, FOOD_SAFE_THRESHOLD, STONE_PRIORITIES};
 use ai_tcp_client::AiTcpClient;
 use behavior_tree::behavior_tree::{
-    ActionNode, BehaviorNode, ConditionNode, NodeStatus, SequenceNode,
+    ActionNode, BehaviorNode, BlackBoard, ConditionNode, NodeStatus, SequenceNode,
 };
 use behavior_tree::decorator_node::RunUntilNode;
 use rand::RngExt;
@@ -199,6 +199,34 @@ pub fn take_action(client: Rc<RefCell<AiTcpClient>>, resource: String) -> Box<dy
             }
         }
     }))
+}
+
+pub fn compute_target_stone(bb: &BlackBoard) -> Option<String> {
+    let level = bb.get::<u8>("level").map(|l| *l).unwrap_or(1);
+    let idx = (level as usize).saturating_sub(1).min(6);
+    let req = &ELEVATION_TABLE[idx];
+
+    let required_for = |name: &str| -> u32 {
+        match name {
+            "linemate"  => req.linemate,
+            "deraumere" => req.deraumere,
+            "sibur"     => req.sibur,
+            "mendiane"  => req.mendiane,
+            "phiras"    => req.phiras,
+            "thystame"  => req.thystame,
+            _           => 0,
+        }
+    };
+
+    STONE_PRIORITIES.iter().find_map(|(name, _)| {
+        let required = required_for(name);
+        let current = bb.get::<u32>(name).map(|v| *v).unwrap_or(0);
+        if current < required {
+            Some(name.to_string())
+        } else {
+            None
+        }
+    })
 }
 
 pub fn incantation_action(client: Rc<RefCell<AiTcpClient>>) -> Box<dyn BehaviorNode> {
