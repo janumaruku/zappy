@@ -91,6 +91,7 @@ fn parse_bracket_response(line: &str) -> ServerMessage {
     let is_inventory = tokens
         .first()
         .map(|token| {
+            let token = token.trim();
             token.starts_with("food ")
                 && token
                     .split_whitespace()
