@@ -43,6 +43,24 @@ Server::Server(int port, int width, int height, std::vector<std::string> teams,
         _availableSlots[team] = playersPerTeam;
 }
 
+std::optional<std::string> Server::checkWinCondition() const noexcept
+{
+    std::unordered_map<std::string, int> teamLevel8Counts;
+
+    for (const auto& [id, player] : _map.getPlayers()) {
+        if (player.getLevel() == 8) {
+            teamLevel8Counts[player.getTeam()]++;
+        }
+    }
+
+    for (const auto& [team, count] : teamLevel8Counts) {
+        if (count >= 6) {
+            return team;
+        }
+    }
+    return std::nullopt;
+}
+
 void Server::run()
 {
     scheduleResourceRespawn();
@@ -221,6 +239,15 @@ void Server::handleAiHandshake(const std::shared_ptr<network::ConnectedSocket> &
         player.getTeam()
     );
     notifyGUI(command);
+}
+
+void Server::stop() noexcept
+{
+    _resourceRespawnTimer.cancel();
+    for (auto &a : _aiSessions) {
+        a->cancelTimers();
+    }
+    _ioContext.stop();
 }
 
 void Server::notifyGUI(const std::string &command)

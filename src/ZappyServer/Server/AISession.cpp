@@ -44,6 +44,12 @@ Server &AISession::getServer() noexcept
     return _server;
 }
 
+void AISession::cancelTimers()
+{
+    _command_timer.cancel();
+    _starvation_timer.cancel();
+}
+
 void AISession::freeze() noexcept
 {
     _frozen = true;
