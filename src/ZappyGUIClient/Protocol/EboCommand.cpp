@@ -27,9 +27,8 @@ bool EboCommand::execute(WorldState& s, const std::vector<std::string> &cmd)
 
     std::string idStr = cmd[0];
 
-    if (!idStr.empty() && idStr[0] == '#') {
-        idStr.erase(0, 1);
-    }
+if (!id.empty() && id.front() == '#')
+        id.erase(id.begin());
 
     try {
         id = std::stoi(idStr);
