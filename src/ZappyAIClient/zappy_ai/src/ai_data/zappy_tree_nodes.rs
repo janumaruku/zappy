@@ -24,8 +24,20 @@ pub fn random_walk(client: Rc<RefCell<AiTcpClient>>) -> Box<dyn BehaviorNode> {
             return NodeStatus::Running;
         }
 
-        sent = false;
-        NodeStatus::Success
+        match bb.get::<ServerMessage>("last_response") {
+            Ok(ServerMessage::Ok) => {
+                bb.clear("last_response").ok();
+                sent = false;
+                NodeStatus::Success
+            }
+            Ok(ServerMessage::Ko) => {
+                bb.clear("last_response").ok();
+                sent = false;
+                NodeStatus::Failure
+            }
+            Ok(_) => NodeStatus::Running,
+            Err(_) => NodeStatus::Running,
+        }
     }))
 }
 

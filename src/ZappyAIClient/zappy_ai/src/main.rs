@@ -1,7 +1,7 @@
-use crate::ai_data::{ServerMessage, build_tree, classify, random_walk, WorldModel};
+use crate::ai_data::{ServerMessage, build_tree, classify, WorldModel};
 use ai_tcp_client::AiTcpClient;
-use behavior_tree::behavior_tree::{BehaviorTree, BlackBoard};
-use network::network::{Endpoint, IoContext, NetworkError};
+use behavior_tree::behavior_tree::{BehaviorTree, BlackBoard, NodeStatus};
+use network::network::{Endpoint, IoContext};
 use shell::command::{CommandBuilder, CommandDefinition};
 use std::cell::RefCell;
 use std::rc::Rc;
@@ -84,6 +84,15 @@ fn parse_broadcast_level(text: &str) -> Option<u8> {
     rest[..end].parse::<u8>().ok()
 }
 
+fn tick_until_running(tree: &mut BehaviorTree, bb: &mut BlackBoard) {
+    loop {
+        match tree.tick(bb) {
+            NodeStatus::Running => break,
+            _ => {}
+        }
+    }
+}
+
 fn main() {
     let port = Rc::new(RefCell::new(0));
     let team = Rc::new(RefCell::new(String::new()));
@@ -107,15 +116,14 @@ fn main() {
     let mut tree = build_tree(tcp_client.clone());
     let mut world = WorldModel::new();
     let mut bb = BlackBoard::new();
-    tree.tick(&mut bb);
+
+    tick_until_running(&mut tree, &mut bb);
 
     loop {
-        let transmission: String;
-        if let Some(result) = tcp_client.borrow_mut().receive() {
-            transmission = result;
-        } else {
-            continue;
-        }
+        let transmission = match tcp_client.borrow_mut().receive() {
+            Some(r) => r,
+            None => break,
+        };
 
         let response = classify(&transmission);
         match response {
@@ -126,13 +134,13 @@ fn main() {
                 bb.set("broadcast_level", parse_broadcast_level(&text));
                 bb.set("broadcast_timestamp", std::time::Instant::now());
             }
-            ServerMessage::Eject(orientation) => {}
+            ServerMessage::Eject(_) => {
+                bb.set("was_ejected", true);
+            }
             _ => {
-                bb.set("last_response", response.clone());
                 world.update(&response, &mut bb);
-                tree.tick(&mut bb);
+                tick_until_running(&mut tree, &mut bb);
             }
         }
-        tree.tick(&mut bb);
     }
 }
