@@ -162,7 +162,7 @@ const std::unordered_map<uint, data::Egg> &Map::getEggs() const noexcept
     return _eggs;
 }
 
-std::vector<uint> Map::getEggsOnTile(const data::Position &pos) const
+std::unique_ptr<std::vector<uint>> Map::getEggsOnTile(const data::Position &pos) const
 {
     std::vector<uint> out;
 
@@ -172,6 +172,6 @@ std::vector<uint> Map::getEggsOnTile(const data::Position &pos) const
             e.getPosition().getY() == pos.getY())
             out.push_back(kv.first);
     }
-    return out;
+    return std::make_unique<std::vector<uint>>(out);
 }
 }

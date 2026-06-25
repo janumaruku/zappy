@@ -34,7 +34,7 @@ bool EjectCommand::execute(AISession& s, const std::vector<std::string>& /*v*/)
 
     auto eggs = s.getServer().getMap().getEggsOnTile(pos);
 
-    for (auto& egg : eggs) {
+    for (auto& egg : *eggs) {
         s.getServer().getMap().removeEgg(egg);
         s.getServer().notifyGUI(std::format("edi #{}", egg));
     }
