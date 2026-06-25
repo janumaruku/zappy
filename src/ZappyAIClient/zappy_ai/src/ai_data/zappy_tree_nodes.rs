@@ -65,6 +65,36 @@ pub fn food_threshold_condition() -> Box<dyn BehaviorNode> {
     }))
 }
 
+pub fn inventory_action(client: Rc<RefCell<AiTcpClient>>) -> Box<dyn BehaviorNode> {
+    let mut sent = false;
+
+    Box::new(ActionNode::new(move |bb| {
+        if !sent {
+            println!("[inventory] sending: Inventory");
+            client.borrow().send("Inventory".to_string());
+            sent = true;
+            return NodeStatus::Running;
+        }
+
+        match bb.get::<ServerMessage>("last_response") {
+            Ok(ServerMessage::Inventory(_)) => {
+                println!("[inventory] received inventory response → Success");
+                bb.clear("last_response").ok();
+                sent = false;
+                NodeStatus::Success
+            }
+            Ok(other) => {
+                println!("[inventory] unexpected response: {} → Running", other.variant_name());
+                NodeStatus::Running
+            }
+            Err(err) => {
+                println!("[inventory] no last_response yet ({err}) → Running");
+                NodeStatus::Running
+            }
+        }
+    }))
+}
+
 pub fn look_action(client: Rc<RefCell<AiTcpClient>>) -> Box<dyn BehaviorNode> {
     let mut flag = false;
 
