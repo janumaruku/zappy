@@ -188,8 +188,8 @@ void WorldState::onTileContent(const data::Position pos,
     _map.updateTile(pos, resources);
 
     notify(ZappyEventType::GUI_EVENT, TileUpdateEvent{
-        .position = pos,
-        .resources = resources
+        pos,
+        resources
     });
 }
 
@@ -201,6 +201,17 @@ void WorldState::onRessourceDropped(const PlayerId &id, data::Resource r)
     player.getInventory().at(r)--;
     auto &tileInv = getMap().getTile(playerPos).getResources();
     tileInv.at(r)++;
+    notify(ZappyEventType::GUI_EVENT, TileUpdateEvent{player.getPosition(), tileInv});
+}
+
+void WorldState::onRessourceTaken(const PlayerId &id, data::Resource r)
+{
+    auto player = getPlayerById(id);
+    const auto playerPos = player.getPosition();
+
+    player.getInventory().at(r)++;
+    auto &tileInv = getMap().getTile(playerPos).getResources();
+    tileInv.at(r)--;
     notify(ZappyEventType::GUI_EVENT, TileUpdateEvent{player.getPosition(), tileInv});
 }
 

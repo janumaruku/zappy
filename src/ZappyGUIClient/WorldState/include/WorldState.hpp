@@ -72,6 +72,7 @@ public:
         const std::unordered_map<data::Resource, int> &resources);
 
     void onRessourceDropped(const PlayerId &id, data::Resource r);
+    void onRessourceTaken(const PlayerId &id, data::Resource r);
 
     void onTimeUnit(uint t);
 
