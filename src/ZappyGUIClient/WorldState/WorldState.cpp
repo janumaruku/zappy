@@ -31,6 +31,11 @@ const GUIMap &WorldState::getMap() const noexcept
     return _map;
 }
 
+GUIMap &WorldState::getMap() noexcept
+{
+    return _map;
+}
+
 const std::unordered_map<WorldState::PlayerId, GUIPlayer> &
 WorldState::getPlayers() const noexcept
 {
@@ -65,6 +70,12 @@ std::unordered_map<std::string, Team> &WorldState::getTeams()
 {
     return _teams;
 }
+
+const std::unordered_map<std::string, data::Egg> &WorldState::getEggs() const noexcept
+{
+    return _eggs;
+}
+
 
 void WorldState::onPlayerNew(const GUIPlayer &player)
 {
@@ -134,6 +145,12 @@ void WorldState::onPlayerPosition(const std::string &id,
 
 }
 
+void WorldState::onPlayerEject(const PlayerId &id)
+{
+    auto player = getPlayerById(id);
+    notify(ZappyEventType::GUI_EVENT, PlayerMovedEvent{player});
+}
+
 void WorldState::onPlayerDeath(const PlayerId &id)
 {
     if (!_players.contains(id)) {
@@ -154,6 +171,12 @@ void WorldState::onPlayerInventory(GUIPlayer &player, const std::unordered_map<d
     notify(ZappyEventType::GUI_EVENT, PlayerInventoryAssignEvent{player});
 }
 
+void WorldState::onPlayerBroadcast(const PlayerId &id, const std::string &msg)
+{
+    const auto &player = getPlayerById(id);
+    notify(ZappyEventType::GUI_EVENT, PlayerBroadcastEvent{player, msg});
+}
+
 void WorldState::onTeamName(const data::TeamId &teamName)
 {
     _teams.insert_or_assign(teamName, Team{teamName, WHITE});
@@ -165,9 +188,31 @@ void WorldState::onTileContent(const data::Position pos,
     _map.updateTile(pos, resources);
 
     notify(ZappyEventType::GUI_EVENT, TileUpdateEvent{
-        .position = pos,
-        .resources = resources
+        pos,
+        resources
     });
+}
+
+void WorldState::onRessourceDropped(const PlayerId &id, data::Resource r)
+{
+    auto player = getPlayerById(id);
+    const auto playerPos = player.getPosition();
+
+    player.getInventory().at(r)--;
+    auto &tileInv = getMap().getTile(playerPos).getResources();
+    tileInv.at(r)++;
+    notify(ZappyEventType::GUI_EVENT, TileUpdateEvent{player.getPosition(), tileInv});
+}
+
+void WorldState::onRessourceTaken(const PlayerId &id, data::Resource r)
+{
+    auto player = getPlayerById(id);
+    const auto playerPos = player.getPosition();
+
+    player.getInventory().at(r)++;
+    auto &tileInv = getMap().getTile(playerPos).getResources();
+    tileInv.at(r)--;
+    notify(ZappyEventType::GUI_EVENT, TileUpdateEvent{player.getPosition(), tileInv});
 }
 
 void WorldState::onTimeUnit(uint t)
@@ -184,7 +229,7 @@ uint WorldState::getTimeUnit() const
 void WorldState::onEggLaid(int eggId, const PlayerId &playerId, const data::Position &pos)
 {
     auto player =  getPlayers().at(playerId);
-    data::Egg e(std::to_string(eggId), playerId, player.getTeam(), pos, player.getLevel());
+    data::Egg e(std::to_string(eggId), playerId, player.getTeam(), pos, 1);
     _eggs.emplace(std::to_string(eggId), e);
 }
 
@@ -214,10 +259,9 @@ void WorldState::onMapDimension(const int &width, const int &height)
     _map.updateHeight(height);
 }
 
-void WorldState::onIncantationStart(const data::Position &pos, const uint &level, const std::vector<PlayerId> &playerIds)
+void WorldState::onIncantationStart(const data::Position &pos,const uint &level, const data::PlayerId &id, const std::vector<PlayerId> &participants)
 {
-    IncantationStartEvent i(pos, level, playerIds);
-    notify(ZappyEventType::GUI_EVENT, i);
+    notify(ZappyEventType::GUI_EVENT, IncantationStartEvent{pos, level, id, participants});
 }
 
 void WorldState::onIncantationEnd(const data::Position &pos, bool result)
@@ -229,8 +273,7 @@ void WorldState::onIncantationEnd(const data::Position &pos, bool result)
 void WorldState::onGameEnd(const Team &winningTeam)
 {
     _winner = winningTeam.getName();
-    GameEndEvent evt(winningTeam.getName());
-    notify(ZappyEventType::GUI_EVENT, evt);
+    notify(ZappyEventType::GUI_EVENT, GameEndEvent{winningTeam.getName()});
 }
 
 const std::optional<std::string> &WorldState::getWinner() const

@@ -1,5 +1,5 @@
 /*
-** EPITECH PROJECT, 2025
+** EPITECH PROJECT, 2026
 ** ZPY
 ** File description:
 ** SegCommand.cpp
@@ -20,7 +20,7 @@ namespace zappy::gui {
 
 bool SegCommand::execute(WorldState &s, const std::vector<std::string> &cmd)
 {
-    Team team(cmd[0], GREEN);
+    auto team = s.getTeams().at(cmd.at(0));
     s.onGameEnd(team);
     return true;
 }

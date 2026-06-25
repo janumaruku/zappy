@@ -1,5 +1,5 @@
 /*
-** EPITECH PROJECT, 2025
+** EPITECH PROJECT, 2026
 ** ZPY
 ** File description:
 ** PicCommand.cpp
@@ -19,22 +19,20 @@
 
 namespace zappy::gui {
 
+
 bool PicCommand::execute(WorldState& s, const std::vector<std::string>&cmd)
 {
-    data::Position pos;
-    uint level;
+    data::Position pos(std::stoi(cmd.at(0)), std::stoi(cmd.at(1)));
+    uint level = std::stoi(cmd.at(2));
 
-    try {
-        pos = data::Position(std::stoi(cmd[0]), std::stoi(cmd[1]));
-        level = std::stoi(cmd[2]);
-    } catch (const std::exception &e) {
-        std::cerr << "PicCommand::" << __func__ << "Error Parsing position";
-        return false;
-    }
-    std::vector<data::PlayerId> playerIds;
-    for (auto it = cmd.begin() + 3; it != cmd.end(); it++)
-        playerIds.push_back(*it);
-    s.onIncantationStart(pos, level, playerIds);
+    auto initiatorId = cmd.at(3);
+
+    if (!initiatorId.empty() && initiatorId.front() == '#')
+        initiatorId.erase(initiatorId.begin());
+
+    std::vector<data::PlayerId> participants(cmd.begin() + 4, cmd.end());
+
+    s.onIncantationStart(pos, level, initiatorId, participants);
     return true;
 }
 

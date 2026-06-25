@@ -1,5 +1,5 @@
 /*
-** EPITECH PROJECT, 2025
+** EPITECH PROJECT, 2026
 ** ZPY
 ** File description:
 ** PlvCommand.cpp
@@ -24,10 +24,14 @@ namespace zappy::gui {
 
 bool PlvCommand::execute(WorldState& s, const std::vector<std::string>&cmd)
 {
-    const auto &str = cmd.at(0);
-    auto &player = s.getPlayerById(str);
+    std::string id = cmd[0];
 
-    player.setLevel(std::stoi(str));
+    if (!id.empty() && id.front() == '#')
+        id.erase(id.begin());
+
+    auto &player = s.getPlayerById(id);
+
+    player.setLevel(std::stoi(id));
     s.onPlayerLevel(player);
     return true;
 }

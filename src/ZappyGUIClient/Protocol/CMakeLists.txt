@@ -5,17 +5,24 @@ add_library(gui_protocol STATIC
         EnwCommand.cpp
         MctCommand.cpp
         MszCommand.cpp
+        PbcCommand.cpp
+        PdiCommand.cpp
+        PdrCommand.cpp
+        PexCommand.cpp
+        PfkCommand.cpp
+        PgtCommand.cpp
         PicCommand.cpp
         PieCommand.cpp
         PinCommand.cpp
         PlvCommand.cpp
         PnwCommand.cpp
         PpoCommand.cpp
-        ProtocolHandler.cpp
         SegCommand.cpp
         SgtCommand.cpp
+        SmgCommand.cpp
         SstCommand.cpp
-        TnaCommand.cpp)
+        TnaCommand.cpp
+        ProtocolHandler.cpp)
 
 
 target_include_directories(gui_protocol PUBLIC include)

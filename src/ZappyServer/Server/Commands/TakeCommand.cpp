@@ -1,5 +1,5 @@
 /*
-** EPITECH PROJECT, 2025
+** EPITECH PROJECT, 2026
 ** ZPY
 ** File description:
 ** TakeCommand.cpp
@@ -72,10 +72,10 @@ bool TakeCommand::execute(AISession &session,
         return true;
     }
 
-    auto &player = const_cast<Player &>(session.getPlayer());
+    auto &player = session.getPlayer();
     player.takeResource(resource);
 
-    std::string guiMsg = std::format("pbc #{} {}\n",
+    std::string guiMsg = std::format("pgt #{} {}\n",
         session.getPlayer().getId(), static_cast<int>(resource));
     server.notifyGUI(guiMsg);
 

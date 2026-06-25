@@ -1,5 +1,5 @@
 /*
-** EPITECH PROJECT, 2025
+** EPITECH PROJECT, 2026
 ** ZPY
 ** File description:
 ** EboCommand.cpp
@@ -18,26 +18,12 @@ namespace zappy::gui {
 
 bool EboCommand::execute(WorldState& s, const std::vector<std::string> &cmd)
 {
-    uint id;
+    auto id = cmd[0];
 
-    if (cmd.empty()) {
-        std::cerr << "EboCommand::" << __func__ << " No egg id provided" << std::endl;
-        return false;
-    }
+    if (!id.empty() && id.front() == '#')
+        id.erase(id.begin());
 
-    std::string idStr = cmd[0];
-
-if (!idStr.empty() && idStr.front() == '#')
-        idStr.erase(idStr.begin());
-
-    try {
-        id = std::stoi(idStr);
-    } catch (const std::exception &e) {
-        std::cerr << "EboCommand::" << __func__ << "Error Parsing egg id: " << idStr << std::endl;
-        return false;
-    }
-
-    s.onEggHatched(id);
+    s.onEggHatched(std::stoi(id));
     return true;
 }
 

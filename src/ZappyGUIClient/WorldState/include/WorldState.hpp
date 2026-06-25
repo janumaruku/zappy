@@ -37,6 +37,7 @@ public:
         int timeUnit, int width, int height);
 
     [[nodiscard]] const GUIMap &getMap() const noexcept;
+    [[nodiscard]] GUIMap &getMap() noexcept;
 
     const std::unordered_map<PlayerId, GUIPlayer> &getPlayers() const noexcept;
 
@@ -45,6 +46,8 @@ public:
 
     const std::unordered_map<std::string, Team> &getTeams() const noexcept;
     std::unordered_map<std::string, Team> &getTeams() noexcept;
+
+    const std::unordered_map<std::string, data::Egg> &getEggs() const noexcept;
 
     uint getTimeUnit() const;
 
@@ -55,14 +58,21 @@ public:
     void onPlayerPosition(const std::string &id, const data::Position &pos,
         const data::Orientation &orientation);
 
+    void onPlayerEject(const PlayerId &id);
+
     void onPlayerDeath(const PlayerId &id);
 
     void onPlayerInventory(GUIPlayer &player, const std::unordered_map<data::Resource, uint> &);
+
+    void onPlayerBroadcast(const PlayerId &id, const std::string &msg);
 
     void onTeamName(const data::TeamId &teamName);
 
     void onTileContent(data::Position pos,
         const std::unordered_map<data::Resource, int> &resources);
+
+    void onRessourceDropped(const PlayerId &id, data::Resource r);
+    void onRessourceTaken(const PlayerId &id, data::Resource r);
 
     void onTimeUnit(uint t);
 
@@ -72,7 +82,8 @@ public:
 
     void onMapDimension(const int &width, const int &height);
 
-    void onIncantationStart(const data::Position &pos, const uint &level, const std::vector<PlayerId> &playerIds);
+    void onIncantationStart(const data::Position &pos, const uint &level, const PlayerId &initiatorId,
+        const std::vector<PlayerId> &participants);
     void onIncantationEnd(const data::Position &pos, bool result);
 
     void onGameEnd(const Team &winningTeam);

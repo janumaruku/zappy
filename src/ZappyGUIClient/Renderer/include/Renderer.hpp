@@ -77,6 +77,10 @@ private:
         {
         }
 
+        void operator()(const PlayerBroadcastEvent &)
+        {
+        }
+
         void operator()(const TileUpdateEvent &)
         {
         }

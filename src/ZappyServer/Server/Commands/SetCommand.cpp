@@ -1,5 +1,5 @@
 /*
-** EPITECH PROJECT, 2025
+** EPITECH PROJECT, 2026
 ** ZPY
 ** File description:
 ** SetCommand.cpp
@@ -51,8 +51,8 @@ bool SetCommand::execute(AISession &session,
     }
 
     const auto resource = it->second;
-    Server &server = const_cast<Server &>(session.getServer());
-    Player &player = const_cast<Player &>(session.getPlayer());
+    auto &server = session.getServer();
+    auto &player = session.getPlayer();
 
     if (!player.removeResource(resource)) {
         session.scheduleResponse(TIME_LIMIT, "ko\n");
