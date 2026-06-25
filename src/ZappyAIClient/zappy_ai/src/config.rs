@@ -1,1 +1,1 @@
-pub const FOOD_SAFE_THRESHOLD: u32 = 20;
+pub const FOOD_SAFE_THRESHOLD: u32 = 10;
