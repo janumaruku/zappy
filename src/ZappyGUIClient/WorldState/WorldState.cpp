@@ -229,7 +229,7 @@ uint WorldState::getTimeUnit() const
 void WorldState::onEggLaid(int eggId, const PlayerId &playerId, const data::Position &pos)
 {
     auto player =  getPlayers().at(playerId);
-    data::Egg e(std::to_string(eggId), playerId, player.getTeam(), pos, player.getLevel());
+    data::Egg e(std::to_string(eggId), playerId, player.getTeam(), pos, 1);
     _eggs.emplace(std::to_string(eggId), e);
 }
 

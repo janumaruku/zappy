@@ -22,18 +22,18 @@ namespace zappy::gui {
 
 bool EnwCommand::execute(WorldState &s, const std::vector<std::string> &cmd)
 {
-    const auto& playerId = cmd[1];
-    data::Position pos;
-    int eggId;
+
+    auto eggId = cmd.at(0);
+    auto playerId = cmd.at(1);
+
+    auto stripHastag = [] (std::string &str) {
+        if (!str.empty() && str.front() == '#')
+        str.erase(str.begin());
+    };
+    stripHastag(eggId);
+    stripHastag(playerId);
     
-    try {
-        eggId = std::stoi(cmd[0]);
-        pos = data::Position(std::stoi(cmd[2]), std::stoi(cmd[3]));
-    } catch (const std::exception &e) {
-        std::cerr << "EnwCommand::" << __func__ << "Error Parsing position";
-        return false;
-    }
-    s.onEggLaid(eggId, playerId, pos);
+    s.onEggLaid(std::stoi(eggId), playerId, s.getPlayerById(playerId).getPosition());
     return true;
 }
 
