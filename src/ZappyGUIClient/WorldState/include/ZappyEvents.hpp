@@ -14,6 +14,7 @@
 
 #include "Egg.hpp"
 #include "GUIPlayer.hpp"
+#include "Position.hpp"
 #include "Tile.hpp"
 
 namespace zappy::gui {
@@ -52,9 +53,16 @@ struct PlayerDiedEvent {
     data::PlayerId id;
 };
 
+struct PlayerBroadcastEvent {
+    explicit PlayerBroadcastEvent(const GUIPlayer &player, std::string msg);
+    data::PlayerId id;
+    std::string msg;
+};
+
 struct TileUpdateEvent {
+    explicit TileUpdateEvent(const data::Position &pos, const std::unordered_map<data::Resource, int> &resources);
     data::Position position;
-    std::unordered_map<data::Resource, int> resources;
+    const std::unordered_map<data::Resource, int> &resources;
 };
 
 struct TimeUpdateEvent {
@@ -92,7 +100,7 @@ struct GameEndEvent {
 };
 
 using ZappyEvent = std::variant<PlayerNewEvent, PlayerMovedEvent, PlayerLevelEvent,
-    PlayerInventoryAssignEvent, PlayerDiedEvent,
+    PlayerInventoryAssignEvent, PlayerDiedEvent, PlayerBroadcastEvent,
     TileUpdateEvent,
     TimeUpdateEvent,
     EggLaidEvent, EggHatchedEvent, EggDiedEvent,

@@ -38,6 +38,18 @@ const data::Tile &GUIMap::getTile(data::Position pos) const
     return _tiles[index];
 }
 
+data::Tile &GUIMap::getTile(data::Position pos)
+{
+    if (pos.getX() > _width || pos.getX() < 0 ||
+        pos.getY() > _height || pos.getY() < 0) {
+        throw std::runtime_error("getTile position out of bound");
+    }
+
+    const auto index = (pos.getY() * _width) + pos.getX();
+
+    return _tiles[index];
+}
+
 void GUIMap::updateWidth(const int width)
 {
     _width = width;

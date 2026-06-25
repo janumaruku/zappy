@@ -23,6 +23,7 @@ public:
     [[nodiscard]] int getHeight() const;
 
     [[nodiscard]] const data::Tile &getTile(data::Position pos) const;
+    [[nodiscard]] data::Tile &getTile(data::Position pos);
 
     void updateWidth(int width);
 

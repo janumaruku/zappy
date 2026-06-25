@@ -6,7 +6,10 @@
 */
 
 #include "ZappyEvents.hpp"
+
+#include <utility>
 #include "GUIPlayer.hpp"
+#include "Position.hpp"
 
 namespace zappy::gui {
 PlayerNewEvent::PlayerNewEvent(const GUIPlayer &player): id{player.getId()},
@@ -29,4 +32,11 @@ id(player.getId()), inventory(player.getInventory())
 {}
 
 TimeUpdateEvent::TimeUpdateEvent(uint t) : timeUint(t) {}
+
+PlayerBroadcastEvent::PlayerBroadcastEvent(const GUIPlayer &player, std::string msg) :
+id(player.getId()), msg(std::move(msg)) {}
+
+TileUpdateEvent::TileUpdateEvent(const data::Position &pos, const std::unordered_map<data::Resource, int> &resources) :
+position(pos), resources(resources) {}
+
 }
