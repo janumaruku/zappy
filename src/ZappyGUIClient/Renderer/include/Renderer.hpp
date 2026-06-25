@@ -11,6 +11,8 @@
 #include <memory>
 #include <string>
 
+#include "Animation.hpp"
+#include "AnimationManager.hpp"
 #include "AObserver.hpp"
 #include "Animation.hpp"
 #include "FactoryTemplate.hpp"
@@ -63,9 +65,11 @@ private:
 
         void operator()(const PlayerMovedEvent &event)
         {
-            const Animation animation(event.action, tileToPixel(event.position), renderer._animationManager->getTexture(PLAYER_MOVEMENT_NAME));
-
-            renderer._animations.emplace(event.id, animation);
+            auto animation =
+                Animation::create(event.action, tileToPixel(event.position),
+                    renderer._animationManager
+                        ->getTexture(PLAYER_MOVEMENT_NAME));
+            renderer._animations[event.id] = std::move(animation);
         }
 
         void operator()(const PlayerDiedEvent &event)
@@ -161,7 +165,7 @@ private:
     std::unordered_map<std::string, data::Position> _eggs;
     std::map<data::Position, std::chrono::steady_clock::time_point> _incantations;
     std::map<data::Position, std::pair<bool, std::chrono::steady_clock::time_point>> _incantationsRes;
-    std::unordered_map<data::PlayerId, Animation> _animations;
+    std::unordered_map<data::PlayerId, std::unique_ptr<Animation>> _animations;
     std::optional<std::string> _winner;
 
     //AnimationFactory _animationFactory;
