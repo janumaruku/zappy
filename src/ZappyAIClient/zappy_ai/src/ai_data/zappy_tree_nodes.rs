@@ -1,6 +1,5 @@
 use crate::ai_data::{ServerMessage, tile_to_commands};
-use crate::config::{ELEVATION_TABLE, FOOD_CRITICAL_THRESHOLD, FOOD_SAFE_THRESHOLD, INCANT_WAIT_TIMEOUT_S, STONE_PRIORITIES};
-use std::time::Instant;
+use crate::config::{ELEVATION_TABLE, FOOD_CRITICAL_THRESHOLD, FOOD_SAFE_THRESHOLD, STONE_PRIORITIES};
 use ai_tcp_client::AiTcpClient;
 use behavior_tree::behavior_tree::{
     ActionNode, BehaviorNode, BlackBoard, ConditionNode, NodeStatus, SelectorNode, SequenceNode,
@@ -231,13 +230,60 @@ pub fn compute_target_stone(bb: &BlackBoard) -> Option<String> {
 }
 
 pub fn incantation_action(client: Rc<RefCell<AiTcpClient>>) -> Box<dyn BehaviorNode> {
-    let mut sent = false;
+    let mut set_commands: Vec<String> = Vec::new();
+    let mut awaiting = false;
+    let mut initialized = false;
 
     Box::new(ActionNode::new(move |bb| {
-        if !sent {
+        if !initialized {
+            let level = bb.get::<u8>("level").map(|l| *l).unwrap_or(1);
+            let idx = (level as usize).saturating_sub(1).min(6);
+            let req = &ELEVATION_TABLE[idx];
+            set_commands.clear();
+            for _ in 0..req.linemate  { set_commands.push("Set linemate".to_string()); }
+            for _ in 0..req.deraumere { set_commands.push("Set deraumere".to_string()); }
+            for _ in 0..req.sibur     { set_commands.push("Set sibur".to_string()); }
+            for _ in 0..req.mendiane  { set_commands.push("Set mendiane".to_string()); }
+            for _ in 0..req.phiras    { set_commands.push("Set phiras".to_string()); }
+            for _ in 0..req.thystame  { set_commands.push("Set thystame".to_string()); }
+            initialized = true;
+            println!("[incantation] stones to set: {:?}", set_commands);
+        }
+
+        if !set_commands.is_empty() {
+            if !awaiting {
+                client.borrow().send(set_commands[0].clone());
+                awaiting = true;
+                return NodeStatus::Running;
+            }
+            match bb.get::<ServerMessage>("last_response") {
+                Ok(ServerMessage::Ok) => {
+                    bb.clear("last_response").ok();
+                    set_commands.remove(0);
+                    awaiting = false;
+                    if !set_commands.is_empty() {
+                        client.borrow().send(set_commands[0].clone());
+                        awaiting = true;
+                        return NodeStatus::Running;
+                    }
+                    // Last stone set — fall through to send Incantation immediately
+                }
+                Ok(ServerMessage::Ko) => {
+                    println!("[incantation] set stone ko → Failure");
+                    bb.clear("last_response").ok();
+                    set_commands.clear();
+                    awaiting = false;
+                    initialized = false;
+                    return NodeStatus::Failure;
+                }
+                _ => return NodeStatus::Running,
+            }
+        }
+
+        if !awaiting {
             println!("[incantation] sending: Incantation");
             client.borrow().send("Incantation".to_string());
-            sent = true;
+            awaiting = true;
             return NodeStatus::Running;
         }
 
@@ -247,13 +293,15 @@ pub fn incantation_action(client: Rc<RefCell<AiTcpClient>>) -> Box<dyn BehaviorN
                 println!("[incantation] level up → {level}");
                 bb.set("level", level);
                 bb.clear("last_response").ok();
-                sent = false;
+                awaiting = false;
+                initialized = false;
                 NodeStatus::Success
             }
             Ok(ServerMessage::Ko) => {
                 println!("[incantation] ko → Failure");
                 bb.clear("last_response").ok();
-                sent = false;
+                awaiting = false;
+                initialized = false;
                 NodeStatus::Failure
             }
             Ok(ServerMessage::ElevationUnderway) => {
@@ -280,6 +328,32 @@ pub fn food_not_critical_condition() -> Box<dyn BehaviorNode> {
             result
         }
         Err(_) => false,
+    }))
+}
+
+
+pub fn broadcast_received_condition() -> Box<dyn BehaviorNode> {
+    Box::new(ConditionNode::new(|bb| {
+        let result = bb.get::<u8>("broadcast_k").is_ok();
+        println!("[broadcast_received] → {result}");
+        result
+    }))
+}
+
+pub fn broadcast_level_matches() -> Box<dyn BehaviorNode> {
+    Box::new(ConditionNode::new(|bb| {
+        let our_level = bb.get::<u8>("level").map(|l| *l).unwrap_or(1);
+        match bb.get::<Option<u8>>("broadcast_level") {
+            Ok(Some(lvl)) => {
+                let result = *lvl == our_level;
+                println!("[broadcast_level_matches] broadcast={lvl}, ours={our_level} → {result}");
+                result
+            }
+            _ => {
+                println!("[broadcast_level_matches] no broadcast level → false");
+                false
+            }
+        }
     }))
 }
 
@@ -319,15 +393,18 @@ pub fn enough_teammates_on_tile() -> Box<dyn BehaviorNode> {
     }))
 }
 
-pub fn not_enough_teammates_on_tile() -> Box<dyn BehaviorNode> {
+
+pub fn no_competing_broadcast_condition() -> Box<dyn BehaviorNode> {
     Box::new(ConditionNode::new(|bb| {
-        let level = bb.get::<u8>("level").map(|l| *l).unwrap_or(1);
-        let idx = (level as usize).saturating_sub(1).min(6);
-        let needed = ELEVATION_TABLE[idx].players.saturating_sub(1);
-        let teammates = bb.get::<u32>("teammates_on_tile").map(|v| *v).unwrap_or(0);
-        let result = needed > 0 && teammates < needed;
-        println!("[not_enough_teammates] level={level}, teammates={teammates}, needed={needed} → {result}");
-        result
+        let our_level = bb.get::<u8>("level").map(|l| *l).unwrap_or(1);
+        let k = bb.get::<u8>("broadcast_k").map(|k| *k).unwrap_or(0);
+        match bb.get::<Option<u8>>("broadcast_level") {
+            Ok(Some(lvl)) if *lvl == our_level && k != 0 => {
+                println!("[no_competing_broadcast] competing leader level={lvl} k={k} → false");
+                false
+            }
+            _ => true,
+        }
     }))
 }
 
@@ -355,52 +432,32 @@ pub fn broadcast_ready_action(client: Rc<RefCell<AiTcpClient>>) -> Box<dyn Behav
     }))
 }
 
-pub fn wait_for_teammates_action(client: Rc<RefCell<AiTcpClient>>) -> Box<dyn BehaviorNode> {
-    let mut start_time: Option<Instant> = None;
-    let mut awaiting_response = false;
-
-    Box::new(ActionNode::new(move |bb| {
-        let now = Instant::now();
-
-        if start_time.is_none() {
-            start_time = Some(now);
-        }
-
-        let elapsed = now.duration_since(start_time.unwrap()).as_secs_f32();
-        if elapsed >= INCANT_WAIT_TIMEOUT_S {
-            println!("[wait_teammates] timeout after {elapsed:.1}s → Failure");
-            start_time = None;
-            awaiting_response = false;
-            return NodeStatus::Failure;
-        }
-
-        if !awaiting_response {
-            client.borrow().send("Inventory".to_string());
-            awaiting_response = true;
-            return NodeStatus::Running;
-        }
-
-        match bb.get::<ServerMessage>("last_response") {
-            Ok(ServerMessage::Inventory(_)) => {
-                bb.clear("last_response").ok();
-                awaiting_response = false;
-                client.borrow().send("Inventory".to_string());
-                awaiting_response = true;
-                NodeStatus::Running
-            }
-            Ok(_) => NodeStatus::Running,
-            Err(_) => NodeStatus::Running,
-        }
-    }))
-}
-
-pub fn wait_for_teammates_sequence(client: Rc<RefCell<AiTcpClient>>) -> Box<dyn BehaviorNode> {
+pub fn leader_elevation_sequence(client: Rc<RefCell<AiTcpClient>>) -> Box<dyn BehaviorNode> {
     Box::new(SequenceNode::new(vec![
         has_required_stones(),
-        not_enough_teammates_on_tile(),
-        broadcast_ready_action(client.clone()),
+        Box::new(SelectorNode::new(vec![
+            enough_teammates_on_tile(),
+            Box::new(RunUntilNode::new(
+                |bb| {
+                    let level = bb.get::<u8>("level").map(|l| *l).unwrap_or(1);
+                    let idx = (level as usize).saturating_sub(1).min(6);
+                    let needed = ELEVATION_TABLE[idx].players.saturating_sub(1);
+                    let teammates = bb.get::<u32>("teammates_on_tile").map(|v| *v).unwrap_or(0);
+                    let result = teammates >= needed;
+                    println!("[leader/wait] teammates={teammates}, needed={needed} → {result}");
+                    result
+                },
+                Box::new(SequenceNode::new(vec![
+                    food_not_critical_condition(),
+                    no_competing_broadcast_condition(),
+                    broadcast_ready_action(client.clone()),
+                    look_action(client.clone()),
+                    inventory_action(client.clone()),
+                ])),
+            )),
+        ])),
         food_not_critical_condition(),
-        wait_for_teammates_action(client.clone()),
+        incantation_action(client.clone()),
     ]))
 }
 
@@ -492,6 +549,172 @@ pub fn stone_navigate_take_action(client: Rc<RefCell<AiTcpClient>>) -> Box<dyn B
     }))
 }
 
+pub fn incantation_on_tile_condition() -> Box<dyn BehaviorNode> {
+    Box::new(ConditionNode::new(|bb| {
+        let result = bb.get::<bool>("incantation_on_tile").map(|v| *v).unwrap_or(false);
+        println!("[incantation_on_tile] → {result}");
+        result
+    }))
+}
+
+pub fn answer_elevation_action(client: Rc<RefCell<AiTcpClient>>) -> Box<dyn BehaviorNode> {
+    let mut awaiting_response = false;
+
+    Box::new(ActionNode::new(move |bb| {
+        let on_tile = bb.get::<bool>("incantation_on_tile").map(|v| *v).unwrap_or(false);
+        if !on_tile {
+            awaiting_response = false;
+            return NodeStatus::Success;
+        }
+
+        if !awaiting_response {
+            println!("[answer_elevation] sending Inventory to keep loop alive");
+            client.borrow().send("Inventory".to_string());
+            awaiting_response = true;
+            return NodeStatus::Running;
+        }
+
+        match bb.get::<ServerMessage>("last_response") {
+            Ok(ServerMessage::Ko) => {
+                bb.clear("last_response").ok();
+                bb.set("incantation_on_tile", false);
+                awaiting_response = false;
+                NodeStatus::Failure
+            }
+            Ok(_) => {
+                bb.clear("last_response").ok();
+                client.borrow().send("Inventory".to_string());
+                NodeStatus::Running
+            }
+            Err(_) => NodeStatus::Running,
+        }
+    }))
+}
+
+pub fn answer_elevation_sequence(client: Rc<RefCell<AiTcpClient>>) -> Box<dyn BehaviorNode> {
+    Box::new(SequenceNode::new(vec![
+        incantation_on_tile_condition(),
+        answer_elevation_action(client),
+    ]))
+}
+
+fn k_to_commands(k: u8) -> Vec<String> {
+    match k {
+        1 => vec!["Forward".to_string()],
+        2 => vec!["Forward".to_string(), "Left".to_string(), "Forward".to_string()],
+        3 => vec!["Left".to_string(), "Forward".to_string()],
+        4 => vec!["Left".to_string(), "Forward".to_string(), "Left".to_string(), "Forward".to_string()],
+        5 => vec!["Right".to_string(), "Right".to_string(), "Forward".to_string()],
+        6 => vec!["Right".to_string(), "Forward".to_string(), "Right".to_string(), "Forward".to_string()],
+        7 => vec!["Right".to_string(), "Forward".to_string()],
+        8 => vec!["Forward".to_string(), "Right".to_string(), "Forward".to_string()],
+        _ => vec![],
+    }
+}
+
+pub fn navigate_toward_k_action(client: Rc<RefCell<AiTcpClient>>) -> Box<dyn BehaviorNode> {
+    let mut commands: Vec<String> = Vec::new();
+    let mut awaiting_response = false;
+    let mut initialized = false;
+
+    Box::new(ActionNode::new(move |bb| {
+        if !initialized {
+            let k = match bb.get::<u8>("broadcast_k") {
+                Ok(k) => *k,
+                Err(_) => {
+                    println!("[navigate_k] no broadcast_k → Failure");
+                    return NodeStatus::Failure;
+                }
+            };
+            bb.clear("broadcast_k").ok();
+            bb.clear("broadcast_level").ok();
+            bb.clear("broadcast_timestamp").ok();
+            bb.clear("broadcast_text").ok();
+            commands = k_to_commands(k);
+            initialized = true;
+            println!("[navigate_k] k={k}, commands={commands:?}");
+        }
+
+        // Navigation mode
+        if !commands.is_empty() {
+            if !awaiting_response {
+                client.borrow().send(commands[0].clone());
+                awaiting_response = true;
+                return NodeStatus::Running;
+            }
+
+            match bb.get::<ServerMessage>("last_response") {
+                Ok(ServerMessage::Ok) => {
+                    bb.clear("last_response").ok();
+                    commands.remove(0);
+                    awaiting_response = false;
+                    if !commands.is_empty() {
+                        client.borrow().send(commands[0].clone());
+                        awaiting_response = true;
+                        return NodeStatus::Running;
+                    }
+                    bb.clear("broadcast_k").ok();
+                    bb.clear("broadcast_level").ok();
+                    bb.clear("broadcast_timestamp").ok();
+                    bb.clear("broadcast_text").ok();
+                }
+                Ok(ServerMessage::Ko) => {
+                    bb.clear("last_response").ok();
+                    commands.clear();
+                    awaiting_response = false;
+                    initialized = false;
+                    return NodeStatus::Failure;
+                }
+                _ => return NodeStatus::Running,
+            }
+        }
+
+        // On-tile waiting mode (commands exhausted or K=0 at init)
+        if bb.get::<bool>("incantation_on_tile").map(|v| *v).unwrap_or(false) {
+            awaiting_response = false;
+            initialized = false;
+            return NodeStatus::Success;
+        }
+
+        let food = bb.get::<u32>("food").map(|v| *v).unwrap_or(0);
+        if food < FOOD_CRITICAL_THRESHOLD {
+            awaiting_response = false;
+            initialized = false;
+            return NodeStatus::Failure;
+        }
+
+        if let Ok(new_k) = bb.get::<u8>("broadcast_k").map(|k| *k) {
+            bb.clear("broadcast_k").ok();
+            bb.clear("broadcast_level").ok();
+            bb.clear("broadcast_timestamp").ok();
+            bb.clear("broadcast_text").ok();
+            commands = k_to_commands(new_k);
+            awaiting_response = false;
+            println!("[navigate_k] updated k={new_k}, commands={commands:?}");
+            if !commands.is_empty() {
+                client.borrow().send(commands[0].clone());
+                awaiting_response = true;
+                return NodeStatus::Running;
+            }
+        }
+
+        if awaiting_response {
+            match bb.get::<ServerMessage>("last_response") {
+                Ok(_) => {
+                    bb.clear("last_response").ok();
+                    awaiting_response = false;
+                }
+                Err(_) => return NodeStatus::Running,
+            }
+        }
+
+        println!("[navigate_k] on broadcaster tile, waiting for incantation");
+        client.borrow().send("Inventory".to_string());
+        awaiting_response = true;
+        NodeStatus::Running
+    }))
+}
+
 pub fn stone_seeking_sequence(client: Rc<RefCell<AiTcpClient>>) -> Box<dyn BehaviorNode> {
     Box::new(SequenceNode::new(vec![
         inventory_action(client.clone()),
@@ -523,5 +746,6 @@ pub fn food_seeking_sequence(client: Rc<RefCell<AiTcpClient>>) -> Box<dyn Behavi
         )),
         navigate_to_tile_action(client.clone(), "food"),
         take_action(client.clone(), "food".to_string()),
+        inventory_action(client.clone()),
     ]))
 }
