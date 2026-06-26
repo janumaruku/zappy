@@ -22,6 +22,7 @@ void HUD::update(const WorldState &world,
     } else {
         onDropdownPlayerSelected(hudManager, world.getPlayers());
     }
+    hudManager->updateRectanglePlayers(world);
 }
 
 void HUD::draw(const WorldState &worldState,
@@ -93,10 +94,10 @@ void HUD::drawTeamsPanel(const std::unordered_map<data::PlayerId, GUIPlayer>
     DrawTexture(hudManager->getTexture(BACKGROUND_TEAM_NAME), 0,
         BACKGROUND_TEAM_HEIGHT * count, team.second.getColor());
     DrawText(team.first.c_str(), 0, BACKGROUND_TEAM_HEIGHT * count,
-        TEXT_FONT_SIZE, WHITE);
+        TEXT_FONT_SIZE, BLACK);
     DrawText(playerCountText.c_str(), 0,
         (BACKGROUND_TEAM_HEIGHT * count) + PLAYER_COUNT_Y_OFFSET,
-        TEXT_FONT_SIZE, WHITE);
+        TEXT_FONT_SIZE, BLACK);
 }
 
 void HUD::drawTime(const int &timeUnit)

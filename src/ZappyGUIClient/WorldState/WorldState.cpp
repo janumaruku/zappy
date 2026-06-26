@@ -70,6 +70,13 @@ std::unordered_map<std::string, Team> &WorldState::getTeams()
 {
     return _teams;
 }
+const Color &WorldState::getTeamColor(const data::TeamId &teamName) noexcept
+{
+    if (TEAM_COLORS.contains(teamName)) {
+        return TEAM_COLORS.at(teamName);
+    }
+    return TEAM_COLORS.at("white");
+}
 
 const std::unordered_map<std::string, data::Egg> &WorldState::getEggs() const noexcept
 {
@@ -123,26 +130,29 @@ static bool hasMovedCounterClockwise(const data::Orientation &old, const data::O
 void WorldState::onPlayerPosition(const std::string &id,
     const data::Position &pos, const data::Orientation &orientation)
 {
-    auto &player = _players.at(id);
-    const auto &oldPos = player.getPosition();
-    const auto &oldOrient = player.getOrientation();
-    ActionType a;
+    try {
+        auto &player = _players.at(id);
+        const auto &oldPos = player.getPosition();
+        const auto &oldOrient = player.getOrientation();
+        ActionType a;
 
-    if (oldPos != pos)
-        a = ActionType::FORWARD;
-    if (hasMovedClockwise(oldOrient, orientation))
-        a = ActionType::RIGHT;
-    if (hasMovedCounterClockwise(oldOrient, orientation))
-        a = ActionType::LEFT;
+        if (oldPos != pos)
+            a = ActionType::FORWARD;
+        if (hasMovedClockwise(oldOrient, orientation))
+            a = ActionType::RIGHT;
+        if (hasMovedCounterClockwise(oldOrient, orientation))
+            a = ActionType::LEFT;
 
-    player.setOrientation(orientation);
-    player.setPosition(pos);
+        player.setOrientation(orientation);
+        player.setPosition(pos);
 
-    Action action{.type=a, .duration=7.0F / static_cast<float>(_timeUnit)};
+        Action action{.type=a, .duration=7.0F / static_cast<float>(_timeUnit)};
 
-    notify(ZappyEventType::GUI_EVENT, PlayerMovedEvent{player});
-    player.enqueueAction(action);
-
+        notify(ZappyEventType::GUI_EVENT, PlayerMovedEvent{player});
+        player.enqueueAction(action);
+    } catch (const std::exception &) {
+        return;
+    }
 }
 
 void WorldState::onPlayerEject(const PlayerId &id)
@@ -179,7 +189,8 @@ void WorldState::onPlayerBroadcast(const PlayerId &id, const std::string &msg)
 
 void WorldState::onTeamName(const data::TeamId &teamName)
 {
-    _teams.insert_or_assign(teamName, Team{teamName, WHITE});
+    const Color &color = getTeamColor(teamName);
+    _teams.insert_or_assign(teamName, Team{teamName, color});
 }
 
 void WorldState::onTileContent(const data::Position pos,

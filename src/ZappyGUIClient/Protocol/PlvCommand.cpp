@@ -31,7 +31,7 @@ bool PlvCommand::execute(WorldState& s, const std::vector<std::string>&cmd)
 
     auto &player = s.getPlayerById(id);
 
-    player.setLevel(std::stoi(id));
+    player.setLevel(std::stoi(cmd[1]));
     s.onPlayerLevel(player);
     return true;
 }

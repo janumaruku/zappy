@@ -15,8 +15,6 @@ namespace zappy::gui {
 constexpr int BACKGROUND_TEAM_WIDTH  = 80;
 constexpr int BACKGROUND_TEAM_HEIGHT = 30;
 
-// todo make it so it use positions instead of individual int to make it less
-// filled
 constexpr int BACKGROUND_DROPDOWN_BUTTON_X = BACKGROUND_TEAM_WIDTH;
 constexpr int BACKGROUND_DROPDOWN_BUTTON_Y = 0;
 
@@ -50,6 +48,7 @@ public:
     HUDManager(const WorldState &worldState);
     ~HUDManager() override = default;
 
+    void updateRectanglePlayers(const WorldState &worldState);
     void loadPlayerDropdownRectangles(const WorldState &worldState);
 
 protected:
