@@ -51,6 +51,9 @@ private:
     std::unordered_map<PlayerId, Player> _players;
     std::unordered_map<uint, data::Egg> _eggs;
     uint _nextEggId = 1;
+
+    
+    [[nodiscard]] size_t getResourceCount(const data::Resource &resource) const;
 };
 
 }
