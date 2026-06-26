@@ -1,6 +1,5 @@
 use crate::ai_data::{ServerMessage, tile_to_commands};
-use crate::config::{BROADCAST_COOLDOWN_S, ELEVATION_TABLE, FOOD_CRITICAL_THRESHOLD, FOOD_SAFE_THRESHOLD, INCANT_WAIT_TIMEOUT_S, STONE_PRIORITIES};
-use std::time::Instant;
+use crate::config::{ELEVATION_TABLE, FOOD_CRITICAL_THRESHOLD, FOOD_SAFE_THRESHOLD, STONE_PRIORITIES};
 use ai_tcp_client::AiTcpClient;
 use behavior_tree::behavior_tree::{
     ActionNode, BehaviorNode, BlackBoard, ConditionNode, NodeStatus, SelectorNode, SequenceNode,
@@ -283,20 +282,11 @@ pub fn food_not_critical_condition() -> Box<dyn BehaviorNode> {
     }))
 }
 
-pub fn broadcast_is_fresh() -> Box<dyn BehaviorNode> {
+pub fn broadcast_received_condition() -> Box<dyn BehaviorNode> {
     Box::new(ConditionNode::new(|bb| {
-        match bb.get::<Instant>("broadcast_timestamp") {
-            Ok(ts) => {
-                let elapsed = ts.elapsed().as_secs_f32();
-                let result = elapsed < BROADCAST_COOLDOWN_S;
-                println!("[broadcast_is_fresh] elapsed={elapsed:.1}s → {result}");
-                result
-            }
-            Err(_) => {
-                println!("[broadcast_is_fresh] no broadcast → false");
-                false
-            }
-        }
+        let result = bb.get::<u8>("broadcast_k").is_ok();
+        println!("[broadcast_received] → {result}");
+        result
     }))
 }
 
@@ -389,52 +379,27 @@ pub fn broadcast_ready_action(client: Rc<RefCell<AiTcpClient>>) -> Box<dyn Behav
     }))
 }
 
-pub fn wait_for_teammates_action(client: Rc<RefCell<AiTcpClient>>) -> Box<dyn BehaviorNode> {
-    let mut start_time: Option<Instant> = None;
-    let mut awaiting_response = false;
-
-    Box::new(ActionNode::new(move |bb| {
-        let now = Instant::now();
-
-        if start_time.is_none() {
-            start_time = Some(now);
-        }
-
-        let elapsed = now.duration_since(start_time.unwrap()).as_secs_f32();
-        if elapsed >= INCANT_WAIT_TIMEOUT_S {
-            println!("[wait_teammates] timeout after {elapsed:.1}s → Failure");
-            start_time = None;
-            awaiting_response = false;
-            return NodeStatus::Failure;
-        }
-
-        if !awaiting_response {
-            client.borrow().send("Inventory".to_string());
-            awaiting_response = true;
-            return NodeStatus::Running;
-        }
-
-        match bb.get::<ServerMessage>("last_response") {
-            Ok(ServerMessage::Inventory(_)) => {
-                bb.clear("last_response").ok();
-                awaiting_response = false;
-                client.borrow().send("Inventory".to_string());
-                awaiting_response = true;
-                NodeStatus::Running
-            }
-            Ok(_) => NodeStatus::Running,
-            Err(_) => NodeStatus::Running,
-        }
-    }))
-}
-
 pub fn wait_for_teammates_sequence(client: Rc<RefCell<AiTcpClient>>) -> Box<dyn BehaviorNode> {
     Box::new(SequenceNode::new(vec![
         has_required_stones(),
         not_enough_teammates_on_tile(),
-        broadcast_ready_action(client.clone()),
-        food_not_critical_condition(),
-        wait_for_teammates_action(client.clone()),
+        Box::new(RunUntilNode::new(
+            |bb| {
+                let level = bb.get::<u8>("level").map(|l| *l).unwrap_or(1);
+                let idx = (level as usize).saturating_sub(1).min(6);
+                let needed = ELEVATION_TABLE[idx].players.saturating_sub(1);
+                let teammates = bb.get::<u32>("teammates_on_tile").map(|v| *v).unwrap_or(0);
+                let result = teammates >= needed;
+                println!("[wait_teammates/condition] teammates={teammates}, needed={needed} → {result}");
+                result
+            },
+            Box::new(SequenceNode::new(vec![
+                food_not_critical_condition(),
+                broadcast_ready_action(client.clone()),
+                look_action(client.clone()),
+                inventory_action(client.clone()),
+            ])),
+        )),
     ]))
 }
 
@@ -603,6 +568,10 @@ pub fn navigate_toward_k_action(client: Rc<RefCell<AiTcpClient>>) -> Box<dyn Beh
                     return NodeStatus::Failure;
                 }
             };
+            bb.clear("broadcast_k").ok();
+            bb.clear("broadcast_level").ok();
+            bb.clear("broadcast_timestamp").ok();
+            bb.clear("broadcast_text").ok();
             commands = k_to_commands(k);
             initialized = true;
             println!("[navigate_k] k={k}, commands={commands:?}");

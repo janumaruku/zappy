@@ -39,7 +39,7 @@ pub fn elevate_branch(client: Rc<RefCell<AiTcpClient>>) -> Box<dyn BehaviorNode>
 pub fn coordinate_branch(client: Rc<RefCell<AiTcpClient>>) -> Box<dyn BehaviorNode> {
     Box::new(SelectorNode::new(vec![
         Box::new(SequenceNode::new(vec![
-            broadcast_is_fresh(),
+            broadcast_received_condition(),
             broadcast_level_matches(),
             navigate_toward_k_action(client.clone()),
         ])),
