@@ -282,6 +282,23 @@ pub fn food_not_critical_condition() -> Box<dyn BehaviorNode> {
     }))
 }
 
+pub fn no_broadcast_for_my_level_condition() -> Box<dyn BehaviorNode> {
+    Box::new(ConditionNode::new(|bb| {
+        let our_level = bb.get::<u8>("level").map(|l| *l).unwrap_or(1);
+        match bb.get::<Option<u8>>("broadcast_level") {
+            Ok(Some(lvl)) => {
+                let result = *lvl != our_level;
+                println!("[no_broadcast_for_my_level] broadcast={lvl}, ours={our_level} → {result}");
+                result
+            }
+            _ => {
+                println!("[no_broadcast_for_my_level] no broadcast for my level → true");
+                true
+            }
+        }
+    }))
+}
+
 pub fn broadcast_received_condition() -> Box<dyn BehaviorNode> {
     Box::new(ConditionNode::new(|bb| {
         let result = bb.get::<u8>("broadcast_k").is_ok();
@@ -383,6 +400,7 @@ pub fn wait_for_teammates_sequence(client: Rc<RefCell<AiTcpClient>>) -> Box<dyn 
     Box::new(SequenceNode::new(vec![
         has_required_stones(),
         not_enough_teammates_on_tile(),
+        no_broadcast_for_my_level_condition(),
         Box::new(RunUntilNode::new(
             |bb| {
                 let level = bb.get::<u8>("level").map(|l| *l).unwrap_or(1);
@@ -575,40 +593,85 @@ pub fn navigate_toward_k_action(client: Rc<RefCell<AiTcpClient>>) -> Box<dyn Beh
             commands = k_to_commands(k);
             initialized = true;
             println!("[navigate_k] k={k}, commands={commands:?}");
-            if commands.is_empty() {
-                initialized = false;
-                return NodeStatus::Success;
+        }
+
+        // Navigation mode
+        if !commands.is_empty() {
+            if !awaiting_response {
+                client.borrow().send(commands[0].clone());
+                awaiting_response = true;
+                return NodeStatus::Running;
             }
-        }
 
-        if !awaiting_response {
-            client.borrow().send(commands[0].clone());
-            awaiting_response = true;
-            return NodeStatus::Running;
-        }
-
-        match bb.get::<ServerMessage>("last_response") {
-            Ok(ServerMessage::Ok) => {
-                bb.clear("last_response").ok();
-                commands.remove(0);
-                if commands.is_empty() {
+            match bb.get::<ServerMessage>("last_response") {
+                Ok(ServerMessage::Ok) => {
+                    bb.clear("last_response").ok();
+                    commands.remove(0);
+                    awaiting_response = false;
+                    if !commands.is_empty() {
+                        client.borrow().send(commands[0].clone());
+                        awaiting_response = true;
+                        return NodeStatus::Running;
+                    }
+                    bb.clear("broadcast_k").ok();
+                    bb.clear("broadcast_level").ok();
+                    bb.clear("broadcast_timestamp").ok();
+                    bb.clear("broadcast_text").ok();
+                }
+                Ok(ServerMessage::Ko) => {
+                    bb.clear("last_response").ok();
+                    commands.clear();
                     awaiting_response = false;
                     initialized = false;
-                    NodeStatus::Success
-                } else {
-                    client.borrow().send(commands[0].clone());
-                    NodeStatus::Running
+                    return NodeStatus::Failure;
                 }
+                _ => return NodeStatus::Running,
             }
-            Ok(ServerMessage::Ko) => {
-                bb.clear("last_response").ok();
-                commands.clear();
-                awaiting_response = false;
-                initialized = false;
-                NodeStatus::Failure
-            }
-            _ => NodeStatus::Running,
         }
+
+        // On-tile waiting mode (commands exhausted or K=0 at init)
+        if bb.get::<bool>("incantation_on_tile").map(|v| *v).unwrap_or(false) {
+            awaiting_response = false;
+            initialized = false;
+            return NodeStatus::Success;
+        }
+
+        let food = bb.get::<u32>("food").map(|v| *v).unwrap_or(0);
+        if food < FOOD_CRITICAL_THRESHOLD {
+            awaiting_response = false;
+            initialized = false;
+            return NodeStatus::Failure;
+        }
+
+        if let Ok(new_k) = bb.get::<u8>("broadcast_k").map(|k| *k) {
+            bb.clear("broadcast_k").ok();
+            bb.clear("broadcast_level").ok();
+            bb.clear("broadcast_timestamp").ok();
+            bb.clear("broadcast_text").ok();
+            commands = k_to_commands(new_k);
+            awaiting_response = false;
+            println!("[navigate_k] updated k={new_k}, commands={commands:?}");
+            if !commands.is_empty() {
+                client.borrow().send(commands[0].clone());
+                awaiting_response = true;
+                return NodeStatus::Running;
+            }
+        }
+
+        if awaiting_response {
+            match bb.get::<ServerMessage>("last_response") {
+                Ok(_) => {
+                    bb.clear("last_response").ok();
+                    awaiting_response = false;
+                }
+                Err(_) => return NodeStatus::Running,
+            }
+        }
+
+        println!("[navigate_k] on broadcaster tile, waiting for incantation");
+        client.borrow().send("Inventory".to_string());
+        awaiting_response = true;
+        NodeStatus::Running
     }))
 }
 

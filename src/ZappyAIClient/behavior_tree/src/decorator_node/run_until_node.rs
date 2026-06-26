@@ -16,8 +16,8 @@ impl<F: Fn(&BlackBoard) -> bool> BehaviorNode for RunUntilNode<F> {
         loop {
             match self.child.tick(bb) {
                 NodeStatus::Running => return NodeStatus::Running,
-                _ => {
-                    // child completed a full cycle — now check predicate
+                NodeStatus::Failure => return NodeStatus::Failure,
+                NodeStatus::Success => {
                     if (self.predicate)(bb) {
                         return NodeStatus::Success;
                     }
