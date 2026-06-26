@@ -107,7 +107,7 @@ void AISession::onCommandComplete()
 void AISession::scheduleResponse(const uint &durationConstant, const std::string &response)
 {
     _command_timer.asyncWait(
-        std::chrono::nanoseconds(static_cast<uint64_t>(durationConstant) * 1000 / _server.getFrequency()),
+        std::chrono::milliseconds(static_cast<uint64_t>(durationConstant) * 1000 / _server.getFrequency()),
         [this, response]() {
             std::clog << "AISession is Sending response" << std::endl;
             send(response);
