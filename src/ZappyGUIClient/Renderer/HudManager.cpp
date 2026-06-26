@@ -17,6 +17,26 @@ HUDManager::HUDManager(const WorldState &worldState)
     loadPlayerDropdownRectangles(worldState);
 }
 
+void HUDManager::updateRectanglePlayers(const WorldState &worldState)
+{
+    int count = 0;
+
+    for (const auto &[playerId, playerData] : worldState.getPlayers()) {
+        if (!_rectangles.contains(playerId)) {
+            data::Position playerRecPosition = {BACKGROUND_PLAYER_DROPDOWN_X,
+        BACKGROUND_PLAYER_DROPDOWN_Y +
+        (BACKGROUND_PLAYER_DROPDOWN_HEIGHT * count)};
+
+            createRectangle(playerId,
+                {static_cast<float>(playerRecPosition.getX()),
+                    static_cast<float>(playerRecPosition.getY())},
+                BACKGROUND_PLAYER_DROPDOWN_WIDTH,
+                BACKGROUND_PLAYER_DROPDOWN_HEIGHT);
+            ++count;
+        }
+    }
+}
+
 void HUDManager::loadPlayerDropdownRectangles(const WorldState &worldState)
 {
     int count = 0;
@@ -33,6 +53,7 @@ void HUDManager::loadPlayerDropdownRectangles(const WorldState &worldState)
         ++count;
     }
 }
+
 
 void HUDManager::loadImages()
 {
