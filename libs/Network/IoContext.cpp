@@ -171,7 +171,7 @@ void IOContext::drainExpiredTimers()
 {
     const auto now = static_cast<uint64_t>(
         std::chrono::duration_cast<std::chrono::milliseconds>(
-            std::chrono::high_resolution_clock::now().time_since_epoch()
+            std::chrono::steady_clock::now().time_since_epoch()
         ).count());
 
     while (!_timerQueue.empty()) {

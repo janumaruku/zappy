@@ -16,7 +16,11 @@ template <typename Clock>
 void IOContext::registerTimer(BasicWaitableTimer<Clock> &timer)
 {
     struct TimerEntry entry {
-        .timePoint = static_cast<uint64_t>(timer.expiry().time_since_epoch().count()),
+        .timePoint = static_cast<uint64_t>(
+            std::chrono::duration_cast<std::chrono::milliseconds>(
+                timer.expiry().time_since_epoch()
+            ).count()
+        ),
         .handler = timer.handler(),
         .cancellation = false
     };

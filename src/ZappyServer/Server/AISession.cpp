@@ -68,7 +68,7 @@ bool AISession::isFrozen() const noexcept
 void AISession::scheduleTask(const uint &durationConstant,
 const std::function<void()> &task)
 {
-    _command_timer.asyncWait(std::chrono::high_resolution_clock::duration(
+    _command_timer.asyncWait(std::chrono::steady_clock::duration(
         durationConstant / _server.getFrequency()),
         [task]() {
             task();

@@ -20,9 +20,9 @@ _frameInfo{.width = sheet.height,
             .count        = sheet.width / sheet.height,
             .currentFrame = 0,
             .duration     = 0.1F},
-_animStart(std::chrono::high_resolution_clock::now()),
+_animStart(std::chrono::steady_clock::now()),
 
-_frameStart(std::chrono::high_resolution_clock::now()),
+_frameStart(std::chrono::steady_clock::now()),
 _startPos(pos), _currentPos(pos),
 _endPos(pos), _duration((static_cast<float>(sheet.width) /
               static_cast<float>(sheet.height)) *
@@ -36,7 +36,7 @@ _frameCount(sheet.width / sheet.height)
 
 void Animation::update()
 {
-    using Clock = std::chrono::high_resolution_clock;
+    using Clock = std::chrono::steady_clock;
     using Fsec  = std::chrono::duration<float>;
 
     const auto now = Clock::now();
@@ -84,7 +84,7 @@ const Texture2D &Animation::getSpriteSheet() const
 
 bool Animation::isFinished() const
 {
-    return (static_cast<float>(std::chrono::high_resolution_clock::now().time_since_epoch().count()) -
+    return (static_cast<float>(std::chrono::steady_clock::now().time_since_epoch().count()) -
     static_cast<float>(_animStart.time_since_epoch().count())) >= _duration;
 }
 
