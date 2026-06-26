@@ -12,11 +12,12 @@
 
 namespace zappy::gui {
 TCPClient::TCPClient(network::IOContext &ioc, const int port,
-    const std::string &hostname, WorldState &worldState): _ioc(ioc), _socket(_ioc), _protocol(worldState)
+    const std::string &hostname, WorldState &worldState):
+    _ioc(ioc), _socket(_ioc), _protocol(worldState)
 {
     _readBuffer.resize(1024);
     _asyncReadBuffer.resize(1024);
-    auto config = network::BASIC_CONFIG;
+    auto config    = network::BASIC_CONFIG;
     config.context = "TCP-CLIENT";
     _logger.config(config);
     try {
@@ -61,7 +62,8 @@ std::string TCPClient::receive()
 
     while (!done) {
         _socket.read(network::buffer(_readBuffer, _readBuffer.size()),
-            [this, &done](const std::error_code &err, const std::size_t &bytes) {
+            [this, &done](const std::error_code &err,
+                const std::size_t &bytes) {
                 if (err) {
                     std::cerr << err.message() << std::endl;
                     done = true;
@@ -97,18 +99,15 @@ bool TCPClient::isTransmissionReady(const std::size_t &bytes,
     if (index == std::string::npos && bytes != 0) {
         _transmission.append(_transmissionTemp.begin(),
             _transmissionTemp.end());
-        _transmission.append(buffer.begin(),
-            buffer.begin() + bytes);
+        _transmission.append(buffer.begin(), buffer.begin() + bytes);
 
         _transmissionTemp.clear();
         return false;
     }
 
-    _transmission.append(buffer.begin(),
-        buffer.begin() + index);
+    _transmission.append(buffer.begin(), buffer.begin() + index);
 
-    _transmissionTemp.assign(
-        buffer.begin() + index + data::PACKET_END.size(),
+    _transmissionTemp.assign(buffer.begin() + index + data::PACKET_END.size(),
         buffer.end());
     return true;
 }
@@ -122,8 +121,8 @@ void TCPClient::handleTransmission()
 
 void TCPClient::startRead()
 {
-    _socket.asyncReadSome(network::buffer(_asyncReadBuffer,
-            _asyncReadBuffer.size()),
+    _socket.asyncReadSome(network::buffer(
+        _asyncReadBuffer, _asyncReadBuffer.size()),
         [this](const std::error_code &err, const std::size_t &bytes) {
             if (err) {
                 std::cerr << err.message() << std::endl;
@@ -135,13 +134,22 @@ void TCPClient::startRead()
                 _socket.close();
                 return;
             }
+            _transmission.append(_asyncReadBuffer.data(), bytes);
 
-            if (!isTransmissionReady(bytes, _asyncReadBuffer)) {
-                startRead();
-            } else {
-                _logger.start(LogLevel::INFO) << "Received: " << _transmission << utils::END;
-                handleTransmission();
+            std::size_t index;
+            while ((index = _transmission.find(data::PACKET_END)) !=
+                std::string::npos) {
+
+                std::string packet = _transmission.substr(0, index);
+
+                _logger.start(LogLevel::INFO)
+                    << "Received: " << packet << utils::END;
+
+                _protocol.handleLine(packet);
+
+                _transmission.erase(0, index + data::PACKET_END.size());
             }
+            startRead();
         });
 }
 } // namespace zappy::gui

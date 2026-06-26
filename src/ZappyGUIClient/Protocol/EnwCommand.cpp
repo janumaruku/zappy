@@ -25,6 +25,8 @@ bool EnwCommand::execute(WorldState &s, const std::vector<std::string> &cmd)
 
     auto eggId = cmd.at(0);
     auto playerId = cmd.at(1);
+    auto xStr = cmd.at(2);
+    auto yStr = cmd.at(3);
 
     auto stripHastag = [] (std::string &str) {
         if (!str.empty() && str.front() == '#')
@@ -33,7 +35,7 @@ bool EnwCommand::execute(WorldState &s, const std::vector<std::string> &cmd)
     stripHastag(eggId);
     stripHastag(playerId);
     
-    s.onEggLaid(std::stoi(eggId), playerId, s.getPlayerById(playerId).getPosition());
+    s.onEggLaid(std::stoi(eggId), playerId, {std::stoi(xStr), std::stoi(yStr)});
     return true;
 }
 

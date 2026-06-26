@@ -107,7 +107,15 @@ void Map::generate()
 
 void Map::generateResource(const data::Resource &resource, const uint amount)
 {
-    for (auto i = 0UL; i < amount; ++i) {
+    const size_t currentAmount = getResourceCount(resource);
+
+    if (currentAmount >= amount) {
+        return;
+    }
+
+    const size_t amountToSpawn = amount - currentAmount;
+
+    for (auto i = 0UL; i < amountToSpawn; ++i) {
         const auto x = utils::randomNumber(0, _width - 1);
         const auto y = utils::randomNumber(0, _height - 1);
         const auto index = (y * _width) + x;
@@ -173,5 +181,22 @@ std::unique_ptr<std::vector<uint>> Map::getEggsOnTile(const data::Position &pos)
             out.push_back(kv.first);
     }
     return std::make_unique<std::vector<uint>>(out);
+}
+
+size_t Map::getResourceCount(const data::Resource &resource) const
+{
+    size_t count = 0;
+
+    for (const auto &tile : _tiles) {
+        const auto &resources = tile.getResources();
+        const auto it = resources.find(resource);
+        
+        if (it != resources.end()) {
+            if (it->second > 0) {
+                count += static_cast<size_t>(it->second);
+            }
+        }
+    }
+    return count;
 }
 }
