@@ -31,7 +31,7 @@ impl ConnectedSocket {
         } else {
             let socket = Rc::new(RefCell::new(ConnectedSocket {
                 socket_fd: fd,
-                endpoint: Endpoint::new(0, ""),
+                endpoint: Endpoint::new(0, "127.0.0.1"),
                 io_context,
                 self_ref: Weak::new(),
             }));

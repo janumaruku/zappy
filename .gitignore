@@ -38,8 +38,9 @@
 *.exe
 *.out
 *.app
-zappy_gui
-zappy_server
+/zappy_gui
+/zappy_server
+/zappy_ai
 
 # Build directories
 build/
@@ -77,4 +78,5 @@ docs/generated
 # misc
 compile_flags.txt
 .gitignore
+*.pdf
 src/ZappyAIClient/target/

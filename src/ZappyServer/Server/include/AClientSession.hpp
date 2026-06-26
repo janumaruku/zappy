@@ -22,7 +22,7 @@ public:
     ~AClientSession() override = default;
 
     void start() override;
-    void send(std::string &data) override;
+    void send(const std::string &data) override;
     std::string receive() override;
 
 protected:
@@ -36,6 +36,9 @@ protected:
     void handleWrite(const std::string& message) override;
 
     bool isTransmissionReady(const size_t &bytes);
+
+    utils::Logger _logger{"AI-SESSION", LogLevel::INFO, true};
+
 };
 
 }

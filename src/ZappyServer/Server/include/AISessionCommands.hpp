@@ -1,0 +1,15 @@
+#pragma once
+
+#include "BroadcastCommand.hpp"
+#include "ConnectNbrCommand.hpp"
+#include "EjectCommand.hpp"
+#include "ForkCommand.hpp"
+#include "ForwardCommand.hpp"
+#include "ICommand.hpp"
+#include "IncantationCommand.hpp"
+#include "InventoryCommand.hpp"
+#include "LeftCommand.hpp"
+#include "LookCommand.hpp"
+#include "RightCommand.hpp"
+#include "SetCommand.hpp"
+#include "TakeCommand.hpp"

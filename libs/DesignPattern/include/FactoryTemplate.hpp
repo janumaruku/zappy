@@ -65,6 +65,11 @@ public:
         throw std::runtime_error(sstream.str());
     }
 
+    [[nodiscard]] bool hasKey(const KeyType &key) const noexcept
+    {
+        return _creators.contains(key);
+    }
+
 private:
     CreatorMap _creators{};
 };

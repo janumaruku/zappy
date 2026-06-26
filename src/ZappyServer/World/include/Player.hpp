@@ -1,5 +1,5 @@
 /*
-** EPITECH PROJECT, 2025
+** EPITECH PROJECT, 2026
 ** ZPY
 ** File description:
 ** Player.hpp
@@ -23,17 +23,20 @@ class Player {
 public:
     Player() = delete;
     explicit Player(const PlayerId &id, const TeamId &team,
-        const data::Position &position, const std::uint8_t &level);
+        const data::Position &position, const std::uint8_t &level, int mapWidth, int mapHeight);
 
     void left();
-    void forward(int width, int height);
+    void forward();
     void right();
     void takeResource(const data::Resource &resource);
+    bool removeResource(const data::Resource &resource);
 
     [[nodiscard]] PlayerId getId() const noexcept;
     [[nodiscard]] TeamId getTeam() const noexcept;
     [[nodiscard]] data::Position getPosition() const noexcept;
     [[nodiscard]] std::uint8_t getLevel() const noexcept;
+    [[nodiscard]] data::Orientation getOrientation() const noexcept;
+    [[nodiscard]] const std::unordered_map<data::Resource, std::uint8_t> &getInventory() const noexcept;
 
 private:
     PlayerId _id;
@@ -42,6 +45,8 @@ private:
     std::uint8_t _level;
     std::unordered_map<data::Resource, std::uint8_t> _inventory;
     data::Orientation _orientation;
+    int _mapWidth;
+    int _mapHeight;
 };
 
 } // namespace zappy::server

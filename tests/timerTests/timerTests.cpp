@@ -8,7 +8,7 @@
 TEST(TimerTests, HandlerIsCalledAfterDuration)
 {
     network::IOContext ioContext;
-    SteadyTimer timer(ioContext, 1);
+    SteadyTimer timer(ioContext);
     bool handlerCalled = false;
 
     timer.asyncWait(std::chrono::milliseconds(100),[&handlerCalled]() {
@@ -24,7 +24,7 @@ TEST(TimerTests, HandlerIsCalledAfterDuration)
 TEST(TimerTests, CancellationPreventsHandlerCall)
 {
     network::IOContext ioContext;
-    SteadyTimer timer2(ioContext, 2);
+    SteadyTimer timer2(ioContext);
     bool handler2Called = false;
 
     timer2.asyncWait(std::chrono::milliseconds(50), [&handler2Called]() {
@@ -41,7 +41,7 @@ TEST(TimerTests, CancellationPreventsHandlerCall)
 TEST(TimerTests, ChainCalls)
 {
     network::IOContext ioContext;
-    SteadyTimer timer(ioContext, 1);
+    SteadyTimer timer(ioContext);
     bool hasBeenCalled = false;
 
     timer.expiresAfter(std::chrono::milliseconds(100));
@@ -58,10 +58,10 @@ TEST(TimerTests, ChainCalls)
 TEST(TimerTests, OrderedByExpiry)
 {
     network::IOContext ioContext;
-    SteadyTimer timer1(ioContext, 1);
-    SteadyTimer timer2(ioContext, 2);
-    SteadyTimer timer3(ioContext, 3);
-    SteadyTimer timer4(ioContext, 4);
+    SteadyTimer timer1(ioContext);
+    SteadyTimer timer2(ioContext);
+    SteadyTimer timer3(ioContext);
+    SteadyTimer timer4(ioContext);
 
     std::vector<int> callOrder;
 

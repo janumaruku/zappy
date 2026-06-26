@@ -49,10 +49,18 @@ public:
     [[nodiscard]] std::string getTeam() const;
 
     [[nodiscard]] data::Position getPosition() const;
+    void setPosition(const data::Position &);
 
     [[nodiscard]] data::Orientation getOrientation() const;
+    void setOrientation(const data::Orientation &);
 
-    uint8_t &getLevel();
+    uint8_t getLevel() const;
+    void setLevel(uint8_t lvl) noexcept;
+
+    const std::unordered_map<data::Resource, uint> &getInventory() const;
+    std::unordered_map<data::Resource, uint> &getInventory();
+
+    void setInventory(const std::unordered_map<data::Resource, uint> &);
 
     void enqueueAction(Action action);
 

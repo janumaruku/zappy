@@ -1,6 +1,6 @@
 /*
 ** EPITECH PROJECT, 2026
-** NanoTekSpice
+** Zappy
 ** File description:
 ** StringUtils
 */

@@ -1,5 +1,6 @@
 use network::network::{ConnectedSocket, Endpoint, IoContext, NetworkError};
 use std::cell::RefCell;
+use std::ops::Deref;
 use std::rc::{Rc, Weak};
 
 pub struct AiTcpClient {
@@ -8,6 +9,7 @@ pub struct AiTcpClient {
     read_buffer: Rc<RefCell<Vec<u8>>>,
     async_read_buffer: Rc<RefCell<Vec<u8>>>,
     transmission: String,
+    transmission_temp: String,
     self_ref: Weak<RefCell<AiTcpClient>>,
 }
 
@@ -24,6 +26,7 @@ impl AiTcpClient {
                     read_buffer: Rc::new(RefCell::new(vec![0; 1024])),
                     async_read_buffer: Rc::new(RefCell::new(vec![0; 1024])),
                     transmission: String::new(),
+                    transmission_temp: String::new(),
                     self_ref: Weak::new(),
                 }));
 
@@ -85,7 +88,8 @@ impl AiTcpClient {
 
     pub fn send(&self, msg: String) {
         if let Some(self_ref) = self.self_ref.upgrade() {
-            self.socket.borrow().write(msg.as_bytes(), |err, bytes| {
+            let transmission = &format!("{}\n", &msg);
+            self.socket.borrow().write(transmission.as_ref(), |err, bytes| {
                 if let Some(err) = err {
                     eprintln!("{err}");
                     return;
@@ -102,33 +106,92 @@ impl AiTcpClient {
         }
     }
 
-    pub fn receive(&self) -> String {
+    pub fn receive(&mut self) -> Option<String> {
         let Some(self_ref) = self.self_ref.upgrade() else {
-            return String::default();
+            return None;
         };
-        let mut bytes_received = 0usize;
-        {
-            let mut buf = self.read_buffer.borrow_mut();
-            self.socket.borrow().read(buf.as_mut(), |err, bytes| {
-                if let Some(err) = err {
-                    eprintln!("{err}");
-                    return;
-                }
-                if bytes == 0 {
-                    println!("Client disconnected!");
-                    self_ref.borrow().socket.borrow_mut().close();
-                    return;
-                }
-                bytes_received = bytes;
-            });
+
+        if let Some(idx) = self.transmission_temp.find('\n') {
+            let line = self.transmission_temp[..idx].to_string();
+            self.transmission_temp = self.transmission_temp[idx + 1..].to_string();
+            println!("Received: {line}");
+            return Some(line);
         }
-        let result =
-            String::from_utf8_lossy(&self.read_buffer.borrow()[..bytes_received]).into_owned();
-        println!("Received: {result}");
-        result
+        if !self.transmission_temp.is_empty() {
+            self.transmission.push_str(&std::mem::take(&mut self.transmission_temp));
+        }
+
+        let mut done = false;
+        let result = Rc::new(RefCell::new(None::<String>));
+        let ref_result = result.clone();
+
+        while !done {
+            let mut bytes_received = 0usize;
+            {
+                let mut buf = self.read_buffer.borrow_mut();
+                self.socket.borrow().read(buf.as_mut(), |err, bytes| {
+                    if let Some(err) = err {
+                        eprintln!("{err}");
+                        done = true;
+                        return;
+                    }
+                    if bytes == 0 {
+                        println!("Client disconnected!");
+                        self_ref.borrow().socket.borrow_mut().close();
+                        done = true;
+                        return;
+                    }
+                    bytes_received = bytes;
+                });
+            }
+
+            if done {
+                break;
+            }
+
+            if self.is_transmission_ready(bytes_received) {
+                *ref_result.borrow_mut() = Some(self.transmission.clone());
+                self.transmission.clear();
+                done = true;
+            }
+        }
+
+        match result.borrow().clone() {
+            None => None,
+            Some(msg) => {
+                println!("Received: {msg}");
+                Some(msg)
+            }
+        }
+    }
+
+    fn is_transmission_ready(&mut self, bytes: usize) -> bool {
+        let buf = self.read_buffer.borrow();
+        let chunk = &buf[..bytes];
+        let text = String::from_utf8_lossy(chunk);
+
+        match text.find('\n') {
+            None => {
+                self.transmission.push_str(&text);
+                false
+            }
+            Some(index) => {
+                self.transmission.push_str(&text[..index]);
+
+                let leftover = &text[index + 1..];
+                if !leftover.is_empty() {
+                    self.transmission_temp.push_str(leftover);
+                }
+                true
+            }
+        }
     }
 
     pub fn connect(&mut self, endpoint: Endpoint) -> Result<(), NetworkError> {
         self.socket.borrow_mut().connect(endpoint)
+    }
+
+    pub fn close(&mut self) {
+        self.socket.borrow_mut().close();
     }
 }
