@@ -561,13 +561,13 @@ pub fn answer_elevation_sequence(client: Rc<RefCell<AiTcpClient>>) -> Box<dyn Be
 fn k_to_commands(k: u8) -> Vec<String> {
     match k {
         1 => vec!["Forward".to_string()],
-        2 => vec!["Forward".to_string(), "Right".to_string(), "Forward".to_string()],
-        3 => vec!["Right".to_string(), "Forward".to_string()],
-        4 => vec!["Right".to_string(), "Forward".to_string(), "Right".to_string(), "Forward".to_string()],
+        2 => vec!["Forward".to_string(), "Left".to_string(), "Forward".to_string()],
+        3 => vec!["Left".to_string(), "Forward".to_string()],
+        4 => vec!["Left".to_string(), "Forward".to_string(), "Left".to_string(), "Forward".to_string()],
         5 => vec!["Right".to_string(), "Right".to_string(), "Forward".to_string()],
-        6 => vec!["Left".to_string(), "Forward".to_string(), "Left".to_string(), "Forward".to_string()],
-        7 => vec!["Left".to_string(), "Forward".to_string()],
-        8 => vec!["Forward".to_string(), "Left".to_string(), "Forward".to_string()],
+        6 => vec!["Right".to_string(), "Forward".to_string(), "Right".to_string(), "Forward".to_string()],
+        7 => vec!["Right".to_string(), "Forward".to_string()],
+        8 => vec!["Forward".to_string(), "Right".to_string(), "Forward".to_string()],
         _ => vec![],
     }
 }
