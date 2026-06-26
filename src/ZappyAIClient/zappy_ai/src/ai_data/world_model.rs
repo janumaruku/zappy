@@ -118,6 +118,10 @@ impl WorldModel {
             ServerMessage::Inventory(inventory) => self.update_inventory(inventory, blackboard),
             ServerMessage::Look(tiles) => self.update_look(tiles, blackboard),
             ServerMessage::LevelUp(level) => self.update_level_up(*level, blackboard),
+            ServerMessage::ElevationUnderway => {
+                blackboard.set("incantation_on_tile", true);
+                blackboard.set("last_response", ServerMessage::ElevationUnderway);
+            }
             ServerMessage::Ok => blackboard.set("last_response", ServerMessage::Ok),
             ServerMessage::Ko => blackboard.set("last_response", ServerMessage::Ko),
             _ => {},
@@ -198,6 +202,7 @@ impl WorldModel {
 
     fn update_level_up(&mut self, level: u8, blackboard: &mut BlackBoard) {
         self.level = level;
+        blackboard.set("incantation_on_tile", false);
         blackboard.set("last_response", ServerMessage::LevelUp(level));
         blackboard.set("level", level);
         println!("[world/level_up] level={level}");

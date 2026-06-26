@@ -526,6 +526,55 @@ pub fn stone_navigate_take_action(client: Rc<RefCell<AiTcpClient>>) -> Box<dyn B
     }))
 }
 
+pub fn incantation_on_tile_condition() -> Box<dyn BehaviorNode> {
+    Box::new(ConditionNode::new(|bb| {
+        let result = bb.get::<bool>("incantation_on_tile").map(|v| *v).unwrap_or(false);
+        println!("[incantation_on_tile] → {result}");
+        result
+    }))
+}
+
+pub fn answer_elevation_action(client: Rc<RefCell<AiTcpClient>>) -> Box<dyn BehaviorNode> {
+    let mut awaiting_response = false;
+
+    Box::new(ActionNode::new(move |bb| {
+        let on_tile = bb.get::<bool>("incantation_on_tile").map(|v| *v).unwrap_or(false);
+        if !on_tile {
+            awaiting_response = false;
+            return NodeStatus::Success;
+        }
+
+        if !awaiting_response {
+            println!("[answer_elevation] sending Inventory to keep loop alive");
+            client.borrow().send("Inventory".to_string());
+            awaiting_response = true;
+            return NodeStatus::Running;
+        }
+
+        match bb.get::<ServerMessage>("last_response") {
+            Ok(ServerMessage::Ko) => {
+                bb.clear("last_response").ok();
+                bb.set("incantation_on_tile", false);
+                awaiting_response = false;
+                NodeStatus::Failure
+            }
+            Ok(_) => {
+                bb.clear("last_response").ok();
+                client.borrow().send("Inventory".to_string());
+                NodeStatus::Running
+            }
+            Err(_) => NodeStatus::Running,
+        }
+    }))
+}
+
+pub fn answer_elevation_sequence(client: Rc<RefCell<AiTcpClient>>) -> Box<dyn BehaviorNode> {
+    Box::new(SequenceNode::new(vec![
+        incantation_on_tile_condition(),
+        answer_elevation_action(client),
+    ]))
+}
+
 fn k_to_commands(k: u8) -> Vec<String> {
     match k {
         1 => vec!["Forward".to_string()],
