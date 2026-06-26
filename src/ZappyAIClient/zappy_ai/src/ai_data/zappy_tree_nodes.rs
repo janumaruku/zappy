@@ -394,6 +394,20 @@ pub fn enough_teammates_on_tile() -> Box<dyn BehaviorNode> {
 }
 
 
+pub fn no_competing_broadcast_condition() -> Box<dyn BehaviorNode> {
+    Box::new(ConditionNode::new(|bb| {
+        let our_level = bb.get::<u8>("level").map(|l| *l).unwrap_or(1);
+        let k = bb.get::<u8>("broadcast_k").map(|k| *k).unwrap_or(0);
+        match bb.get::<Option<u8>>("broadcast_level") {
+            Ok(Some(lvl)) if *lvl == our_level && k != 0 => {
+                println!("[no_competing_broadcast] competing leader level={lvl} k={k} → false");
+                false
+            }
+            _ => true,
+        }
+    }))
+}
+
 pub fn broadcast_ready_action(client: Rc<RefCell<AiTcpClient>>) -> Box<dyn BehaviorNode> {
     let mut sent = false;
 
@@ -435,6 +449,7 @@ pub fn leader_elevation_sequence(client: Rc<RefCell<AiTcpClient>>) -> Box<dyn Be
                 },
                 Box::new(SequenceNode::new(vec![
                     food_not_critical_condition(),
+                    no_competing_broadcast_condition(),
                     broadcast_ready_action(client.clone()),
                     look_action(client.clone()),
                     inventory_action(client.clone()),
@@ -731,5 +746,6 @@ pub fn food_seeking_sequence(client: Rc<RefCell<AiTcpClient>>) -> Box<dyn Behavi
         )),
         navigate_to_tile_action(client.clone(), "food"),
         take_action(client.clone(), "food".to_string()),
+        inventory_action(client.clone()),
     ]))
 }
