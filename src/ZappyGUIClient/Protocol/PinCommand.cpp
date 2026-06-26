@@ -30,13 +30,13 @@ bool PinCommand::execute(WorldState &s, const std::vector<std::string> &cmd)
     player.setPosition({std::stoi(cmd.at(1)), std::stoi(cmd.at(2))});
 
      Inventory i = {
-        {data::Resource::FOOD, std::stoi(cmd.at(2))},
-        {data::Resource::LINEMATE,std::stoi(cmd.at(3))},
-        {data::Resource::DERAUMERE, std::stoi(cmd.at(4))},
-        {data::Resource::SIBUR, std::stoi(cmd.at(5))},
-        {data::Resource::MENDIANE, std::stoi(cmd.at(6))},
-        {data::Resource::PHIRAS, std::stoi(cmd.at(7))},
-        {data::Resource::THYSTAME, std::stoi(cmd.at(8))}
+        {data::Resource::FOOD, std::stoi(cmd.at(3))},
+        {data::Resource::LINEMATE,std::stoi(cmd.at(4))},
+        {data::Resource::DERAUMERE, std::stoi(cmd.at(5))},
+        {data::Resource::SIBUR, std::stoi(cmd.at(6))},
+        {data::Resource::MENDIANE, std::stoi(cmd.at(7))},
+        {data::Resource::PHIRAS, std::stoi(cmd.at(8))},
+        {data::Resource::THYSTAME, std::stoi(cmd.at(9))}
     };
     s.onPlayerInventory(player, i);
     return true;
