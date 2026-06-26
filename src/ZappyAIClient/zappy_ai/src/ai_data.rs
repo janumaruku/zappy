@@ -35,13 +35,7 @@ pub fn elevate_branch(client: Rc<RefCell<AiTcpClient>>) -> Box<dyn BehaviorNode>
     Box::new(SequenceNode::new(vec![
         food_not_critical_condition(),
         Box::new(SelectorNode::new(vec![
-            Box::new(SequenceNode::new(vec![
-                has_required_stones(),
-                enough_teammates_on_tile(),
-                food_not_critical_condition(),
-                incantation_action(client.clone()),
-            ])),
-            wait_for_teammates_sequence(client.clone()),
+            leader_elevation_sequence(client.clone()),
             coordinate_branch(client.clone()),
             stone_seeking_sequence(client.clone()),
         ])),
