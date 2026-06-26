@@ -399,6 +399,7 @@ pub fn wait_for_teammates_sequence(client: Rc<RefCell<AiTcpClient>>) -> Box<dyn 
         has_required_stones(),
         not_enough_teammates_on_tile(),
         broadcast_ready_action(client.clone()),
+        food_not_critical_condition(),
         wait_for_teammates_action(client.clone()),
     ]))
 }
