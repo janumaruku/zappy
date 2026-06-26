@@ -44,8 +44,8 @@ bool BctCommand::execute(WorldState&s, const std::vector<std::string>&cmd)
         {data::Resource::DERAUMERE, qts[2]},
         {data::Resource::SIBUR, qts[3]},
         {data::Resource::MENDIANE, qts[4]},
-        {data::Resource::PHIRAS, qts[4]},
-        {data::Resource::THYSTAME, qts[5]}
+        {data::Resource::PHIRAS, qts[5]},
+        {data::Resource::THYSTAME, qts[6]}
     };
     s.onTileContent(tilePos, resources);
     return true;
