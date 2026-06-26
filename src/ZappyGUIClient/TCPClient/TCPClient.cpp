@@ -12,9 +12,10 @@
 
 namespace zappy::gui {
 TCPClient::TCPClient(network::IOContext &ioc, const int port,
-    const std::string &hostname): _ioc(ioc), _socket(_ioc)
+    const std::string &hostname, WorldState &worldState): _ioc(ioc), _socket(_ioc), _protocol(worldState)
 {
-    _readBuffer.resize(3);
+    _readBuffer.resize(1024);
+    _asyncReadBuffer.resize(1024);
     auto config = network::BASIC_CONFIG;
     config.context = "TCP-CLIENT";
     _logger.config(config);
@@ -73,6 +74,7 @@ std::string TCPClient::receive()
                 }
                 done = isTransmissionReady(bytes, _readBuffer);
             });
+        pollAll();
     }
 
     const auto result = std::string{_transmission.data(), _transmission.size()};
@@ -113,7 +115,8 @@ bool TCPClient::isTransmissionReady(const std::size_t &bytes,
 
 void TCPClient::handleTransmission()
 {
-    // !todo(call protocol handler here)
+    _protocol.handleLine(_transmission);
+    _transmission.clear();
     startRead();
 }
 
