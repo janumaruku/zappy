@@ -526,6 +526,74 @@ pub fn stone_navigate_take_action(client: Rc<RefCell<AiTcpClient>>) -> Box<dyn B
     }))
 }
 
+fn k_to_commands(k: u8) -> Vec<String> {
+    match k {
+        1 => vec!["Forward".to_string()],
+        2 => vec!["Forward".to_string(), "Right".to_string(), "Forward".to_string()],
+        3 => vec!["Right".to_string(), "Forward".to_string()],
+        4 => vec!["Right".to_string(), "Forward".to_string(), "Right".to_string(), "Forward".to_string()],
+        5 => vec!["Right".to_string(), "Right".to_string(), "Forward".to_string()],
+        6 => vec!["Left".to_string(), "Forward".to_string(), "Left".to_string(), "Forward".to_string()],
+        7 => vec!["Left".to_string(), "Forward".to_string()],
+        8 => vec!["Forward".to_string(), "Left".to_string(), "Forward".to_string()],
+        _ => vec![],
+    }
+}
+
+pub fn navigate_toward_k_action(client: Rc<RefCell<AiTcpClient>>) -> Box<dyn BehaviorNode> {
+    let mut commands: Vec<String> = Vec::new();
+    let mut awaiting_response = false;
+    let mut initialized = false;
+
+    Box::new(ActionNode::new(move |bb| {
+        if !initialized {
+            let k = match bb.get::<u8>("broadcast_k") {
+                Ok(k) => *k,
+                Err(_) => {
+                    println!("[navigate_k] no broadcast_k → Failure");
+                    return NodeStatus::Failure;
+                }
+            };
+            commands = k_to_commands(k);
+            initialized = true;
+            println!("[navigate_k] k={k}, commands={commands:?}");
+            if commands.is_empty() {
+                initialized = false;
+                return NodeStatus::Success;
+            }
+        }
+
+        if !awaiting_response {
+            client.borrow().send(commands[0].clone());
+            awaiting_response = true;
+            return NodeStatus::Running;
+        }
+
+        match bb.get::<ServerMessage>("last_response") {
+            Ok(ServerMessage::Ok) => {
+                bb.clear("last_response").ok();
+                commands.remove(0);
+                if commands.is_empty() {
+                    awaiting_response = false;
+                    initialized = false;
+                    NodeStatus::Success
+                } else {
+                    client.borrow().send(commands[0].clone());
+                    NodeStatus::Running
+                }
+            }
+            Ok(ServerMessage::Ko) => {
+                bb.clear("last_response").ok();
+                commands.clear();
+                awaiting_response = false;
+                initialized = false;
+                NodeStatus::Failure
+            }
+            _ => NodeStatus::Running,
+        }
+    }))
+}
+
 pub fn stone_seeking_sequence(client: Rc<RefCell<AiTcpClient>>) -> Box<dyn BehaviorNode> {
     Box::new(SequenceNode::new(vec![
         inventory_action(client.clone()),
