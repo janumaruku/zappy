@@ -124,8 +124,8 @@ void WorldState::onPlayerPosition(const std::string &id,
     const data::Position &pos, const data::Orientation &orientation)
 {
     auto &player = _players.at(id);
-    const auto &oldPos = player.getPosition();
-    const auto &oldOrient = player.getOrientation();
+    data::Position oldPos = player.getPosition();
+    data::Orientation oldOrient = player.getOrientation();
     ActionType a;
 
     if (oldPos != pos)
@@ -141,7 +141,7 @@ void WorldState::onPlayerPosition(const std::string &id,
     Action action{.type=a, .duration=7.0F / static_cast<float>(_timeUnit)};
 
     player.enqueueAction(action);
-    notify(ZappyEventType::GUI_EVENT, PlayerMovedEvent{player});
+    notify(ZappyEventType::GUI_EVENT, PlayerMovedEvent{player, oldPos, oldOrient});
 }
 
 void WorldState::onPlayerEject(const PlayerId &id)

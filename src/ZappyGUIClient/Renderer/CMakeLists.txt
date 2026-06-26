@@ -5,7 +5,8 @@ add_library(renderer STATIC
         Hud.cpp
         HudManager.cpp
         Animation.cpp
-        AnimationManager.cpp)
+        AnimationManager.cpp
+        AnimationQueue.cpp)
 
 target_include_directories(renderer PUBLIC include)
 

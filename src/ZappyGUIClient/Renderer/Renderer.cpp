@@ -40,6 +40,7 @@ Renderer::~Renderer()
 {
     _resourceManager.reset();
     _hudManager.reset();
+    _animationManager.reset();
     CloseWindow();
 }
 
@@ -110,19 +111,48 @@ void Renderer::renderResourcesFromTile(const std::unordered_map<data::Resource,
 
 void Renderer::renderPlayers(const std::unordered_map<data::PlayerId, GUIPlayer>
                                  &players,
-    const std::unordered_map<std::string, Team> &teams) const
+    const std::unordered_map<std::string, Team> &teams)
 {
-    for (const auto &it: players) {
-        const auto resourceTexture =
-            _resourceManager->getTexture(playerOrientationToString(it.second
+    for (const auto &[playerId, playerData]: players) {
+        const auto &resourceTexture =
+            _resourceManager->getTexture(playerOrientationToString(playerData
                     .getOrientation()));
-        const auto position = it.second.getPosition();
-        DrawTexture(resourceTexture,
-            (position.getX() * TILE_SIZE) +
-                ((TILE_SIZE - resourceTexture.width) / 2),
-            (position.getY() * TILE_SIZE) +
-                ((TILE_SIZE - resourceTexture.height) / 2),
-            teams.at(it.second.getTeam()).getColor());
+
+        const auto &position  = playerData.getPosition();
+        const auto &teamColor = teams.at(playerData.getTeam()).getColor();
+
+        if (_animations.contains(playerId)) {
+            renderPlayerAnimation(playerId, teamColor);
+        } else {
+            DrawTexture(resourceTexture,
+                (position.getX() * TILE_SIZE) +
+                    ((TILE_SIZE - resourceTexture.width) / 2),
+                (position.getY() * TILE_SIZE) +
+                    ((TILE_SIZE - resourceTexture.height) / 2),
+                teamColor);
+        }
+    }
+}
+
+void Renderer::renderPlayerAnimation(const data::PlayerId &playerId,
+    const Color &teamColor)
+{
+    auto &animationQueue = _animations.at(playerId);
+
+    animationQueue.update();
+
+    if (animationQueue.hasCurrentAnimation()) {
+        const auto &animationCurrent = animationQueue.getCurrentAnimation();
+        const auto &currentPosition  = animationCurrent.currentPosition();
+        const auto &currentSpriteSheet = animationCurrent.getSpriteSheet();
+
+        DrawTextureRec(animationCurrent.getSpriteSheet(),
+            animationCurrent.currentSourceRect(),
+            {        currentPosition.x + (TILE_SIZE - currentSpriteSheet.width) / 2.0f,
+        currentPosition.y + (TILE_SIZE - currentSpriteSheet.height) / 2.0f},
+            teamColor);
+    } else {
+        _animations.erase(playerId);
     }
 }
 

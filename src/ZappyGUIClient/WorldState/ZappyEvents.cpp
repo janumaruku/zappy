@@ -26,6 +26,16 @@ PlayerMovedEvent::PlayerMovedEvent(GUIPlayer &player): id{player.getId()},
     action = player.dequeueAction();
 }
 
+PlayerMovedEvent::PlayerMovedEvent(GUIPlayer &player,
+data::Position &oldPos, data::Orientation &oldOrient):
+id{player.getId()}, position{player.getPosition()},
+orientation{player.getOrientation()}, oldPos{oldPos}, oldOrient{oldOrient}
+{
+    if (!player.hasAction())
+        return;
+    action = player.dequeueAction();
+}
+
 PlayerLevelEvent::PlayerLevelEvent(const GUIPlayer &player) : id(player.getId()),
 level(player.getLevel()), team(player.getTeam())
 {}

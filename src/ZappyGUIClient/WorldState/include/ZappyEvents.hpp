@@ -8,6 +8,7 @@
 #ifndef ZAPPY_ZAPPYEVENTS_HPP
 #define ZAPPY_ZAPPYEVENTS_HPP
 
+#include <optional>
 #include <unordered_map>
 #include <variant>
 #include <vector>
@@ -43,11 +44,15 @@ struct PlayerInventoryAssignEvent {
 
 struct PlayerMovedEvent {
     explicit PlayerMovedEvent(GUIPlayer &player);
+    explicit PlayerMovedEvent(GUIPlayer &player, data::Position& oldPos,
+        data::Orientation& oldOrient);
 
     Action action{};
     data::PlayerId id;
     data::Position position;
     data::Orientation orientation;
+    std::optional<data::Position> oldPos;
+    std::optional<data::Orientation> oldOrient;
 };
 
 struct PlayerDiedEvent {

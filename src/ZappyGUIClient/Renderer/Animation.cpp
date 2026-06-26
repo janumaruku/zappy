@@ -13,7 +13,7 @@
 
 namespace zappy::gui {
 
-Animation::Animation(Action action, Vector2 pos, Texture2D &sheet):
+Animation::Animation(Action action, Vector2 startPos, Vector2 endPos, Texture2D &sheet):
 _spriteSheet(sheet),
 _frameInfo{.width = sheet.height,
             .height       = sheet.height,
@@ -21,12 +21,10 @@ _frameInfo{.width = sheet.height,
             .currentFrame = 0,
             .duration     = 0.1F},
 _animStart(std::chrono::high_resolution_clock::now()),
-
 _frameStart(std::chrono::high_resolution_clock::now()),
-_startPos(pos), _currentPos(pos),
-_endPos(pos), _duration((static_cast<float>(sheet.width) /
-              static_cast<float>(sheet.height)) *
-    0.1F),
+_startPos(startPos), _currentPos(startPos),
+_endPos(endPos), _duration((static_cast<float>(sheet.width) /
+              static_cast<float>(sheet.height)) * 0.1F),
 _action(action),
 _frameCount(sheet.width / sheet.height)
 {
@@ -41,16 +39,16 @@ void Animation::update()
 
     const auto now = Clock::now();
 
-    // Frame advancement
-    const float frameElapsed = std::chrono::duration_cast<Fsec>(now - _frameStart).count();
+    const float frameElapsed =
+        std::chrono::duration_cast<Fsec>(now - _frameStart).count();
 
     if (frameElapsed >= _frameInfo.duration) {
         _frameInfo.currentFrame = (_frameInfo.currentFrame + 1) % _frameCount;
-        _frameStart   = now;
+        _frameStart = now;
     }
 
-    // Position interpolation 
-    const float totalElapsed = std::chrono::duration_cast<Fsec>(now - _animStart).count();
+    const float totalElapsed =
+        std::chrono::duration_cast<Fsec>(now - _animStart).count();
     const float t = std::clamp(totalElapsed / _duration, 0.0F, 1.0F);
 
     _currentPos = {
@@ -84,13 +82,19 @@ const Texture2D &Animation::getSpriteSheet() const
 
 bool Animation::isFinished() const
 {
-    return (static_cast<float>(std::chrono::high_resolution_clock::now().time_since_epoch().count()) -
-    static_cast<float>(_animStart.time_since_epoch().count())) >= _duration;
+    using Clock = std::chrono::high_resolution_clock;
+    using Fsec = std::chrono::duration<float>;
+
+    const float elapsed =
+        std::chrono::duration_cast<Fsec>(Clock::now() - _animStart).count();
+
+    return elapsed >= _duration;
 }
 
-std::unique_ptr<Animation> Animation::create(Action a, Vector2 pos, Texture2D &sheet)
+std::unique_ptr<Animation> Animation::create(Action a, Vector2 startPos,
+    Vector2 endPos, Texture2D &sheet)
 {
-    return std::make_unique<Animation>(a, pos, sheet);
+    return std::make_unique<Animation>(a, startPos, endPos, sheet);
 }
 
 }

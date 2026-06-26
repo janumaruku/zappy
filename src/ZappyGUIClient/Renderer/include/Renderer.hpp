@@ -13,6 +13,7 @@
 
 #include "Animation.hpp"
 #include "AnimationManager.hpp"
+#include "AnimationQueue.hpp"
 #include "AObserver.hpp"
 #include "Animation.hpp"
 #include "FactoryTemplate.hpp"
@@ -60,18 +61,25 @@ private:
         explicit OnEvent(Renderer &renderer): renderer{renderer}
         {}
 
-        void operator()(const PlayerNewEvent &/*event*/)
-        {
-        }
+        void operator()(const PlayerNewEvent &)
+        {}
 
         void operator()(const PlayerMovedEvent & event)
         void operator()(const PlayerMovedEvent &event)
         {
+            const auto startPos =
+                event.oldPos.has_value() ?
+                event.oldPos.value() : event.position;
+
             auto animation =
-                Animation::create(event.action, tileToPixel(event.position),
-                    renderer._animationManager
-                        ->getTexture(PLAYER_MOVEMENT_NAME));
-            renderer._animations[event.id] = std::move(animation);
+                Animation::create(
+                    event.action,
+                    tileToPixel(startPos),
+                    tileToPixel(event.position),
+                    renderer._animationManager->getTexture(PLAYER_MOVEMENT_NAME)
+                    );
+
+            renderer._animations[event.id].enqueueAnimation(std::move(animation));
         }
 
         void operator()(const PlayerLevelEvent &)
@@ -139,7 +147,9 @@ private:
         data::Position position) const;
 
     void renderPlayers(const std::unordered_map<data::PlayerId, GUIPlayer>
-            &players, const std::unordered_map<std::string, Team>& teams) const;
+            &players, const std::unordered_map<std::string, Team>& teams);
+
+    void renderPlayerAnimation(const data::PlayerId &playerId, const Color &teamColor);
 
     void renderEggs();
 
@@ -169,7 +179,7 @@ private:
     std::unordered_map<std::string, data::Position> _eggs;
     std::map<data::Position, std::chrono::steady_clock::time_point> _incantations;
     std::map<data::Position, std::pair<bool, std::chrono::steady_clock::time_point>> _incantationsRes;
-    std::unordered_map<data::PlayerId, std::unique_ptr<Animation>> _animations;
+    std::unordered_map<data::PlayerId, AnimationQueue> _animations;
     std::optional<std::string> _winner;
 
     //AnimationFactory _animationFactory;
