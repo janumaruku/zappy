@@ -230,13 +230,55 @@ pub fn compute_target_stone(bb: &BlackBoard) -> Option<String> {
 }
 
 pub fn incantation_action(client: Rc<RefCell<AiTcpClient>>) -> Box<dyn BehaviorNode> {
-    let mut sent = false;
+    let mut set_commands: Vec<String> = Vec::new();
+    let mut awaiting = false;
+    let mut initialized = false;
 
     Box::new(ActionNode::new(move |bb| {
-        if !sent {
+        if !initialized {
+            let level = bb.get::<u8>("level").map(|l| *l).unwrap_or(1);
+            let idx = (level as usize).saturating_sub(1).min(6);
+            let req = &ELEVATION_TABLE[idx];
+            set_commands.clear();
+            for _ in 0..req.linemate  { set_commands.push("Set linemate".to_string()); }
+            for _ in 0..req.deraumere { set_commands.push("Set deraumere".to_string()); }
+            for _ in 0..req.sibur     { set_commands.push("Set sibur".to_string()); }
+            for _ in 0..req.mendiane  { set_commands.push("Set mendiane".to_string()); }
+            for _ in 0..req.phiras    { set_commands.push("Set phiras".to_string()); }
+            for _ in 0..req.thystame  { set_commands.push("Set thystame".to_string()); }
+            initialized = true;
+            println!("[incantation] stones to set: {:?}", set_commands);
+        }
+
+        if !set_commands.is_empty() {
+            if !awaiting {
+                client.borrow().send(set_commands[0].clone());
+                awaiting = true;
+                return NodeStatus::Running;
+            }
+            return match bb.get::<ServerMessage>("last_response") {
+                Ok(ServerMessage::Ok) => {
+                    bb.clear("last_response").ok();
+                    set_commands.remove(0);
+                    awaiting = false;
+                    NodeStatus::Running
+                }
+                Ok(ServerMessage::Ko) => {
+                    println!("[incantation] set stone ko → Failure");
+                    bb.clear("last_response").ok();
+                    set_commands.clear();
+                    awaiting = false;
+                    initialized = false;
+                    NodeStatus::Failure
+                }
+                _ => NodeStatus::Running,
+            };
+        }
+
+        if !awaiting {
             println!("[incantation] sending: Incantation");
             client.borrow().send("Incantation".to_string());
-            sent = true;
+            awaiting = true;
             return NodeStatus::Running;
         }
 
@@ -246,13 +288,15 @@ pub fn incantation_action(client: Rc<RefCell<AiTcpClient>>) -> Box<dyn BehaviorN
                 println!("[incantation] level up → {level}");
                 bb.set("level", level);
                 bb.clear("last_response").ok();
-                sent = false;
+                awaiting = false;
+                initialized = false;
                 NodeStatus::Success
             }
             Ok(ServerMessage::Ko) => {
                 println!("[incantation] ko → Failure");
                 bb.clear("last_response").ok();
-                sent = false;
+                awaiting = false;
+                initialized = false;
                 NodeStatus::Failure
             }
             Ok(ServerMessage::ElevationUnderway) => {
