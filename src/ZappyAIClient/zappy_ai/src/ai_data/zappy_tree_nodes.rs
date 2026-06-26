@@ -256,12 +256,17 @@ pub fn incantation_action(client: Rc<RefCell<AiTcpClient>>) -> Box<dyn BehaviorN
                 awaiting = true;
                 return NodeStatus::Running;
             }
-            return match bb.get::<ServerMessage>("last_response") {
+            match bb.get::<ServerMessage>("last_response") {
                 Ok(ServerMessage::Ok) => {
                     bb.clear("last_response").ok();
                     set_commands.remove(0);
                     awaiting = false;
-                    NodeStatus::Running
+                    if !set_commands.is_empty() {
+                        client.borrow().send(set_commands[0].clone());
+                        awaiting = true;
+                        return NodeStatus::Running;
+                    }
+                    // Last stone set — fall through to send Incantation immediately
                 }
                 Ok(ServerMessage::Ko) => {
                     println!("[incantation] set stone ko → Failure");
@@ -269,10 +274,10 @@ pub fn incantation_action(client: Rc<RefCell<AiTcpClient>>) -> Box<dyn BehaviorN
                     set_commands.clear();
                     awaiting = false;
                     initialized = false;
-                    NodeStatus::Failure
+                    return NodeStatus::Failure;
                 }
-                _ => NodeStatus::Running,
-            };
+                _ => return NodeStatus::Running,
+            }
         }
 
         if !awaiting {
@@ -326,22 +331,6 @@ pub fn food_not_critical_condition() -> Box<dyn BehaviorNode> {
     }))
 }
 
-pub fn no_broadcast_for_my_level_condition() -> Box<dyn BehaviorNode> {
-    Box::new(ConditionNode::new(|bb| {
-        let our_level = bb.get::<u8>("level").map(|l| *l).unwrap_or(1);
-        match bb.get::<Option<u8>>("broadcast_level") {
-            Ok(Some(lvl)) => {
-                let result = *lvl != our_level;
-                println!("[no_broadcast_for_my_level] broadcast={lvl}, ours={our_level} → {result}");
-                result
-            }
-            _ => {
-                println!("[no_broadcast_for_my_level] no broadcast for my level → true");
-                true
-            }
-        }
-    }))
-}
 
 pub fn broadcast_received_condition() -> Box<dyn BehaviorNode> {
     Box::new(ConditionNode::new(|bb| {
@@ -404,15 +393,18 @@ pub fn enough_teammates_on_tile() -> Box<dyn BehaviorNode> {
     }))
 }
 
-pub fn not_enough_teammates_on_tile() -> Box<dyn BehaviorNode> {
+
+pub fn no_competing_broadcast_condition() -> Box<dyn BehaviorNode> {
     Box::new(ConditionNode::new(|bb| {
-        let level = bb.get::<u8>("level").map(|l| *l).unwrap_or(1);
-        let idx = (level as usize).saturating_sub(1).min(6);
-        let needed = ELEVATION_TABLE[idx].players.saturating_sub(1);
-        let teammates = bb.get::<u32>("teammates_on_tile").map(|v| *v).unwrap_or(0);
-        let result = needed > 0 && teammates < needed;
-        println!("[not_enough_teammates] level={level}, teammates={teammates}, needed={needed} → {result}");
-        result
+        let our_level = bb.get::<u8>("level").map(|l| *l).unwrap_or(1);
+        let k = bb.get::<u8>("broadcast_k").map(|k| *k).unwrap_or(0);
+        match bb.get::<Option<u8>>("broadcast_level") {
+            Ok(Some(lvl)) if *lvl == our_level && k != 0 => {
+                println!("[no_competing_broadcast] competing leader level={lvl} k={k} → false");
+                false
+            }
+            _ => true,
+        }
     }))
 }
 
@@ -440,28 +432,32 @@ pub fn broadcast_ready_action(client: Rc<RefCell<AiTcpClient>>) -> Box<dyn Behav
     }))
 }
 
-pub fn wait_for_teammates_sequence(client: Rc<RefCell<AiTcpClient>>) -> Box<dyn BehaviorNode> {
+pub fn leader_elevation_sequence(client: Rc<RefCell<AiTcpClient>>) -> Box<dyn BehaviorNode> {
     Box::new(SequenceNode::new(vec![
         has_required_stones(),
-        not_enough_teammates_on_tile(),
-        no_broadcast_for_my_level_condition(),
-        Box::new(RunUntilNode::new(
-            |bb| {
-                let level = bb.get::<u8>("level").map(|l| *l).unwrap_or(1);
-                let idx = (level as usize).saturating_sub(1).min(6);
-                let needed = ELEVATION_TABLE[idx].players.saturating_sub(1);
-                let teammates = bb.get::<u32>("teammates_on_tile").map(|v| *v).unwrap_or(0);
-                let result = teammates >= needed;
-                println!("[wait_teammates/condition] teammates={teammates}, needed={needed} → {result}");
-                result
-            },
-            Box::new(SequenceNode::new(vec![
-                food_not_critical_condition(),
-                broadcast_ready_action(client.clone()),
-                look_action(client.clone()),
-                inventory_action(client.clone()),
-            ])),
-        )),
+        Box::new(SelectorNode::new(vec![
+            enough_teammates_on_tile(),
+            Box::new(RunUntilNode::new(
+                |bb| {
+                    let level = bb.get::<u8>("level").map(|l| *l).unwrap_or(1);
+                    let idx = (level as usize).saturating_sub(1).min(6);
+                    let needed = ELEVATION_TABLE[idx].players.saturating_sub(1);
+                    let teammates = bb.get::<u32>("teammates_on_tile").map(|v| *v).unwrap_or(0);
+                    let result = teammates >= needed;
+                    println!("[leader/wait] teammates={teammates}, needed={needed} → {result}");
+                    result
+                },
+                Box::new(SequenceNode::new(vec![
+                    food_not_critical_condition(),
+                    no_competing_broadcast_condition(),
+                    broadcast_ready_action(client.clone()),
+                    look_action(client.clone()),
+                    inventory_action(client.clone()),
+                ])),
+            )),
+        ])),
+        food_not_critical_condition(),
+        incantation_action(client.clone()),
     ]))
 }
 
@@ -750,5 +746,6 @@ pub fn food_seeking_sequence(client: Rc<RefCell<AiTcpClient>>) -> Box<dyn Behavi
         )),
         navigate_to_tile_action(client.clone(), "food"),
         take_action(client.clone(), "food".to_string()),
+        inventory_action(client.clone()),
     ]))
 }
