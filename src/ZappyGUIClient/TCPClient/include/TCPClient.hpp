@@ -11,6 +11,7 @@
 #include <string>
 
 #include "ConnectedSocket.hpp"
+#include "ProtocolHandler.hpp"
 
 namespace zappy::gui {
 class TCPClient {
@@ -18,7 +19,7 @@ public:
     TCPClient() = delete;
 
     explicit TCPClient(network::IOContext &ioc, int port,
-        const std::string &hostname);
+        const std::string &hostname, WorldState &worldState);
 
     void start();
 
@@ -37,8 +38,8 @@ private:
     std::string _transmission;
     std::string _transmissionTemp;
     utils::Logger _logger{"TCP-CLIENT", LogLevel::INFO, true};
+    ProtocolHandler _protocol;
 
-    // ProtocolHandler _protocol;
     void handleTransmission();
 
     void startRead();
