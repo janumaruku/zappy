@@ -1,5 +1,5 @@
 use crate::ai_data::{ServerMessage, tile_to_commands};
-use crate::config::{ELEVATION_TABLE, FOOD_CRITICAL_THRESHOLD, FOOD_SAFE_THRESHOLD, INCANT_WAIT_TIMEOUT_S, STONE_PRIORITIES};
+use crate::config::{BROADCAST_COOLDOWN_S, ELEVATION_TABLE, FOOD_CRITICAL_THRESHOLD, FOOD_SAFE_THRESHOLD, INCANT_WAIT_TIMEOUT_S, STONE_PRIORITIES};
 use std::time::Instant;
 use ai_tcp_client::AiTcpClient;
 use behavior_tree::behavior_tree::{
@@ -280,6 +280,40 @@ pub fn food_not_critical_condition() -> Box<dyn BehaviorNode> {
             result
         }
         Err(_) => false,
+    }))
+}
+
+pub fn broadcast_is_fresh() -> Box<dyn BehaviorNode> {
+    Box::new(ConditionNode::new(|bb| {
+        match bb.get::<Instant>("broadcast_timestamp") {
+            Ok(ts) => {
+                let elapsed = ts.elapsed().as_secs_f32();
+                let result = elapsed < BROADCAST_COOLDOWN_S;
+                println!("[broadcast_is_fresh] elapsed={elapsed:.1}s → {result}");
+                result
+            }
+            Err(_) => {
+                println!("[broadcast_is_fresh] no broadcast → false");
+                false
+            }
+        }
+    }))
+}
+
+pub fn broadcast_level_matches() -> Box<dyn BehaviorNode> {
+    Box::new(ConditionNode::new(|bb| {
+        let our_level = bb.get::<u8>("level").map(|l| *l).unwrap_or(1);
+        match bb.get::<Option<u8>>("broadcast_level") {
+            Ok(Some(lvl)) => {
+                let result = *lvl == our_level;
+                println!("[broadcast_level_matches] broadcast={lvl}, ours={our_level} → {result}");
+                result
+            }
+            _ => {
+                println!("[broadcast_level_matches] no broadcast level → false");
+                false
+            }
+        }
     }))
 }
 

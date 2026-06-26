@@ -23,6 +23,7 @@ pub const ELEVATION_TABLE: [ElevationRequirement; 7] = [
 ];
 
 pub const INCANT_WAIT_TIMEOUT_S: f32 = 30.0;
+pub const BROADCAST_COOLDOWN_S: f32 = 5.0;
 
 pub const STONE_PRIORITIES: [(&str, u32); 6] = [
     ("thystame", 10),
