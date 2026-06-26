@@ -28,8 +28,8 @@ int GUIMap::getHeight() const
 
 const data::Tile &GUIMap::getTile(data::Position pos) const
 {
-    if (pos.getX() > static_cast<int>(_width) || pos.getX() < 0 ||
-        pos.getY() > static_cast<int>(_height) || pos.getY() < 0) {
+    if (pos.getX() >= _width || pos.getX() < 0 ||
+        pos.getY() >= _height || pos.getY() < 0) {
         throw std::runtime_error("getTile position out of bound");
     }
 
@@ -40,8 +40,8 @@ const data::Tile &GUIMap::getTile(data::Position pos) const
 
 data::Tile &GUIMap::getTile(data::Position pos)
 {
-    if (pos.getX() > _width || pos.getX() < 0 ||
-        pos.getY() > _height || pos.getY() < 0) {
+    if (pos.getX() >= _width || pos.getX() < 0 ||
+        pos.getY() >= _height || pos.getY() < 0) {
         throw std::runtime_error("getTile position out of bound");
     }
 
@@ -65,8 +65,8 @@ void GUIMap::updateHeight(const int height)
 void GUIMap::updateTile(const data::Position pos,
     const std::unordered_map<data::Resource, int> &resources)
 {
-    if (pos.getX() > _width || pos.getX() < 0 ||
-        pos.getY() > _height || pos.getY() < 0) {
+    if (pos.getX() >= _width || pos.getX() < 0 ||
+        pos.getY() >= _height || pos.getY() < 0) {
         throw std::runtime_error("getTile position out of bound");
     }
 
