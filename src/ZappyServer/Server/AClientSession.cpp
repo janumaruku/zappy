@@ -96,9 +96,9 @@ void AClientSession::handleRead()
             if (!isTransmissionReady(bytes)) {
                 handleRead();
             } else {
+                _logger.start(LogLevel::INFO) << "Received: " << _transmission << utils::END;
                 handleTransmission();
                 handleRead();
-                _logger.start(LogLevel::INFO) << "Received: " << _transmission << utils::END;
             }
         });
 }

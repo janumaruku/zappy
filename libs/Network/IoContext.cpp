@@ -169,11 +169,13 @@ void IOContext::triggerHandler(const int &itt)
 
 void IOContext::drainExpiredTimers()
 {
-    const auto now = static_cast<float>(
-        std::chrono::high_resolution_clock::now().time_since_epoch().count());
+    const auto now = static_cast<uint64_t>(
+        std::chrono::duration_cast<std::chrono::milliseconds>(
+            std::chrono::high_resolution_clock::now().time_since_epoch()
+        ).count());
 
     while (!_timerQueue.empty()) {
-        const TimerEntry entry = _timerQueue.top();
+        const TimerEntry &entry = _timerQueue.top();
         if (entry.cancellation) {
             _timerQueue.pop();
             continue;
@@ -182,7 +184,7 @@ void IOContext::drainExpiredTimers()
             entry.handler();
             _timerQueue.pop();
             continue;
-        } 
+        }
         break;
     }
 }
