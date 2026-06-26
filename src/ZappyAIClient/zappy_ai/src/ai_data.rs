@@ -36,10 +36,22 @@ pub fn elevate_branch(client: Rc<RefCell<AiTcpClient>>) -> Box<dyn BehaviorNode>
     ]))
 }
 
+pub fn coordinate_branch(client: Rc<RefCell<AiTcpClient>>) -> Box<dyn BehaviorNode> {
+    Box::new(SelectorNode::new(vec![
+        Box::new(SequenceNode::new(vec![
+            broadcast_is_fresh(),
+            broadcast_level_matches(),
+            navigate_toward_k_action(client.clone()),
+        ])),
+        answer_elevation_sequence(client.clone()),
+    ]))
+}
+
 pub fn build_tree(client: Rc<RefCell<AiTcpClient>>) -> BehaviorTree {
     BehaviorTree::new(Box::new(SequenceNode::new(vec![
         survive_branch(client.clone()),
         elevate_branch(client.clone()),
+        coordinate_branch(client.clone()),
         random_walk(client.clone()),
     ])))
 }
