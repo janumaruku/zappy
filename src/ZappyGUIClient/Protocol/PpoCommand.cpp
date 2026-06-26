@@ -1,5 +1,5 @@
 /*
-** EPITECH PROJECT, 2025
+** EPITECH PROJECT, 2026
 ** ZPY
 ** File description:
 ** PpoCommand.cpp
@@ -20,6 +20,7 @@ bool PpoCommand::execute(WorldState &w, const std::vector<std::string>&cmd)
     auto id = cmd[0];
     if (!id.empty() && id.front() == '#')
         id.erase(id.begin());
+
     data::Position pos(std::stoi(cmd[1]), std::stoi(cmd[2]));
     auto orientation = std::stoi(cmd[3]) - 1;
 

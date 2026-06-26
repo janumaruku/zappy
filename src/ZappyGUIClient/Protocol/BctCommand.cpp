@@ -1,5 +1,5 @@
 /*
-** EPITECH PROJECT, 2025
+** EPITECH PROJECT, 2026
 ** ZPY
 ** File description:
 ** BctCommand.cpp
@@ -8,6 +8,7 @@
 
 #include <array>
 #include <cassert>
+#include <iostream>
 #include <memory>
 #include <stdexcept>
 #include <string>
@@ -34,17 +35,17 @@ bool BctCommand::execute(WorldState&s, const std::vector<std::string>&cmd)
 
     if (qts.size() != data::EXISTING_RESSOURCES) {
         std::cerr << "Missing ressources in request" << std::endl;
-        return;
+        return false;
     }
 
-    const std::unordered_map<data::Resource, uint> resources = {
+    const std::unordered_map<data::Resource, int> resources = {
         {data::Resource::FOOD, qts[0]},
         {data::Resource::LINEMATE,qts[1]},
         {data::Resource::DERAUMERE, qts[2]},
         {data::Resource::SIBUR, qts[3]},
         {data::Resource::MENDIANE, qts[4]},
-        {data::Resource::PHIRAS, qts[4]},
-        {data::Resource::THYSTAME, qts[5]}
+        {data::Resource::PHIRAS, qts[5]},
+        {data::Resource::THYSTAME, qts[6]}
     };
     s.onTileContent(tilePos, resources);
     return true;

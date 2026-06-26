@@ -44,6 +44,12 @@ Server &AISession::getServer() noexcept
     return _server;
 }
 
+void AISession::cancelTimers()
+{
+    _command_timer.cancel();
+    _starvation_timer.cancel();
+}
+
 void AISession::freeze() noexcept
 {
     _frozen = true;
@@ -60,20 +66,19 @@ bool AISession::isFrozen() const noexcept
 }
 
 void AISession::scheduleTask(const uint &durationConstant,
-    const std::function<void()> &task)
+const std::function<void()> &task)
 {
-    _command_timer.asyncWait(std::chrono::high_resolution_clock::duration(
+    _command_timer.asyncWait(std::chrono::steady_clock::duration(
         durationConstant / _server.getFrequency()),
-    [task]() {
-        task();
-    });
+        [task]() {
+            task();
+        });
 }
 
 void AISession::handleTransmission()
 {
     if (_pending_commands >= MAX_PENDING_COMMANDS)
         return;
-
     std::vector<std::string> splittedLine = utils::StringUtils::split(_transmission);
     _commandQueue.push(splittedLine);
     _pending_commands++;
@@ -101,11 +106,13 @@ void AISession::onCommandComplete()
 
 void AISession::scheduleResponse(const uint &durationConstant, const std::string &response)
 {
-    _command_timer.asyncWait(std::chrono::high_resolution_clock::duration(durationConstant / _server.getFrequency()),
-    [this, response]() {
-        send(response);
-        onCommandComplete();
-    });
+    _command_timer.asyncWait(
+        std::chrono::milliseconds(static_cast<uint64_t>(durationConstant) * 1000 / _server.getFrequency()),
+        [this, response]() {
+            std::clog << "AISession is Sending response" << std::endl;
+            send(response);
+            onCommandComplete();
+        });
 }
 
 const Player &AISession::getPlayer() const noexcept

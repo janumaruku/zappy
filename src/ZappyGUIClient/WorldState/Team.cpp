@@ -17,7 +17,7 @@ Team::Team(const std::string &name, const Color &color): _name(name)
 
 }
 
-std::string Team::getName()
+std::string Team::getName() const
 {
     return _name;
 }
@@ -25,6 +25,10 @@ std::string Team::getName()
 Color Team::getColor() const
 {
     return _color;
+}
+std::vector<Team::PlayerId> Team::getPlayers() const
+{
+    return _players;
 }
 
 void Team::addPlayer(const PlayerId &id)

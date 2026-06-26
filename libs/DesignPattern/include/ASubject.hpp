@@ -1,5 +1,5 @@
 /*
-** EPITECH PROJECT, 2025
+** EPITECH PROJECT, 2026
 ** ZPY
 ** File description:
 ** ASubject.hpp
@@ -23,7 +23,7 @@ public:
 
     void removeObserver(KeyType observerType, IObserver<EventType>* observer) override;
 
-    void notify(KeyType observerType, const EventType& event) override;
+    void notify(KeyType observerType, const EventType &event) override;
 
     void notifyAll(const EventType& event) override;
 

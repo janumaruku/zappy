@@ -10,12 +10,13 @@
 #include <algorithm>
 #include <cmath>
 
+#include "Hud.hpp"
 #include "raymath.h"
 #include "ResourceManager.hpp"
 
 namespace zappy::gui {
 Renderer::Renderer(const int &width, const int &height,
-    const SubjectList &list):
+    const SubjectList &list, const WorldState& worldState):
     AObserver{list}, _grid(width, height),
     _camera({
         .offset = Vector2{
@@ -32,25 +33,37 @@ Renderer::Renderer(const int &width, const int &height,
     InitWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Zappy - Renderer");
     SetTargetFPS(60);
     _resourceManager = std::make_unique<ResourceManager>();
+    _hudManager = std::make_unique<HUDManager>(worldState);
 }
 
 Renderer::~Renderer()
 {
     _resourceManager.reset();
+    _hudManager.reset();
     CloseWindow();
+}
+
+void Renderer::registerCreators()
+{
+    //_animationFactory.registerCreator<>(Vector2 key);
 }
 
 void Renderer::render(const WorldState &world)
 {
     updateCamera();
+    updateHud(world);
     BeginDrawing();
     ClearBackground(BLACK);
 
     BeginMode2D(_camera);
     renderMap(world.getMap());
-
+    renderEggs();
     renderPlayers(world.getPlayers(), world.getTeams());
     EndMode2D();
+    _hud.draw(world, _hudManager);
+    if (_winner.has_value()) {
+        renderGameOver();
+    }
     EndDrawing();
 }
 
@@ -65,24 +78,24 @@ void Renderer::onNotify(const ZappyEvent &event)
     std::visit(OnEvent{*this}, event);
 }
 
-void Renderer::renderMap(const GUIMap &map) const
+void Renderer::renderMap(const GUIMap &map)
 {
     _grid.render();
-    const auto width = map.getWidth();
-    const auto len   = map.getWidth() * map.getHeight();
+    const auto width  = map.getWidth();
+    const auto height = map.getHeight();
 
-    auto y = 0;
-    for (auto x = 0; x < len; ++x) {
-        if (x == width - 1)
-            ++y;
-        const auto tile = map.getTile({x % width, y}).getResources();
-
-        renderResourcesFromTile(tile, {(x % width), y});
+    for (auto y = 0; y < height; ++y) {
+        for (auto x = 0; x < width; ++x) {
+            const auto tile = map.getTile({x, y}).getResources();
+            renderResourcesFromTile(tile, {x, y});
+            renderIncantation({x, y});
+        }
     }
 }
 
-void Renderer::renderResourcesFromTile(const std::unordered_map<data::Resource, int>&
-    tile, const data::Position position) const
+void Renderer::renderResourcesFromTile(const std::unordered_map<data::Resource,
+                                           int> &tile,
+    const data::Position position) const
 {
 
     for (auto const &[name, count]: tile) {
@@ -96,7 +109,8 @@ void Renderer::renderResourcesFromTile(const std::unordered_map<data::Resource, 
 }
 
 void Renderer::renderPlayers(const std::unordered_map<data::PlayerId, GUIPlayer>
-    &players, const std::unordered_map<std::string, Team> &teams) const
+                                 &players,
+    const std::unordered_map<std::string, Team> &teams) const
 {
     for (const auto &it: players) {
         const auto resourceTexture =
@@ -112,9 +126,58 @@ void Renderer::renderPlayers(const std::unordered_map<data::PlayerId, GUIPlayer>
     }
 }
 
-void Renderer::renderEggs(const std::map<unsigned int, data::Egg> &eggs)
+void Renderer::renderEggs()
 {
-    (void)eggs;
+    for (const auto &it: _eggs) {
+        const data::Position &eggPosition = it.second;
+
+        const auto &eggTexture = _resourceManager->getTexture("egg");
+
+        float centerX = (eggPosition.getX() * TILE_SIZE) + CELL_SIZE +
+            (CELL_SIZE / 2.0f) - (eggTexture.width / 2.0f) + GRID_SIZE;
+        float centerY = (eggPosition.getY() * TILE_SIZE) + CELL_SIZE +
+            (CELL_SIZE / 2.0f) - (eggTexture.height / 2.0f) + GRID_SIZE;
+
+        DrawTexture(eggTexture, centerX + GRID_SIZE, centerY, WHITE);
+    }
+}
+
+void Renderer::renderIncantation(const data::Position position)
+{
+    const data::Position incantationPosition = {
+        position.getX() * TILE_SIZE, position.getY() * TILE_SIZE};
+
+    if (_incantations.contains(position)) {
+        DrawRectangle(incantationPosition.getX(), incantationPosition.getY(),
+            TILE_SIZE, TILE_SIZE, INCANTATION_COLOR);
+    }
+
+    if (_incantationsRes.contains(position)) {
+        auto [result, addedTime] = _incantationsRes.at(position);
+
+        const auto elapsed = std::chrono::duration_cast<
+            std::chrono::milliseconds>(std::chrono::steady_clock::now() -
+            addedTime);
+
+        if (elapsed < INCANTATION_END_DURATION) {
+            const Color overlayColor =
+                result ? INCANTATION_SUCCESS_COLOR : INCANTATION_FAILURE_COLOR;
+            DrawRectangle(incantationPosition.getX(), incantationPosition.getY(),
+                TILE_SIZE, TILE_SIZE, overlayColor);
+        } else {
+            _incantationsRes.erase(position);
+        }
+    }
+}
+
+void Renderer::renderGameOver()
+{
+    DrawRectangle(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, GAMEOVER_BACKRGOUND_COLOR);
+    const auto &winingText = std::format("Team {} WINS", _winner.value());
+    DrawText(winingText.c_str(),
+        static_cast<int>((WINDOW_WIDTH / 2) - (static_cast<float>(winingText.size()) * TEXT_FONT_SIZE)),
+        WINDOW_HEIGHT / 2, TEXT_FONT_SIZE,
+        BLACK);
 }
 
 void Renderer::updateAnimation(const GUIPlayer &player)
@@ -147,6 +210,11 @@ void Renderer::updateCameraMovement()
     _camera.target      = Vector2Add(_camera.target, delta);
 }
 
+void Renderer::updateHud(const WorldState& worldState)
+{
+    _hud.update(worldState, _hudManager);
+}
+
 Vector2 Renderer::tileToPixel(const data::Position pos)
 {
     return {
@@ -159,6 +227,7 @@ std::string Renderer::resourceToString(const data::Resource &resource)
 {
     return RESOURCE_DATA[static_cast<int>(resource)].name;
 }
+
 std::string Renderer::playerOrientationToString(const data::Orientation
         &orientation)
 {

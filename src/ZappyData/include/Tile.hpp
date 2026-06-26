@@ -39,6 +39,7 @@ public:
     [[nodiscard]] Position getPosition() const;
 
     [[nodiscard]] const std::unordered_map<Resource, int> &getResources() const;
+    std::unordered_map<Resource, int> &getResources();
 
     void setResources(const std::unordered_map<Resource, int> &resources);
 

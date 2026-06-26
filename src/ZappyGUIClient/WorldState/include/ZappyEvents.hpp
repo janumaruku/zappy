@@ -14,6 +14,7 @@
 
 #include "Egg.hpp"
 #include "GUIPlayer.hpp"
+#include "Position.hpp"
 #include "Tile.hpp"
 
 namespace zappy::gui {
@@ -25,6 +26,19 @@ struct PlayerNewEvent {
     data::Orientation orientation;
     uint8_t level;
     std::string team;
+};
+
+struct PlayerLevelEvent {
+    explicit PlayerLevelEvent(const GUIPlayer &player);
+    data::PlayerId id;
+    uint8_t level;
+    std::string team;
+};
+
+struct PlayerInventoryAssignEvent {
+    explicit PlayerInventoryAssignEvent(GUIPlayer &player);
+    data::PlayerId id;
+    const std::unordered_map<data::Resource, uint> &inventory;
 };
 
 struct PlayerMovedEvent {
@@ -39,9 +53,21 @@ struct PlayerDiedEvent {
     data::PlayerId id;
 };
 
+struct PlayerBroadcastEvent {
+    explicit PlayerBroadcastEvent(const GUIPlayer &player, std::string msg);
+    data::PlayerId id;
+    std::string msg;
+};
+
 struct TileUpdateEvent {
+    explicit TileUpdateEvent(const data::Position &pos, const std::unordered_map<data::Resource, int> &resources);
     data::Position position;
-    std::unordered_map<data::Resource, int> resources;
+    const std::unordered_map<data::Resource, int> &resources;
+};
+
+struct TimeUpdateEvent {
+    explicit TimeUpdateEvent(uint timeUnit);
+    uint timeUint;
 };
 
 struct EggLaidEvent {
@@ -59,9 +85,14 @@ struct EggDiedEvent {
 };
 
 struct IncantationStartEvent {
+    explicit IncantationStartEvent(data::Position pos,
+        uint level, data::PlayerId id,
+        std::vector<data::PlayerId> participants);
+        
     data::Position position;
     uint8_t level;
-    std::vector<data::PlayerId> playerIds;
+    data::PlayerId initiatorId;
+    std::vector<data::PlayerId> participants;
 };
 
 struct IncantationEndEvent {
@@ -73,9 +104,12 @@ struct GameEndEvent {
     std::string team;
 };
 
-using ZappyEvent = std::variant<PlayerNewEvent, PlayerMovedEvent,
-    PlayerDiedEvent, TileUpdateEvent, EggLaidEvent, EggHatchedEvent,
-    EggDiedEvent, IncantationStartEvent, IncantationEndEvent>;
+using ZappyEvent = std::variant<PlayerNewEvent, PlayerMovedEvent, PlayerLevelEvent,
+    PlayerInventoryAssignEvent, PlayerDiedEvent, PlayerBroadcastEvent,
+    TileUpdateEvent,
+    TimeUpdateEvent,
+    EggLaidEvent, EggHatchedEvent, EggDiedEvent,
+    IncantationStartEvent, IncantationEndEvent, GameEndEvent>;
 }
 
 #endif //ZAPPY_ZAPPYEVENTS_HPP

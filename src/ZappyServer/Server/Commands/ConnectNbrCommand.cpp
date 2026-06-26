@@ -1,5 +1,5 @@
 /*
-** EPITECH PROJECT, 2025
+** EPITECH PROJECT, 2026
 ** ZPY
 ** File description:
 ** ConnectNbrCommand.cpp
@@ -16,9 +16,11 @@
 
 namespace zappy::server {
 
-bool ConnectNbrCommand::execute(AISession& s, const std::vector<std::string>& v)
+bool ConnectNbrCommand::execute(AISession& s, const std::vector<std::string>&)
 {
-    s.send(v[0]);
+    auto teams = s.getServer().getTeams();
+    auto freeSlots = teams.size() - teams.capacity();
+    s.scheduleResponse(0, std::to_string(freeSlots));
     return true;
 }
 

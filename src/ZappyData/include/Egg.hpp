@@ -13,19 +13,20 @@
 
 namespace zappy::data {
 using PlayerId = std::string;
+using TeamId = std::string;
 
 class Egg {
 public:
-    Egg(const std::string &id, const PlayerId &playerId,
-        const std::string &team, const Position &position, uint level);
+    Egg(std::string id, PlayerId playerId, std::string team, Position position, uint level);
 
     [[nodiscard]] std::string getId() const;
 
-    PlayerId getPlayerId();
+    [[nodiscard]] const PlayerId &getPlayerId() const;
 
     [[nodiscard]] Position getPosition() const;
 
-    std::string getTeam();
+    [[nodiscard]] TeamId &getTeam();
+    [[nodiscard]] const TeamId &getTeam() const;
 
     [[nodiscard]] uint getLevel() const;
 

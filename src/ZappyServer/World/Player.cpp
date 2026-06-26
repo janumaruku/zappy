@@ -1,5 +1,5 @@
 /*
-** EPITECH PROJECT, 2025
+** EPITECH PROJECT, 2026
 ** ZPY
 ** File description
 ** Player.cpp
@@ -10,9 +10,16 @@
 
 namespace zappy::server {
 Player::Player(const PlayerId &id, const TeamId &team,
-    const data::Position &position, const std::uint8_t &level): _id{id},
-    _team{team}, _position{position}, _level{level}
+    const data::Position &position, const std::uint8_t &level, int mapWidth, int mapHeight):
+    _id{id},
+    _team{team},
+    _position{position},
+    _level{level},
+    _mapWidth{mapWidth},
+    _mapHeight{mapHeight}
 {
+    (void)this->_mapWidth;
+    (void)this->_mapHeight;
     _orientation = static_cast<data::Orientation>(utils::randomNumber(0, 3));
     _inventory[data::Resource::FOOD] = 10;
 
@@ -31,21 +38,21 @@ void Player::left()
         - 1);
 }
 
-void Player::forward(const int width, const int height)
+void Player::forward()
 {
     auto &pos = _position;
     switch (_orientation) {
     case data::Orientation::UP:
-        pos = (pos - data::Position{0, 1}) % data::Position{1, width};
+        pos = (pos - data::Position{0, 1}) % data::Position{1, _mapWidth};
         break;
     case data::Orientation::DOWN:
-        pos = (pos + data::Position{0, 1}) % data::Position{1, height};
+        pos = (pos + data::Position{0, 1}) % data::Position{1, _mapHeight};
         break;
     case data::Orientation::LEFT:
-        pos = (pos - data::Position{1, 0}) % data::Position{width, 1};
+        pos = (pos - data::Position{1, 0}) % data::Position{_mapWidth, 1};
         break;
     case data::Orientation::RIGHT:
-        pos = (pos + data::Position{1, 0}) % data::Position{width, 1};
+        pos = (pos + data::Position{1, 0}) % data::Position{_mapWidth, 1};
         break;
     }
 }

@@ -16,6 +16,7 @@
 #include <vector>
 #include "AClientSession.hpp"
 #include "ConnectedSocket.hpp"
+#include "Logger.hpp"
 #include "Timer.hpp"
 #include "Player.hpp"
 #include "Server.hpp"
@@ -52,6 +53,7 @@ public:
 
     void scheduleResponse(const uint &durationConstant, const std::string &response);
 
+    void cancelTimers();
     void freeze() noexcept;
     void unfreeze() noexcept;
     [[nodiscard]] bool isFrozen() const noexcept;
@@ -68,14 +70,13 @@ private:
     Player &_player;
     SteadyTimer _command_timer;
     SteadyTimer _starvation_timer;
-    
+
     uint _pending_commands = 0;
     std::queue<std::vector<std::string>> _commandQueue;
 
     bool _frozen = false;
 
     std::unique_ptr<AIProtocolHandler> _protocolHandler;
-
 };
 
 }

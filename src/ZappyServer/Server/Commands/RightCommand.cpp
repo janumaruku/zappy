@@ -1,5 +1,5 @@
 /*
-** EPITECH PROJECT, 2025
+** EPITECH PROJECT, 2026
 ** ZPY
 ** File description:
 ** RightCommand.cpp
@@ -7,6 +7,7 @@
 
 
 
+#include <format>
 #include <memory>
 #include <string>
 #include <vector>
@@ -16,9 +17,16 @@
 
 namespace zappy::server {
 
-bool RightCommand::execute(AISession& s, const std::vector<std::string>& v)
+bool RightCommand::execute(AISession& s, const std::vector<std::string>& /*v*/)
 {
-    s.send(v[0]);
+    auto &player = s.getPlayer();
+    auto &server = s.getServer();
+
+    player.right();
+    server.notifyGUI(std::format("ppo #{} {} {} {}\n",
+        player.getId(), player.getPosition().getX(),
+        player.getPosition().getY(), static_cast<int>(player.getOrientation()) + 1));
+    s.scheduleResponse(7, "ok\n");
     return true;
 }
 
@@ -29,7 +37,7 @@ bool RightCommand::operator()(AISession& s, const std::vector<std::string>& v)
 
 std::unique_ptr<AIProtocolCommand> RightCommand::create()
 {
-    return std::make_unique<RightCommand>(RightCommand());
+    return std::make_unique<RightCommand>();
 }
 
 }

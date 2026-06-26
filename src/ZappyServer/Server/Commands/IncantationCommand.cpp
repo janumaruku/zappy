@@ -1,17 +1,13 @@
 /*
-** EPITECH PROJECT, 2025
+** EPITECH PROJECT, 2026
 ** ZPY
 ** File description:
 ** IncantationCommand.cpp
 */
 
-#include <algorithm>
-#include <array>
-#include <chrono>
-#include <functional>
-#include <memory>
-#include <string>
-#include <vector>
+#include <iostream>
+#include <map>
+#include <format>
 
 #include "AIProtocolHandler.hpp"
 #include "AISession.hpp"
@@ -161,10 +157,18 @@ bool IncantationCommand::execute(AISession &session,
             p->unfreeze();
         }
 
+        auto winner = server.checkWinCondition();
+        if (winner) {
+            server.broadcastToAll(std::format("seg {}\n", *winner));
+            server.notifyGUI(std::format("seg {}\n", *winner));
+            server.stop();
+        }
+
         std::string pie = std::format("pie {} {} 1\n", pos.getX(), pos.getY());
         server.notifyGUI(pie);
     });
-
+    session.scheduleResponse(TIME_LIMIT, 
+        std::format("Current level: {}\n", level + 1));
     return true;
 }
 

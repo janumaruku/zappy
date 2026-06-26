@@ -25,6 +25,11 @@ const std::unordered_map<Resource, int> &Tile::getResources() const
     return _resources;
 }
 
+std::unordered_map<Resource, int> &Tile::getResources()
+{
+    return _resources;
+}
+
 void Tile::setResources(const std::unordered_map<Resource, int> &resources)
 {
     _resources = resources;

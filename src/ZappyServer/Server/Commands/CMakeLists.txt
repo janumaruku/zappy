@@ -3,6 +3,7 @@ add_library(commands STATIC
     BroadcastCommand.cpp
     ConnectNbrCommand.cpp
     EjectCommand.cpp
+    EdiCommand.cpp
     ForkCommand.cpp
     ForwardCommand.cpp
     IncantationCommand.cpp
@@ -10,10 +11,14 @@ add_library(commands STATIC
     MszCommand.cpp
     LeftCommand.cpp
     LookCommand.cpp
+    PinCommand.cpp
     PnwCommand.cpp
+    PlvCommand.cpp
     PpoCommand.cpp
     RightCommand.cpp
     SetCommand.cpp
+    SgtCommand.cpp
+    SstCommand.cpp
     TakeCommand.cpp
     TnaCommand.cpp
 )

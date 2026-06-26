@@ -8,28 +8,62 @@
 #include "Server.hpp"
 
 #include <algorithm>
+#include <array>
+#include <chrono>
+#include <format>
 #include <iostream>
+#include <memory>
+#include <string>
+#include <vector>
 
 #include "AISession.hpp"
 #include "Buffer.hpp"
 #include "GUISession.hpp"
+#include "Player.hpp"
 
 namespace zappy::server {
+
+static int resourceQuantity(const data::Tile &tile, const data::Resource &resource)
+{
+    const auto &resources = tile.getResources();
+
+    if (!resources.contains(resource))
+        return 0;
+    return resources.at(resource);
+}
 
 Server::~Server() = default;
 
 Server::Server(int port, int width, int height, std::vector<std::string> teams,
     uint playersPerTeam, uint frequency):
     _acceptor(_ioContext, network::Endpoint(port)), _teams(teams),
-    _frequency(frequency), _map(width, height)
+    _frequency(frequency), _map(width, height), _resourceRespawnTimer(_ioContext)
 {
     for (const auto &team : _teams)
         _availableSlots[team] = playersPerTeam;
 }
 
+std::optional<std::string> Server::checkWinCondition() const noexcept
+{
+    std::unordered_map<std::string, int> teamLevel8Counts;
+
+    for (const auto& [id, player] : _map.getPlayers()) {
+        if (player.getLevel() == 8) {
+            teamLevel8Counts[player.getTeam()]++;
+        }
+    }
+
+    for (const auto& [team, count] : teamLevel8Counts) {
+        if (count >= 6) {
+            return team;
+        }
+    }
+    return std::nullopt;
+}
+
 void Server::run()
 {
-    (void)_frequency;
+    scheduleResourceRespawn();
     startAccept();
     _ioContext.run();
 }
@@ -39,6 +73,59 @@ void Server::run()
     return _frequency;
 }
 
+void Server::setFrequency(const uint frequency) noexcept
+{
+    _frequency = frequency;
+    scheduleResourceRespawn();
+}
+
+void Server::scheduleResourceRespawn()
+{
+    const uint delay = std::max(1U,
+        (RESOURCE_RESPAWN_TIME_UNIT * 1000U) / std::max(1U, _frequency));
+
+    _resourceRespawnTimer.cancel();
+    _resourceRespawnTimer.asyncWait(std::chrono::milliseconds(delay), [this]() {
+        respawnResources();
+    });
+}
+
+void Server::respawnResources()
+{
+    _map.generate();
+    notifyMapContent();
+    scheduleResourceRespawn();
+}
+
+void Server::notifyMapContent()
+{
+    for (auto &session : _guiSessions)
+        sendMapContent(*session);
+}
+
+void Server::sendMapContent(GUISession &session)
+{
+    constexpr std::array resources = {
+        data::Resource::FOOD,
+        data::Resource::LINEMATE,
+        data::Resource::DERAUMERE,
+        data::Resource::SIBUR,
+        data::Resource::MENDIANE,
+        data::Resource::PHIRAS,
+        data::Resource::THYSTAME,
+    };
+
+    for (int y = 0; y < _map.getHeight(); ++y) {
+        for (int x = 0; x < _map.getWidth(); ++x) {
+            const auto &tile = _map.getTile(data::Position{x, y});
+            std::string command = std::format("bct {} {}", x, y);
+
+            for (const auto &resource : resources)
+                command += std::format(" {}", resourceQuantity(tile, resource));
+            session.send(command + "\n");
+        }
+    }
+}
 
 void Server::startAccept()
 {
@@ -62,7 +149,7 @@ static std::string trimPacket(std::string value)
 }
 
 void Server::onAccept(
-    const std::shared_ptr<network::ConnectedSocket> &socket)
+    std::shared_ptr<network::ConnectedSocket> socket)
 {
     bool success = false;
 
@@ -117,6 +204,8 @@ void Server::handleGuiHandshake(const std::shared_ptr<network::ConnectedSocket> 
     auto &session = *_guiSessions.back();
     _guiProtocolHandler.handleLine("msz", session);
     _guiProtocolHandler.handleLine("tna", session);
+    _guiProtocolHandler.handleLine("sgt", session);
+    sendMapContent(session);
     _guiProtocolHandler.handleLine("pnw", session);
     session.start();
 }
@@ -140,14 +229,37 @@ void Server::handleAiHandshake(const std::shared_ptr<network::ConnectedSocket> &
 
     _aiSessions.push_back(std::make_unique<AISession>(socket, *this, player));
     _aiSessions.back()->start();
-    notifyGUI("pnw", {player.getId()});
+
+
+    auto command = std::format("pnw #{} {} {} {} {} {}\n", player.getId(),
+        std::to_string(player.getPosition().getX()),
+        std::to_string(player.getPosition().getY()),
+        std::to_string(static_cast<uint>(player.getOrientation())),
+        std::to_string(player.getLevel()),
+        player.getTeam()
+    );
+    notifyGUI(command);
 }
 
-void Server::notifyGUI(const std::string &command,
-    const std::vector<std::string> &args)
+void Server::stop() noexcept
+{
+    _resourceRespawnTimer.cancel();
+    for (auto &a : _aiSessions) {
+        a->cancelTimers();
+    }
+    _ioContext.stop();
+}
+
+void Server::notifyGUI(const std::string &command)
 {
     for (auto &session : _guiSessions)
-        _guiProtocolHandler.handleLine(command, *session, args);
+        session->send(command);
+}
+
+bool Server::handleGUICommand(GUISession &session, const std::string &command,
+    const std::vector<std::string> &args)
+{
+    return _guiProtocolHandler.handleLine(command, session, args);
 }
 
 void Server::broadcastToAll(const std::string &data)
@@ -164,6 +276,13 @@ void Server::forEachAISession(const std::function<void(AISession &)> &fn)
         if (a)
             fn(*a);
     }
+}
+
+void Server::onPlayerMoved(const Player &player)
+{
+    const auto command = std::format("ppo #{} {} {} {}\n",
+        player.getId(), player.getPosition().getX(), player.getPosition().getY(), static_cast<uint>(player.getOrientation()));
+    notifyGUI(command);
 }
 
 }
