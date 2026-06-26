@@ -428,27 +428,28 @@ pub fn stone_navigate_take_action(client: Rc<RefCell<AiTcpClient>>) -> Box<dyn B
                 awaiting_response = true;
                 return NodeStatus::Running;
             }
-            return match bb.get::<ServerMessage>("last_response") {
+            match bb.get::<ServerMessage>("last_response") {
                 Ok(ServerMessage::Ok) => {
                     bb.clear("last_response").ok();
                     commands.remove(0);
                     if commands.is_empty() {
                         awaiting_response = false;
                         taking = true;
+                        // fall through to Take block below
                     } else {
                         client.borrow().send(commands[0].clone());
+                        return NodeStatus::Running;
                     }
-                    NodeStatus::Running
                 }
                 Ok(ServerMessage::Ko) => {
                     bb.clear("last_response").ok();
                     commands.clear();
                     stone = None;
                     awaiting_response = false;
-                    NodeStatus::Failure
+                    return NodeStatus::Failure;
                 }
-                _ => NodeStatus::Running,
-            };
+                _ => return NodeStatus::Running,
+            }
         }
 
         // Take
