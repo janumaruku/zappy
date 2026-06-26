@@ -67,7 +67,7 @@ private:
     void startAccept();
 
     void onAccept(
-        const std::shared_ptr<network::ConnectedSocket> &socket
+        std::shared_ptr<network::ConnectedSocket> socket
         );
     void onPlayerMoved(const Player &player);
 

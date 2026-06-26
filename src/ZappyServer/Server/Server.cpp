@@ -149,7 +149,7 @@ static std::string trimPacket(std::string value)
 }
 
 void Server::onAccept(
-    const std::shared_ptr<network::ConnectedSocket> &socket)
+    std::shared_ptr<network::ConnectedSocket> socket)
 {
     bool success = false;
 

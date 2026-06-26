@@ -167,7 +167,8 @@ bool IncantationCommand::execute(AISession &session,
         std::string pie = std::format("pie {} {} 1\n", pos.getX(), pos.getY());
         server.notifyGUI(pie);
     });
-
+    session.scheduleResponse(TIME_LIMIT, 
+        std::format("Current level: {}\n", level + 1));
     return true;
 }
 
