@@ -1,5 +1,5 @@
 use crate::ai_data::{ServerMessage, tile_to_commands};
-use crate::config::{ELEVATION_TABLE, FOOD_SAFE_THRESHOLD, INCANT_WAIT_TIMEOUT_S, STONE_PRIORITIES};
+use crate::config::{ELEVATION_TABLE, FOOD_CRITICAL_THRESHOLD, FOOD_SAFE_THRESHOLD, INCANT_WAIT_TIMEOUT_S, STONE_PRIORITIES};
 use std::time::Instant;
 use ai_tcp_client::AiTcpClient;
 use behavior_tree::behavior_tree::{
@@ -269,6 +269,17 @@ pub fn incantation_action(client: Rc<RefCell<AiTcpClient>>) -> Box<dyn BehaviorN
                 NodeStatus::Running
             }
         }
+    }))
+}
+
+pub fn food_not_critical_condition() -> Box<dyn BehaviorNode> {
+    Box::new(ConditionNode::new(|bb| match bb.get::<u32>("food") {
+        Ok(food) => {
+            let result = *food >= FOOD_CRITICAL_THRESHOLD;
+            println!("[food_not_critical] food={food}, threshold={FOOD_CRITICAL_THRESHOLD} → {result}");
+            result
+        }
+        Err(_) => false,
     }))
 }
 
