@@ -26,6 +26,13 @@ namespace zappy::gui {
 enum class ZappyEventType: std::uint8_t {
     GUI_EVENT,
 };
+static const std::unordered_map<std::string, Color> TEAM_COLORS = {
+    {"red", RED},
+    {"blue", BLUE},
+    {"green", GREEN},
+    {"yellow", YELLOW},
+    {"white", WHITE},
+};
 
 class WorldState: designPattern::ASubject<ZappyEvent, ZappyEventType> {
     using PlayerId = std::string;
@@ -46,6 +53,7 @@ public:
 
     const std::unordered_map<std::string, Team> &getTeams() const noexcept;
     std::unordered_map<std::string, Team> &getTeams() noexcept;
+    static const Color& getTeamColor(const data::TeamId &teamName) noexcept;
 
     const std::unordered_map<std::string, data::Egg> &getEggs() const noexcept;
 

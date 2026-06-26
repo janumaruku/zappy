@@ -70,6 +70,13 @@ std::unordered_map<std::string, Team> &WorldState::getTeams()
 {
     return _teams;
 }
+const Color &WorldState::getTeamColor(const data::TeamId &teamName) noexcept
+{
+    if (TEAM_COLORS.contains(teamName)) {
+        return TEAM_COLORS.at(teamName);
+    }
+    return TEAM_COLORS.at("white");
+}
 
 const std::unordered_map<std::string, data::Egg> &WorldState::getEggs() const noexcept
 {
@@ -179,7 +186,8 @@ void WorldState::onPlayerBroadcast(const PlayerId &id, const std::string &msg)
 
 void WorldState::onTeamName(const data::TeamId &teamName)
 {
-    _teams.insert_or_assign(teamName, Team{teamName, WHITE});
+    const Color &color = getTeamColor(teamName);
+    _teams.insert_or_assign(teamName, Team{teamName, color});
 }
 
 void WorldState::onTileContent(const data::Position pos,
